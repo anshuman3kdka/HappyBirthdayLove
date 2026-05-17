@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -10,7 +10,14 @@
 
 @layer base {
   body {
-    @apply bg-[#050505] text-[#E0D8D0] font-sans antialiased overflow-x-hidden;
+    @apply bg-[#050505] text-[#E0D8D0] font-sans antialiased overflow-x-hidden select-none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  img,
+  video {
+    user-select: none;
+    -webkit-user-drag: none;
   }
 }
 
@@ -20,29 +27,35 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: theme('colors.zinc.950');
+  background: theme("colors.zinc.950");
 }
 
 ::-webkit-scrollbar-thumb {
-  background: theme('colors.zinc.800');
+  background: theme("colors.zinc.800");
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: theme('colors.zinc.700');
+  background: theme("colors.zinc.700");
 }
 
 /* Filmstrip specific utility */
 .film-strip-pattern {
-  background-image: radial-gradient(circle at 10px 10px, theme('colors.zinc.950') 4px, transparent 5px);
+  background-image: radial-gradient(
+    circle at 10px 10px,
+    theme("colors.zinc.950") 4px,
+    transparent 5px
+  );
   background-size: 20px 20px;
   background-position: center;
 }
 
 .polaroid-shadow {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.5),
+    0 4px 6px -2px rgba(0, 0, 0, 0.3);
 }
 
 .text-shadow-sm {
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
