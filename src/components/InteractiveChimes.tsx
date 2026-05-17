@@ -21,10 +21,12 @@ export function InteractiveChimes() {
         ctx.resume();
       }
 
-      // Calculate pan from -1 (left) to 1 (right) based on click position
-      const panValue = (e.clientX / window.innerWidth) * 2 - 1;
+      // Calculate spatial positions from -1 to 1 based on click coordinates
+      const xPos = (e.clientX / window.innerWidth) * 2 - 1;
+      // Invert Y so that top of screen (0) maps to positive Y in audio space
+      const yPos = -((e.clientY / window.innerHeight) * 2 - 1);
 
-      playChime(ctx, panValue);
+      playChime(ctx, xPos, yPos);
     };
 
     window.addEventListener('mousedown', handleGlobalClick);
@@ -38,7 +40,7 @@ export function InteractiveChimes() {
     };
   }, []);
 
-  const playChime = (ctx: AudioContext, panValue: number) => {
+  const playChime = (ctx: AudioContext, xPos: number, yPos: number) => {
     const t = ctx.currentTime;
 
     // Use a high C Major Pentatonic scale for a pleasant, twinkling sound
@@ -53,15 +55,23 @@ export function InteractiveChimes() {
     masterGain.gain.value = 0.04; // Keep it subtle and low volume
     masterGain.connect(ctx.destination);
 
-    // Stereo Panner
-    // Use modern standard createStereoPanner if available, gracefully fallback
-    let finalNode: AudioNode = masterGain;
-    if (ctx.createStereoPanner) {
-      const panner = ctx.createStereoPanner();
-      panner.pan.value = panValue;
-      panner.connect(masterGain);
-      finalNode = panner;
-    }
+    // 3D Panner (Spatial Audio)
+    // Use HRTF (Head-Related Transfer Function) for superior 2D/3D positioning
+    const panner = ctx.createPanner();
+    panner.panningModel = 'HRTF';
+    panner.distanceModel = 'inverse';
+    panner.refDistance = 1;
+    panner.maxDistance = 10000;
+    panner.rolloffFactor = 1;
+
+    // Map screen coordinates to audio space
+    // We place the sound slightly in front of the listener (Z = -0.5) to avoid the "inside-head" effect
+    panner.positionX.setValueAtTime(xPos, t);
+    panner.positionY.setValueAtTime(yPos, t);
+    panner.positionZ.setValueAtTime(-0.5, t);
+    
+    panner.connect(masterGain);
+    const finalNode: AudioNode = panner;
 
     // Main Envelope (Controls output volume over time)
     const env = ctx.createGain();
