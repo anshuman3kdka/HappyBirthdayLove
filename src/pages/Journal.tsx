@@ -65,9 +65,9 @@ function JournalEntry({ entry }: { entry: typeof ENTRIES[0] }) {
         <img 
           src={entry.image} 
           alt="" 
-          className="w-full h-full object-cover opacity-30 mix-blend-luminosity"
+          className="w-full h-full object-cover opacity-[0.15] mix-blend-luminosity"
         />
-        <div className="absolute inset-0 bg-[#050505]/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
       </motion.div>
 
       {/* Content */}

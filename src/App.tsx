@@ -14,6 +14,7 @@ import { InteractiveChimes } from './components/InteractiveChimes';
 import { SkyBackground } from './components/webgl/SkyBackground';
 import { EnvelopeEntry } from './components/EnvelopeEntry';
 import { SitePreloader } from './components/SitePreloader';
+import { GlobalDust } from './components/GlobalDust';
 
 import { Home } from './pages/Home';
 import { Journal } from './pages/Journal';
@@ -117,6 +118,7 @@ export default function App() {
           className="relative min-h-screen w-full flex flex-col font-sans"
         >
           <SkyBackground />
+          <GlobalDust />
           <Navigation />
           <GlobalAudio hasEntered={hasEntered} />
           <InteractiveChimes />
