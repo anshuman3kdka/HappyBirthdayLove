@@ -1,0 +1,28 @@
+{
+  "title": "nehal.",
+  "subtitle_1": "happy birthday. this took longer than it should have.",
+  "subtitle_2": "it was worth it.",
+  "bottom_date": "march 4th, 2025 // 02:42 am",
+  "polaroids": [
+    {
+      "image": "/assets/image/home-photo-1",
+      "caption": "Paris, 2024",
+      "rotation": -4
+    },
+    {
+      "image": "/assets/image/home-photo-2",
+      "caption": "coffee at 2pm",
+      "rotation": 3
+    },
+    {
+      "image": "/assets/image/home-photo-3",
+      "caption": "you wouldn't stop laughing",
+      "rotation": -6
+    },
+    {
+      "image": "/assets/image/home-photo-4",
+      "caption": "That night on the roof",
+      "rotation": 5
+    }
+  ]
+}

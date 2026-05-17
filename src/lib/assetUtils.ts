@@ -14,19 +14,28 @@ export const resolveAssetUrl = (basePath: string, type: keyof typeof FORMATS): s
 export const preloadAsset = (
   basePath: string,
   type: keyof typeof FORMATS,
-  onComplete: () => void
+  onComplete: () => void,
+  knownUrl?: string
 ) => {
   const base = basePath.replace(/\.[a-z0-9]+$/i, "");
   const extensions = FORMATS[type];
   
   const tryExtension = (index: number) => {
-    const ext = extensions[index];
-    if (!ext) {
-      onComplete(); // all failed, fallback to default behavior
+    // Determine the literal URL to try.
+    // If we have a knownUrl (pre-discovered), try it first at index 0.
+    // Subsequent indices fetch from the standard FORMATS extension list.
+    const url = (index === 0 && knownUrl) ? knownUrl : `${base}.${extensions[knownUrl ? index - 1 : index]}`;
+    
+    // Check if we have run out of things to try
+    const currentExt = knownUrl ? extensions[index - 1] : extensions[index];
+    if (index > 0 && !currentExt) {
+      onComplete();
       return;
     }
-
-    const url = `${base}.${ext}`;
+    if (index === 0 && !knownUrl && !extensions[0]) {
+      onComplete();
+      return;
+    }
 
     if (type === 'image') {
       const img = new Image();
@@ -38,7 +47,7 @@ export const preloadAsset = (
       img.src = url;
     } else if (type === 'audio') {
       const audio = new Audio();
-      audio.preload = "metadata";
+      audio.preload = "auto";
       const onReady = () => {
         ASSET_MAP[base] = url;
         cleanup();
@@ -49,15 +58,15 @@ export const preloadAsset = (
         tryExtension(index + 1);
       };
       const cleanup = () => {
-        audio.removeEventListener('loadedmetadata', onReady);
+        audio.removeEventListener('canplaythrough', onReady);
         audio.removeEventListener('error', onError);
       };
-      audio.addEventListener('loadedmetadata', onReady);
+      audio.addEventListener('canplaythrough', onReady);
       audio.addEventListener('error', onError);
       audio.src = url;
     } else if (type === 'video') {
       const video = document.createElement('video');
-      video.preload = "metadata";
+      video.preload = "auto";
       const onReady = () => {
         ASSET_MAP[base] = url;
         cleanup();
@@ -68,10 +77,10 @@ export const preloadAsset = (
         tryExtension(index + 1);
       };
       const cleanup = () => {
-        video.removeEventListener('loadedmetadata', onReady);
+        video.removeEventListener('canplaythrough', onReady);
         video.removeEventListener('error', onError);
       };
-      video.addEventListener('loadedmetadata', onReady);
+      video.addEventListener('canplaythrough', onReady);
       video.addEventListener('error', onError);
       video.src = url;
     }

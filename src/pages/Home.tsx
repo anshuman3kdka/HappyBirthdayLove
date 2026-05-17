@@ -2,13 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 import { resolveAssetUrl } from '../lib/assetUtils';
-
-const POLAROIDS = [
-  { id: 1, basePath: '/assets/image/home-photo-1', caption: 'Paris, 2024', rotation: -4 },
-  { id: 2, basePath: '/assets/image/home-photo-2', caption: 'coffee at 2pm', rotation: 3 },
-  { id: 3, basePath: '/assets/image/home-photo-3', caption: 'you wouldn\'t stop laughing', rotation: -6 },
-  { id: 4, basePath: '/assets/image/home-photo-4', caption: 'That night on the roof', rotation: 5 },
-];
+import homeContent from '../content/home.json';
 
 function Typewriter({ text, delay = 0 }: { text: string; delay?: number }) {
   const [displayText, setDisplayText] = useState('');
@@ -44,24 +38,24 @@ export function Home() {
           className="text-left mt-16 md:mt-0"
         >
           <h1 className="text-[80px] md:text-[112px] leading-[0.9] font-light tracking-tighter mb-4 italic font-serif relative">
-            nehal.
+            {homeContent.title}
             {/* Soft lavender/bougainvillea decorative glow behind text */}
             <div className="absolute -inset-4 bg-purple-400/10 blur-2xl rounded-full z-[-1] pointer-events-none"></div>
           </h1>
           <div className="h-[1px] w-24 bg-gradient-to-r from-purple-300/40 to-transparent mb-6"></div>
           <div className="text-xl md:text-2xl font-light opacity-80 leading-relaxed max-w-sm mb-2 font-serif">
-            <Typewriter text="happy birthday. this took longer than it should have." delay={2} />
+            <Typewriter text={homeContent.subtitle_1} delay={2} />
             <motion.p 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 2, delay: 6.5 }}
               className="inline-block mt-2"
             >
-              it was worth it.
+              {homeContent.subtitle_2}
             </motion.p>
           </div>
           <p className="font-mono text-[9px] uppercase tracking-[0.4em] opacity-40 mt-6">
-            march 4th, 2025 // 02:42 am
+            {homeContent.bottom_date}
           </p>
         </motion.div>
       </div>
@@ -70,9 +64,9 @@ export function Home() {
       <div className="relative mt-32 w-full max-w-4xl h-[60vh] flex items-center justify-center z-20 pointer-events-none">
         <div ref={constraintsRef} className="absolute inset-[-100px] md:inset-[-200px]" />
         <div className="absolute inset-0 flex items-center justify-center flex-wrap gap-4 pointer-events-auto">
-          {POLAROIDS.map((p, i) => (
+          {homeContent.polaroids.map((p, i) => (
             <motion.div
-              key={p.id}
+              key={i}
               drag
               dragConstraints={constraintsRef}
               dragElastic={0.2}
@@ -102,7 +96,7 @@ export function Home() {
                   {/* Subtle inner shadow for depth */}
                   <div className="absolute inset-0 shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] z-10 pointer-events-none"></div>
                   <img 
-                    src={resolveAssetUrl(p.basePath, 'image')} 
+                    src={resolveAssetUrl(p.image, 'image')} 
                     alt="Memory" 
                     className="w-full h-full object-cover grayscale-[10%] sepia-[10%] contrast-110 opacity-90 transition-transform duration-700 hover:scale-105" 
                     draggable={false} 

@@ -2,49 +2,28 @@ import { useState, useRef, useEffect, forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { resolveAssetUrl } from '../lib/assetUtils';
+import journalContent from '../content/journal.json';
 
-const ENTRIES = [
-  {
-    id: 1,
-    coord: "RA 14h 29m · Dec +18° 11'",
-    date: "march 4, 2025",
-    text: "i remember you explaining your theory about clouds being proof the sky has moods, while your cat slept curled up on your lap. i didn't tell you i stopped listening. i was just watching you.",
-    basePath: "/assets/image/journal-bg-1"
-  },
-  {
-    id: 2,
-    coord: "RA 09h 14m · Dec -43° 22'",
-    date: "july 12, 2024",
-    text: "you fell asleep during the movie we planned for weeks to watch. i paused it. i ended up just watching the city lights hit your face through the window, catching the dancing shadow of the bougainvillea outside. it was a better movie anyway.",
-    basePath: "/assets/image/journal-bg-2"
-  },
-  {
-    id: 3,
-    coord: "RA 19h 50m · Dec +08° 52'",
-    date: "november 18, 2024",
-    text: "it was raining so hard we stepped into that tiny floral shop. you bought a small bouquet of pink carnations you fully admitted you didn't need, just because you liked the way they looked in the damp air. i still think about that.",
-    basePath: "/assets/image/journal-bg-3"
-  }
-];
+const ENTRIES = journalContent.entries;
 
 const JournalContent = forwardRef<HTMLDivElement, { isForeground?: boolean; isRevealed?: boolean }>((props, ref) => {
   return (
     <div ref={ref} className="w-full flex flex-col items-center pb-[20vh]">
       <div className={`pt-[25vh] pb-[10vh] px-6 max-w-5xl mx-auto text-center z-10 relative ${props.isForeground ? 'opacity-0' : 'opacity-100'}`}>
          <h1 className="font-serif text-3xl md:text-5xl italic opacity-60 drop-shadow-sm">
-           the archive of small moments
+           {journalContent.title}
          </h1>
          <p className="mt-8 font-serif italic text-sm md:text-base opacity-90 tracking-wide text-white drop-shadow-md">
-           let your touch clear the haze, guide your light through our days...
+           {journalContent.subtitle}
          </p>
       </div>
 
       <div className={`w-full flex flex-col items-center transition-all duration-1000 ${(!props.isForeground && !props.isRevealed) ? 'opacity-20 blur-[8px]' : ''}`}>
-        {ENTRIES.map((entry) => (
-          <div key={entry.id} className="relative min-h-[100vh] w-full flex items-center justify-center py-20 px-6">
+        {ENTRIES.map((entry, i) => (
+          <div key={i} className="relative min-h-[100vh] w-full flex items-center justify-center py-20 px-6">
             <div className="absolute inset-0 w-full h-[120%] -top-[10%] z-0 pointer-events-none">
               <img 
-                src={resolveAssetUrl(entry.basePath, 'image')} 
+                src={resolveAssetUrl(entry.image, 'image')} 
                 alt="" 
                 className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity"
               />
@@ -70,10 +49,10 @@ const JournalContent = forwardRef<HTMLDivElement, { isForeground?: boolean; isRe
               <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
             </svg>
             <p className="font-serif text-2xl md:text-[32px] italic opacity-80 px-4">
-              there's one more thing i should have said sooner...
+              {journalContent.finalMessage.text1}
             </p>
             <p className="font-serif text-xl md:text-3xl opacity-50 mt-4 italic">
-              i love you.
+              {journalContent.finalMessage.text2}
             </p>
           </div>
         </div>

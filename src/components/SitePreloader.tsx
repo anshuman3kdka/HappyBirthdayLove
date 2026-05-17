@@ -1,39 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { preloadAsset } from '../lib/assetUtils';
-
-const ALL_ASSETS = [
-  // Images
-  { basePath: '/assets/image/home-photo-1', type: 'image' },
-  { basePath: '/assets/image/home-photo-2', type: 'image' },
-  { basePath: '/assets/image/home-photo-3', type: 'image' },
-  { basePath: '/assets/image/home-photo-4', type: 'image' },
-  { basePath: '/assets/image/journal-bg-1', type: 'image' },
-  { basePath: '/assets/image/journal-bg-2', type: 'image' },
-  { basePath: '/assets/image/journal-bg-3', type: 'image' },
-  { basePath: '/assets/image/archive-photo-1', type: 'image' },
-  { basePath: '/assets/image/archive-photo-2', type: 'image' },
-  { basePath: '/assets/image/archive-photo-3', type: 'image' },
-  { basePath: '/assets/image/archive-photo-4', type: 'image' },
-  { basePath: '/assets/image/archive-photo-5', type: 'image' },
-  { basePath: '/assets/image/archive-film-1', type: 'image' },
-  { basePath: '/assets/image/archive-film-2', type: 'image' },
-  { basePath: '/assets/image/archive-film-3', type: 'image' },
-  { basePath: '/assets/image/archive-film-4', type: 'image' },
-  { basePath: '/assets/image/archive-film-5', type: 'image' },
-  { basePath: '/assets/image/archive-film-6', type: 'image' },
-  // Audio
-  { basePath: '/assets/audio/envelope-open', type: 'audio' },
-  { basePath: '/assets/audio/audio-ambient', type: 'audio' },
-  { basePath: '/assets/audio/audio-intimate', type: 'audio' },
-  { basePath: '/assets/audio/audio-nostalgic', type: 'audio' },
-  { basePath: '/assets/audio/wish-swell', type: 'audio' },
-  { basePath: '/assets/audio/slide-projector', type: 'audio' },
-  { basePath: '/assets/audio/archive-voicenote', type: 'audio' },
-  // Video
-  { basePath: '/assets/video/archive-video', type: 'video' },
-  { basePath: '/assets/video/projection-video', type: 'video' },
-] as const;
+import { ALL_ASSETS } from 'virtual:assets';
 
 export function SitePreloader({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
@@ -43,6 +11,14 @@ export function SitePreloader({ onComplete }: { onComplete: () => void }) {
     let loadedCount = 0;
     const totalAssets = ALL_ASSETS.length;
     let hasReturned = false;
+
+    if (totalAssets === 0) {
+      setProgress(100);
+      setTimeout(() => {
+        setIsFinished(true);
+      }, 500);
+      return;
+    }
 
     const updateProgress = () => {
       loadedCount++;
@@ -57,8 +33,8 @@ export function SitePreloader({ onComplete }: { onComplete: () => void }) {
       }
     };
 
-    ALL_ASSETS.forEach(({ basePath, type }) => {
-      preloadAsset(basePath, type, updateProgress);
+    ALL_ASSETS.forEach(({ basePath, type, fullPath }) => {
+      preloadAsset(basePath, type, updateProgress, fullPath);
     });
   }, []);
 

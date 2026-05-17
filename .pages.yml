@@ -1,0 +1,166 @@
+media:
+  input: public/assets
+  output: /assets
+collections:
+  - name: pages
+    label: Pages
+    type: file
+    files:
+      - name: home
+        label: Home Page
+        file: src/content/home.json
+        fields:
+          - name: title
+            label: Title
+            type: string
+          - name: subtitle_1
+            label: First Subtitle
+            type: string
+          - name: subtitle_2
+            label: Second Subtitle
+            type: string
+          - name: bottom_date
+            label: Date Text
+            type: string
+          - name: polaroids
+            label: Polaroids
+            type: list
+            fields:
+              - name: image
+                label: Image Base Path
+                type: string
+              - name: caption
+                label: Caption
+                type: string
+              - name: rotation
+                label: Rotation Angle
+                type: number
+      - name: archive
+        label: Archive Page
+        file: src/content/archive.json
+        fields:
+          - name: constellationPhotos
+            label: Constellation Photos
+            type: list
+            fields:
+              - name: image
+                label: Image Base Path
+                type: string
+              - name: x
+                label: X Position (%)
+                type: number
+              - name: y
+                label: Y Position (%)
+                type: number
+          - name: filmstripPhotos
+            label: Film Strip Images
+            type: list
+            fields:
+              - name: image
+                label: Image Base Path
+                type: string
+          - name: videoMoment
+            label: Video Moment
+            type: object
+            fields:
+              - name: video
+                label: Video Base Path
+                type: string
+              - name: caption
+                label: Caption
+                type: string
+          - name: littleThings
+            label: Little Things
+            type: object
+            fields:
+              - name: audioVoiceNote
+                label: Voice Note Audio Base Path
+                type: string
+              - name: voiceNoteLabel
+                label: Voice Note Label
+                type: string
+              - name: ticketSeat
+                label: Ticket Seat
+                type: string
+              - name: ticketTitle
+                label: Ticket Title
+                type: string
+      - name: journal
+        label: Journal Page
+        file: src/content/journal.json
+        fields:
+          - name: title
+            label: Title
+            type: string
+          - name: subtitle
+            label: Subtitle
+            type: string
+          - name: entries
+            label: Entries
+            type: list
+            fields:
+              - name: coord
+                label: Coordinates
+                type: string
+              - name: date
+                label: Date
+                type: string
+              - name: text
+                label: Text
+                type: string
+              - name: image
+                label: Background Image Base Path
+                type: string
+          - name: finalMessage
+            label: Final Message
+            type: object
+            fields:
+              - name: text1
+                label: Line 1
+                type: string
+              - name: text2
+                label: Line 2
+                type: string
+      - name: projection
+        label: Projection Page
+        file: src/content/projection.json
+        fields:
+          - name: video
+            label: Video Base Path
+            type: string
+          - name: caption
+            label: Caption
+            type: string
+      - name: envelope
+        label: Envelope Screen
+        file: src/content/envelope.json
+        fields:
+          - name: sealInitial
+            label: Seal Initial
+            type: string
+          - name: message
+            label: Inside Message
+            type: string
+      - name: navigation
+        label: Global Navigation
+        file: src/content/navigation.json
+        fields:
+          - name: title
+            label: Title
+            type: string
+          - name: coord1
+            label: Coordinate 1
+            type: string
+          - name: coord2
+            label: Coordinate 2
+            type: string
+          - name: links
+            label: Links
+            type: list
+            fields:
+              - name: to
+                label: Route Name
+                type: string
+              - name: label
+                label: Label
+                type: string

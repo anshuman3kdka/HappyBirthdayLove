@@ -1,0 +1,11 @@
+{
+  "title": "The Observatory",
+  "coord1": "RA 14h 29m 33s",
+  "coord2": "Dec +18° 11' 14\"",
+  "links": [
+    { "to": "/", "label": "The Sky" },
+    { "to": "/journal", "label": "The Journal" },
+    { "to": "/archive", "label": "The Archive" },
+    { "to": "/projection", "label": "The Projection" }
+  ]
+}

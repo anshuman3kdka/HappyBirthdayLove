@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cat, Heart } from 'lucide-react';
 import { resolveAssetUrl } from '../lib/assetUtils';
+import envelopeContent from '../content/envelope.json';
 
 interface EnvelopeEntryProps {
   onEnter: () => void;
@@ -92,7 +93,7 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
               className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[10px] w-12 h-12 bg-red-800 rounded-full shadow-inner z-30 flex items-center justify-center transition-all hover:scale-125 ${showSealSecret ? 'shadow-[0_0_15px_rgba(230,230,250,0.6)] bg-purple-900' : 'group-hover:scale-110'}`}
             >
               <span className={`font-serif text-xl select-none transition-colors flex items-center justify-center ${showSealSecret ? 'text-purple-100' : 'text-red-900/50'}`}>
-                {showSealSecret ? <Cat className="w-5 h-5 fill-purple-200 text-purple-200" /> : 'N'}
+                {showSealSecret ? <Cat className="w-5 h-5 fill-purple-200 text-purple-200" /> : envelopeContent.sealInitial}
               </span>
               
               {/* Confetti Burst (Bougainvillea and Carnation colors) */}
@@ -149,7 +150,7 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
               className="absolute bottom-4 left-4 right-4 h-40 bg-[#fffefc] shadow-md z-10 flex items-center justify-center p-6 border border-amber-50/50"
             >
                <div className="w-full text-center font-handwriting text-2xl text-zinc-800 opacity-60">
-                 for you.
+                 {envelopeContent.message}
                </div>
             </motion.div>
 
@@ -197,7 +198,7 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
                transition={{ duration: 0.3, ease: "easeOut" }}
                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[10px] w-12 h-12 bg-red-800 rounded-full shadow-inner z-40 flex items-center justify-center"
              >
-                <span className="font-serif text-red-900/50 text-xl">N</span>
+                <span className="font-serif text-red-900/50 text-xl">{envelopeContent.sealInitial}</span>
              </motion.div>
           </motion.div>
         )}

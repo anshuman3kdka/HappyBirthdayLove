@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { resolveAssetUrl } from '../lib/assetUtils';
+import projectionContent from '../content/projection.json';
 
 // An ethereal ambient royalty-free video
-const VIDEO_BASE = "/assets/video/projection-video";
+const VIDEO_BASE = projectionContent.video;
 
 // The shader to project the video out like volumetric light and ambient glow
 const ProjectionShader = {
@@ -188,7 +189,7 @@ export function Projection() {
            transition={{ delay: 2, duration: 2 }}
            className="mt-8 font-serif italic text-white/50 text-sm"
         >
-           An empty cinema, floating in deep space. Rented just for you.
+           {projectionContent.caption}
         </motion.div>
       </div>
     </motion.div>

@@ -1,0 +1,27 @@
+{
+  "constellationPhotos": [
+    { "image": "/assets/image/archive-photo-1", "x": 20, "y": 30 },
+    { "image": "/assets/image/archive-photo-2", "x": 60, "y": 15 },
+    { "image": "/assets/image/archive-photo-3", "x": 80, "y": 50 },
+    { "image": "/assets/image/archive-photo-4", "x": 40, "y": 70 },
+    { "image": "/assets/image/archive-photo-5", "x": 10, "y": 80 }
+  ],
+  "filmstripPhotos": [
+    { "image": "/assets/image/archive-film-1" },
+    { "image": "/assets/image/archive-film-2" },
+    { "image": "/assets/image/archive-film-3" },
+    { "image": "/assets/image/archive-film-4" },
+    { "image": "/assets/image/archive-film-5" },
+    { "image": "/assets/image/archive-film-6" }
+  ],
+  "videoMoment": {
+    "video": "/assets/video/archive-video",
+    "caption": "that one perfect afternoon."
+  },
+  "littleThings": {
+    "audioVoiceNote": "/assets/audio/archive-voicenote",
+    "voiceNoteLabel": "your laugh",
+    "ticketSeat": "Row F • Seat 12",
+    "ticketTitle": "ADMIT ONE"
+  }
+}

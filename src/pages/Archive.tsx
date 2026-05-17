@@ -3,23 +3,10 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Play, Pause, X } from 'lucide-react';
 import { AutoplayVideo } from '../components/AutoplayVideo';
 import { resolveAssetUrl } from '../lib/assetUtils';
+import archiveContent from '../content/archive.json';
 
-const ARCHIVE_PHOTOS = [
-  { id: 1, basePath: '/assets/image/archive-photo-1', x: 20, y: 30 },
-  { id: 2, basePath: '/assets/image/archive-photo-2', x: 60, y: 15 },
-  { id: 3, basePath: '/assets/image/archive-photo-3', x: 80, y: 50 },
-  { id: 4, basePath: '/assets/image/archive-photo-4', x: 40, y: 70 },
-  { id: 5, basePath: '/assets/image/archive-photo-5', x: 10, y: 80 },
-];
-
-const FILMSTRIP_PHOTOS = [
-  '/assets/image/archive-film-1',
-  '/assets/image/archive-film-2',
-  '/assets/image/archive-film-3',
-  '/assets/image/archive-film-4',
-  '/assets/image/archive-film-5',
-  '/assets/image/archive-film-6',
-];
+const ARCHIVE_PHOTOS = archiveContent.constellationPhotos;
+const FILMSTRIP_PHOTOS = archiveContent.filmstripPhotos.map(p => p.image);
 
 function ConstellationMap() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -57,17 +44,17 @@ function ConstellationMap() {
       {/* Nodes */}
       {ARCHIVE_PHOTOS.map((photo, i) => (
         <motion.div
-          key={photo.id}
+          key={i}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.8, delay: 1 + i * 0.1 }}
           whileHover={{ scale: 1.1, zIndex: 20 }}
           className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
           style={{ left: `${photo.x}%`, top: `${photo.y}%` }}
-          onClick={() => setSelectedImage(photo.basePath)}
+          onClick={() => setSelectedImage(photo.image)}
         >
           <div className="w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden border border-zinc-500/30 group-hover:border-zinc-300 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.3)]">
-            <img src={resolveAssetUrl(photo.basePath, 'image')} className="w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:mix-blend-normal transition-all" />
+            <img src={resolveAssetUrl(photo.image, 'image')} className="w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:mix-blend-normal transition-all" />
           </div>
         </motion.div>
       ))}
@@ -195,12 +182,12 @@ function VideoMoment() {
     <div className="w-full max-w-4xl mx-auto px-6 mb-32 z-10 relative">
       <div className="relative aspect-video bg-[#0a0a0a] shadow-[0_0_40px_rgba(255,255,255,0.05)] overflow-hidden rounded-sm group">
          <AutoplayVideo 
-           src={resolveAssetUrl("/assets/video/archive-video", "video")} 
+           src={resolveAssetUrl(archiveContent.videoMoment.video, "video")} 
            className="w-full h-full"
          />
       </div>
       <p className="font-serif text-center opacity-50 mt-6 italic text-lg tracking-wide">
-        that one perfect afternoon.
+        {archiveContent.videoMoment.caption}
       </p>
     </div>
   );
@@ -230,7 +217,7 @@ function LittleThings() {
       >
         <audio 
           ref={audioRef} 
-          src={resolveAssetUrl("/assets/audio/archive-voicenote", "audio")} 
+          src={resolveAssetUrl(archiveContent.littleThings.audioVoiceNote, "audio")} 
           onEnded={() => setIsPlaying(false)}
         />
         <div className="flex justify-between items-start">
@@ -262,7 +249,7 @@ function LittleThings() {
         </div>
         
         <div className="font-handwriting text-black/80 text-center w-full bg-[#E0D8D0] py-1 rounded-sm mt-2 text-sm">
-          your laugh
+          {archiveContent.littleThings.voiceNoteLabel}
         </div>
       </motion.div>
       
@@ -272,8 +259,8 @@ function LittleThings() {
         className="w-48 h-24 bg-[#E0D8D0] shadow-2xl relative border-l-8 border-r-8 border-dashed border-black/10 flex items-center justify-center transform rotate-3"
       >
         <div className="text-center">
-          <div className="font-mono font-bold text-black/80 uppercase tracking-widest text-[10px] mb-1">Row F • Seat 12</div>
-          <div className="font-mono text-black/40 text-[9px] uppercase tracking-widest">ADMIT ONE</div>
+          <div className="font-mono font-bold text-black/80 uppercase tracking-widest text-[10px] mb-1">{archiveContent.littleThings.ticketSeat}</div>
+          <div className="font-mono text-black/40 text-[9px] uppercase tracking-widest">{archiveContent.littleThings.ticketTitle}</div>
         </div>
       </motion.div>
       

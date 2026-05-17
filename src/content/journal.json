@@ -1,0 +1,28 @@
+{
+  "title": "the archive of small moments",
+  "subtitle": "let your touch clear the haze, guide your light through our days...",
+  "entries": [
+    {
+      "coord": "RA 14h 29m · Dec +18° 11'",
+      "date": "march 4, 2025",
+      "text": "i remember you explaining your theory about clouds being proof the sky has moods, while your cat slept curled up on your lap. i didn't tell you i stopped listening. i was just watching you.",
+      "image": "/assets/image/journal-bg-1"
+    },
+    {
+      "coord": "RA 09h 14m · Dec -43° 22'",
+      "date": "july 12, 2024",
+      "text": "you fell asleep during the movie we planned for weeks to watch. i paused it. i ended up just watching the city lights hit your face through the window, catching the dancing shadow of the bougainvillea outside. it was a better movie anyway.",
+      "image": "/assets/image/journal-bg-2"
+    },
+    {
+      "coord": "RA 19h 50m · Dec +08° 52'",
+      "date": "november 18, 2024",
+      "text": "it was raining so hard we stepped into that tiny floral shop. you bought a small bouquet of pink carnations you fully admitted you didn't need, just because you liked the way they looked in the damp air. i still think about that.",
+      "image": "/assets/image/journal-bg-3"
+    }
+  ],
+  "finalMessage": {
+    "text1": "there's one more thing i should have said sooner...",
+    "text2": "i love you."
+  }
+}
