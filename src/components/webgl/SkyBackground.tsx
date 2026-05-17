@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useWish } from '../../contexts/WishContext';
 
 interface ConstellationProps {
   points: THREE.Vector3[];
@@ -177,6 +178,188 @@ function ShootingStar() {
   });
 
   return <primitive object={lineObj} />;
+}
+
+function WishStar() {
+  const { viewport } = useThree();
+  const { isWishing } = useWish();
+  
+  const [hasWished, setHasWished] = useState(false);
+  
+  // We want to guarantee the star completes its animation once triggered,
+  // even if the user lets go of the spacebar.
+  const [activeWishAnimation, setActiveWishAnimation] = useState(false);
+
+  useEffect(() => {
+    if (isWishing && !hasWished) {
+      setHasWished(true);
+      setActiveWishAnimation(true);
+    } else if (!isWishing && hasWished) {
+      setHasWished(false);
+      // We do NOT set activeWishAnimation to false here, we strictly let the useFrame loop expire it
+    }
+  }, [isWishing, hasWished]);
+
+  const wishStartTime = useRef<number | null>(null);
+  const trajectory = useRef({ startX: 0, startY: 0, distanceX: 0, distanceY: 0 });
+  const groupRef = useRef<THREE.Group>(null);
+  const headMaterialRef = useRef<THREE.MeshBasicMaterial>(null);
+
+  const points = useMemo(() => [
+    new THREE.Vector3(0, 0, 0), // Head
+    new THREE.Vector3(1, -1, 0) // Tail end
+  ], []);
+  
+  const geometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry().setFromPoints(points);
+    // Add vertex colors (head is opaque white, tail is transparent)
+    const colors = new Float32Array([
+      1, 1, 1,   // vertex 0 (head): rgb
+      1, 1, 1    // vertex 1 (tail): rgb
+    ]);
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    return geo;
+  }, [points]);
+  
+  // Custom shader for line fading since LineBasicMaterial's vertexColors doesn't support alpha per-vertex natively in all WebGL implementations as easily
+  const material = useMemo(() => new THREE.ShaderMaterial({
+    transparent: true,
+    depthTest: false,
+    uniforms: {
+      globalOpacity: { value: 0.0 }
+    },
+    vertexShader: `
+      attribute float alpha;
+      varying float vAlpha;
+      void main() {
+        vAlpha = alpha;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform float globalOpacity;
+      varying float vAlpha;
+      void main() {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, vAlpha * globalOpacity);
+      }
+    `
+  }), []);
+  
+  // Re-write geometry to use the custom alpha attribute for the shader
+  useMemo(() => {
+    const alphas = new Float32Array([1.0, 0.0]); // head is 1.0, tail is 0.0
+    geometry.setAttribute('alpha', new THREE.BufferAttribute(alphas, 1));
+  }, [geometry]);
+
+  const lineObj = useMemo(() => {
+    const line = new THREE.Line(geometry, material);
+    line.renderOrder = 100;
+    return line;
+  }, [geometry, material]);
+
+  useFrame((state) => {
+    if (activeWishAnimation && wishStartTime.current === null) {
+      wishStartTime.current = state.clock.elapsedTime;
+
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.max(viewport.width, viewport.height) * 1.5; // ensure it starts off-screen
+      
+      const sX = Math.cos(angle) * radius;
+      const sY = Math.sin(angle) * radius;
+      
+      const targetAngle = angle + Math.PI + (Math.random() - 0.5) * 1.5; 
+      const tEndX = Math.cos(targetAngle) * radius;
+      const tEndY = Math.sin(targetAngle) * radius;
+
+      const dX = sX - tEndX;
+      const dY = sY - tEndY;
+      
+      trajectory.current = { startX: sX, startY: sY, distanceX: dX, distanceY: dY };
+
+      const distLen = Math.sqrt(dX * dX + dY * dY);
+      const tailLength = 2.0; 
+      const tX = (dX / distLen) * tailLength;
+      const tY = (dY / distLen) * tailLength;
+      
+      geometry.setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(tX, tY, 0)
+      ]);
+    }
+
+    if (activeWishAnimation && wishStartTime.current !== null) {
+      const elapsed = state.clock.elapsedTime - wishStartTime.current;
+      const DURATION = 2.5; // Make the star taking slightly longer to finish its journey
+      
+      if (elapsed < DURATION) {
+        const progress = elapsed / DURATION;
+        const { startX, startY, distanceX, distanceY } = trajectory.current;
+
+        if (groupRef.current) {
+          groupRef.current.position.set(
+            startX - progress * distanceX,
+            startY - progress * distanceY,
+            -5 
+          );
+        }
+        
+        // Smooth sine wave for opacity fading in and out over the duration
+        const opacity = Math.sin(progress * Math.PI) * 1.0;
+        (lineObj.material as THREE.ShaderMaterial).uniforms.globalOpacity.value = opacity;
+        if (headMaterialRef.current) headMaterialRef.current.opacity = opacity;
+      } else {
+        // Animation finished
+        (lineObj.material as THREE.ShaderMaterial).uniforms.globalOpacity.value = 0;
+        if (headMaterialRef.current) headMaterialRef.current.opacity = 0;
+        wishStartTime.current = null;
+        setActiveWishAnimation(false);
+      }
+    } else {
+      (lineObj.material as THREE.ShaderMaterial).uniforms.globalOpacity.value = 0;
+      if (headMaterialRef.current) headMaterialRef.current.opacity = 0;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      <primitive object={lineObj} />
+      <mesh renderOrder={101}>
+        <circleGeometry args={[0.015, 16]} />
+        <meshBasicMaterial ref={headMaterialRef} color="#ffffff" transparent opacity={0} depthTest={false} />
+      </mesh>
+    </group>
+  );
+}
+
+function WishFadingOverlay() {
+  const { isWishing } = useWish();
+  const meshRef = useRef<THREE.Mesh>(null);
+  const materialRef = useRef<THREE.MeshBasicMaterial>(null);
+  const { scene } = useThree();
+
+  useFrame((state) => {
+    if (materialRef.current) {
+      const targetOpacity = isWishing ? 1.0 : 0.0;
+      materialRef.current.opacity += (targetOpacity - materialRef.current.opacity) * 0.05; 
+
+      if (scene.background && (scene.background as THREE.Color).isColor) {
+        materialRef.current.color.copy(scene.background as THREE.Color);
+      }
+    }
+    
+    if (meshRef.current) {
+      meshRef.current.position.copy(state.camera.position);
+      meshRef.current.position.add(state.camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(1));
+      meshRef.current.quaternion.copy(state.camera.quaternion);
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} renderOrder={99}> 
+      <planeGeometry args={[100, 100]} />
+      <meshBasicMaterial ref={materialRef} transparent opacity={0} depthTest={false} depthWrite={false} color="#020202" />
+    </mesh>
+  );
 }
 
 function SceneController() {
@@ -363,6 +546,8 @@ export function SkyBackground() {
           pulseOffset={3}
         />
         <ShootingStar />
+        <WishFadingOverlay />
+        <WishStar />
 
         <EffectComposer multisampling={0}>
           <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} intensity={1.5} mipmapBlur />

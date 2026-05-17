@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useWish } from '../contexts/WishContext';
 
 // Cohesive, universe-themed ambient tracks (Creative Commons - Stellardrone)
 const TRACKS = {
@@ -8,15 +9,21 @@ const TRACKS = {
   '/archive': 'https://archive.org/download/Stellardrone_-_Light_Years_2013/04_Eternity.mp3' // The Archive - Warm, nostalgic
 };
 
+const WISH_SWELL = 'https://archive.org/download/Stellardrone_-_Light_Years_2013/06_Billion_Years.mp3'; // Grand track, jumps directly to peak
+
 const TARGET_VOLUME = 0.45; // Moderately low background volume for ambient tracks
+const WISH_DIM_VOLUME = 0.05; // Drop background track volume heavily during wish
 const FADE_STEP = 0.01;
 const FADE_INTERVAL = 30; // 30ms
 
 export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRefs = useRef<{ [key: string]: HTMLAudioElement | null }>({});
+  const wishAudioRef = useRef<HTMLAudioElement | null>(null);
   const { pathname } = useLocation();
   const currentPathRef = useRef<string>(pathname);
+  const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { isWishing } = useWish();
 
   // Initial play on entry or fallback on interaction
   useEffect(() => {
@@ -112,12 +119,76 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
     };
   }, [pathname, isPlaying]);
 
+  // Handle Wish State (Swell logic)
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const normalizedCurrentPath = TRACKS[pathname as keyof typeof TRACKS] ? pathname : '/';
+    const activeTrack = audioRefs.current[normalizedCurrentPath];
+
+    if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+
+    fadeIntervalRef.current = setInterval(() => {
+      let settled = true;
+      const targetBgVol = isWishing ? WISH_DIM_VOLUME : TARGET_VOLUME;
+      
+      if (activeTrack) {
+        if (Math.abs(activeTrack.volume - targetBgVol) > FADE_STEP) {
+          activeTrack.volume += (activeTrack.volume < targetBgVol ? FADE_STEP : -FADE_STEP);
+          settled = false;
+        } else {
+          activeTrack.volume = targetBgVol;
+        }
+      }
+
+      if (wishAudioRef.current) {
+        if (isWishing) {
+          if (wishAudioRef.current.paused) {
+            wishAudioRef.current.currentTime = 0; // Start at the beginning for a natural rise
+            wishAudioRef.current.volume = 0;
+            const playPromise = wishAudioRef.current.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(e => console.warn('Wish play blocked:', e));
+            }
+          }
+          if (wishAudioRef.current.volume < 0.8) {
+            wishAudioRef.current.volume = Math.min(0.8, wishAudioRef.current.volume + FADE_STEP * 2.5);
+            settled = false;
+          }
+        } else {
+          if (wishAudioRef.current.volume > FADE_STEP * 3) {
+            wishAudioRef.current.volume = Math.max(0, wishAudioRef.current.volume - FADE_STEP * 3);
+            settled = false;
+          } else {
+            wishAudioRef.current.volume = 0;
+            if (!wishAudioRef.current.paused) wishAudioRef.current.pause();
+          }
+        }
+      }
+
+      if (settled && fadeIntervalRef.current) {
+        clearInterval(fadeIntervalRef.current);
+      }
+    }, FADE_INTERVAL);
+
+    return () => {
+      if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+    };
+  }, [isWishing, isPlaying, pathname]);
+
   return (
     <>
+      <audio 
+        ref={wishAudioRef}
+        src={WISH_SWELL}
+        preload="auto"
+      />
       {Object.entries(TRACKS).map(([path, src]) => (
         <audio 
           key={path}
-          ref={el => audioRefs.current[path] = el}
+          ref={el => {
+            if (el) audioRefs.current[path] = el;
+          }}
           src={src}
           loop
           preload="auto"
