@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { Play, Pause } from 'lucide-react';
 
 interface AutoplayVideoProps {
   src: string;
@@ -53,6 +52,14 @@ export function AutoplayVideo({ src, poster, className, loop = true }: AutoplayV
   useEffect(() => {
     if (!videoRef.current) return;
 
+    // Pause immediately if scrolling or out of view
+    if (!isIntersecting || isScrolling) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    // Play if intersecting and completely stopped scrolling
     if (isIntersecting && !isScrolling) {
       const playPromise = videoRef.current.play();
       if (playPromise !== undefined) {
@@ -65,41 +72,42 @@ export function AutoplayVideo({ src, poster, className, loop = true }: AutoplayV
           }
         });
       }
-    } else if (!isIntersecting) {
-      videoRef.current.pause();
-      setIsPlaying(false);
     }
   }, [isIntersecting, isScrolling]);
 
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      videoRef.current.play().then(() => setIsPlaying(true));
-    }
-  };
-
   return (
-    <div className={`relative ${className}`}>
-      <video
-        ref={videoRef}
-        src={src}
-        poster={poster}
-        className="w-full h-full object-cover"
-        loop={loop}
-        playsInline
-        muted // Autoplay usually requires muted
-      />
-      
-      <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity duration-500 ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}>
-        <button
-          onClick={togglePlay}
-          className="w-16 h-16 rounded-full bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all hover:scale-105"
-        >
-          {isPlaying ? <Pause fill="currentColor" /> : <Play fill="currentColor" className="ml-1" />}
-        </button>
+    <div className={`relative ${className} [perspective:1000px]`}>
+      <div 
+        className={`w-full h-full relative transition-all duration-1000 preserve-3d
+        animate-float-tilt ${isPlaying ? 'animate-glow-pulse' : 'opacity-70'}`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <video
+          ref={videoRef}
+          src={src}
+          poster={poster}
+          className="w-full h-full object-cover mix-blend-screen opacity-80"
+          style={{
+            maskImage: 'radial-gradient(circle at center, black 40%, transparent 80%)',
+            WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 80%)',
+          }}
+          loop={loop}
+          playsInline
+          muted // Autoplay usually requires muted
+        />
+        
+        {/* Film grain / Static Scanlines */}
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-20 mix-blend-overlay z-10"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)'
+          }}
+        />
+
+        {/* Slow-moving scanline artifact */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
+           <div className="w-full h-[5%] bg-gradient-to-b from-transparent via-cyan-200/20 to-transparent animate-scanline mix-blend-screen" />
+        </div>
       </div>
     </div>
   );

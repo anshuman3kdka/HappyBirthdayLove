@@ -19,9 +19,10 @@ interface ConstellationProps {
   interactive?: boolean;
   onClick?: () => void;
   glowing?: boolean;
+  intensity?: number;
 }
 
-function Constellation({ points, indices, position, rotation, scale, pulseSpeed = 2, pulseOffset = 0, interactive = false, onClick, glowing = false }: ConstellationProps) {
+function Constellation({ points, indices, position, rotation, scale, pulseSpeed = 2, pulseOffset = 0, interactive = false, onClick, glowing = false, intensity = 1.0 }: ConstellationProps) {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
   const [hovered, setHovered] = useState(false);
@@ -35,13 +36,13 @@ function Constellation({ points, indices, position, rotation, scale, pulseSpeed 
   useFrame((state) => {
     const t = state.clock.elapsedTime * pulseSpeed + pulseOffset;
     if (pointsRef.current) {
-      const baseSize = glowing ? 0.3 : 0.08;
+      const baseSize = glowing ? 0.4 : 0.12;
       const glowScale = glowing ? 2.5 : 1.0;
-      (pointsRef.current.material as THREE.PointsMaterial).size = (baseSize + Math.sin(t) * 0.03 + (hovered ? 0.05 : 0)) * glowScale;
-      (pointsRef.current.material as THREE.PointsMaterial).opacity = glowing ? 1.0 : (0.8 + Math.sin(t * 0.5) * 0.2 + (hovered ? 0.2 : 0));
+      (pointsRef.current.material as THREE.PointsMaterial).size = (baseSize + Math.sin(t) * 0.05 + (hovered ? 0.08 : 0)) * glowScale;
+      (pointsRef.current.material as THREE.PointsMaterial).opacity = glowing ? 1.0 : ((0.8 * intensity) + Math.sin(t * 0.5) * 0.2 * intensity + (hovered ? 0.2 : 0));
     }
     if (linesRef.current) {
-      (linesRef.current.material as THREE.LineBasicMaterial).opacity = glowing ? 1.0 : (0.25 + Math.sin(t * 0.25) * 0.15 + (hovered ? 0.3 : 0));
+      (linesRef.current.material as THREE.LineBasicMaterial).opacity = glowing ? 1.0 : ((0.4 * intensity) + Math.sin(t * 0.25) * 0.15 * intensity + (hovered ? 0.3 : 0));
     }
     if (pointsRef.current && linesRef.current) {
       // Gentle slow rotation for life
@@ -66,10 +67,10 @@ function Constellation({ points, indices, position, rotation, scale, pulseSpeed 
       )}
       <points ref={pointsRef} geometry={geometry}>
         <pointsMaterial 
-          size={0.08} 
+          size={0.15} 
           color="#ffffff" 
           transparent 
-          opacity={0.8}
+          opacity={0.8 * intensity}
           blending={THREE.AdditiveBlending} 
         />
       </points>
@@ -77,7 +78,7 @@ function Constellation({ points, indices, position, rotation, scale, pulseSpeed 
         <lineBasicMaterial 
           color="#ffffff" 
           transparent 
-          opacity={0.3}
+          opacity={0.5 * intensity}
           blending={THREE.AdditiveBlending}
         />
       </lineSegments>
@@ -152,6 +153,81 @@ const shapeKitePoints = [
 ];
 const shapeKiteIndices = new Uint16Array([
   0, 1, 1, 2, 2, 3, 3, 0, 0, 4, 1, 4, 2, 4, 3, 4
+]);
+
+// Data for Flower
+const shapeFlowerPoints = [
+  new THREE.Vector3(0, 0, -10),
+  new THREE.Vector3(0, 2, -10),
+  new THREE.Vector3(1.5, 1.5, -10),
+  new THREE.Vector3(2, 0, -10),
+  new THREE.Vector3(1.5, -1.5, -10),
+  new THREE.Vector3(0, -2, -10),
+  new THREE.Vector3(-1.5, -1.5, -10),
+  new THREE.Vector3(-2, 0, -10),
+  new THREE.Vector3(-1.5, 1.5, -10),
+  new THREE.Vector3(0, -3.5, -10),
+  new THREE.Vector3(-1, -2.5, -10),
+  new THREE.Vector3(1, -2.5, -10),
+];
+const shapeFlowerIndices = new Uint16Array([
+  0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8,
+  1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 1,
+  5, 9,
+  9, 10, 5, 10,
+  9, 11, 5, 11
+]);
+
+// Data for Stretching Cat
+const shapePlayfulCatPoints = [
+  new THREE.Vector3(-2, -1, -8),
+  new THREE.Vector3(0, 0, -8),
+  new THREE.Vector3(0.5, 1.5, -8),
+  new THREE.Vector3(1.5, 1.2, -8),
+  new THREE.Vector3(2, 2, -8),
+  new THREE.Vector3(2.5, 0.5, -8),
+  new THREE.Vector3(1.5, -0.5, -8),
+  new THREE.Vector3(2.5, -2, -8),
+  new THREE.Vector3(4, -1, -8),
+  new THREE.Vector3(6, 1, -8),
+  new THREE.Vector3(5, -2.5, -8),
+];
+const shapePlayfulCatIndices = new Uint16Array([
+  0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 1,
+  1, 7, 7, 8, 8, 10,
+  8, 9
+]);
+
+// Data for Ambiguous Shape 1 (Creature?)
+const shapeAmbiguous1Points = [
+  new THREE.Vector3(0, 3, -12),
+  new THREE.Vector3(2, 1, -12),
+  new THREE.Vector3(3, -1, -12),
+  new THREE.Vector3(1, -3, -12),
+  new THREE.Vector3(-2, -2, -12),
+  new THREE.Vector3(-3, 0, -12),
+  new THREE.Vector3(-1, 2, -12),
+  new THREE.Vector3(0, 0, -12),
+];
+const shapeAmbiguous1Indices = new Uint16Array([
+  0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 0,
+  0, 7, 2, 7, 4, 7, 6, 7
+]);
+
+// Data for Ambiguous Shape 2 (Swirl)
+const shapeAmbiguous2Points = [
+  new THREE.Vector3(3, 3, -10),
+  new THREE.Vector3(2, 4, -10),
+  new THREE.Vector3(0, 3, -10),
+  new THREE.Vector3(-1, 1, -10),
+  new THREE.Vector3(0, -1, -10),
+  new THREE.Vector3(2, -2, -10),
+  new THREE.Vector3(1, -4, -10),
+  new THREE.Vector3(-1, -4, -10),
+  new THREE.Vector3(-3, -2, -10),
+];
+const shapeAmbiguous2Indices = new Uint16Array([
+  0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8
 ]);
 
 function ShootingStar() {
@@ -609,6 +685,48 @@ export function SkyBackground() {
             interactive={true}
             glowing={projectionGlowing}
             onClick={handleProjectionTransition}
+          />
+          
+          {/* New fainter constellations */}
+          <Constellation 
+            points={shapeFlowerPoints} 
+            indices={shapeFlowerIndices} 
+            position={[15, 35, -25]} 
+            rotation={[-0.2, 0.4, 0.1]} 
+            scale={4.0}
+            pulseSpeed={1.5}
+            pulseOffset={4}
+            intensity={1.0}
+          />
+          <Constellation 
+            points={shapePlayfulCatPoints} 
+            indices={shapePlayfulCatIndices} 
+            position={[-25, -15, -45]} 
+            rotation={[0.2, -0.3, -0.1]} 
+            scale={4.5}
+            pulseSpeed={1.7}
+            pulseOffset={5}
+            intensity={1.1}
+          />
+          <Constellation 
+            points={shapeAmbiguous1Points} 
+            indices={shapeAmbiguous1Indices} 
+            position={[-35, -25, 10]} 
+            rotation={[0.4, 1.2, 0.3]} 
+            scale={5.0}
+            pulseSpeed={1.2}
+            pulseOffset={1.5}
+            intensity={0.9}
+          />
+          <Constellation 
+            points={shapeAmbiguous2Points} 
+            indices={shapeAmbiguous2Indices} 
+            position={[30, 5, 45]} 
+            rotation={[-0.5, 2.8, -0.2]} 
+            scale={6.0}
+            pulseSpeed={1.9}
+            pulseOffset={2.5}
+            intensity={0.95}
           />
         </group>
         <ShootingStar />
