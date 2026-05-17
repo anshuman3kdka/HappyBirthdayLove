@@ -1,0 +1,41 @@
+import { NavLink } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
+export function Navigation() {
+  const links = [
+    { to: '/', label: 'The Sky' },
+    { to: '/journal', label: 'The Journal' },
+    { to: '/archive', label: 'The Archive' },
+  ];
+
+  return (
+    <motion.header 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1, duration: 1 }}
+      className="fixed top-0 left-0 w-full z-40 p-8 flex justify-between items-start"
+    >
+      <div className="flex flex-col space-y-1">
+        <span className="font-mono text-[10px] uppercase tracking-[0.3em] opacity-50">The Observatory</span>
+        <div className="h-[1px] w-12 bg-white/30"></div>
+      </div>
+      <nav className="flex space-x-12 text-[11px] uppercase tracking-[0.2em] font-sans">
+        {links.map((link) => (
+          <NavLink
+            key={link.to}
+            to={link.to}
+            className={({ isActive }) => 
+              `transition-colors duration-300 ${isActive ? 'text-white border-b border-white pb-1' : 'opacity-40 hover:text-white hover:opacity-100'}`
+            }
+          >
+            {link.label}
+          </NavLink>
+        ))}
+      </nav>
+      <div className="text-right hidden sm:block">
+        <p className="font-mono text-[10px] tracking-widest opacity-60 uppercase">RA 14h 29m 33s</p>
+        <p className="font-mono text-[10px] tracking-widest opacity-60 uppercase">Dec +18° 11' 14"</p>
+      </div>
+    </motion.header>
+  );
+}
