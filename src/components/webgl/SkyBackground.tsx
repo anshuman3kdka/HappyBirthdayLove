@@ -364,7 +364,7 @@ export function SkyBackground() {
         />
         <ShootingStar />
 
-        <EffectComposer disableNormalPass multisampling={0}>
+        <EffectComposer multisampling={0}>
           <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} intensity={1.5} mipmapBlur />
           <Noise opacity={0.05} />
           <Vignette eskil={false} offset={0.1} darkness={1.1} />

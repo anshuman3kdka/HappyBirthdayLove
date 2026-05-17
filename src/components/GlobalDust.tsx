@@ -1,18 +1,25 @@
-import { useCallback } from "react";
-import Particles from "react-tsparticles";
-import { loadSlim } from "tsparticles-slim";
-import type { Engine } from "tsparticles-engine";
+import { useState, useEffect } from "react";
+import Particles, { initParticlesEngine } from "@tsparticles/react";
+import { loadSlim } from "@tsparticles/slim";
+import type { Engine } from "@tsparticles/engine";
 
 export function GlobalDust() {
-  const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine);
+  const [init, setInit] = useState(false);
+
+  useEffect(() => {
+    initParticlesEngine(async (engine: Engine) => {
+      await loadSlim(engine);
+    }).then(() => {
+      setInit(true);
+    });
   }, []);
+
+  if (!init) return null;
 
   return (
     <div className="fixed inset-0 z-[5] pointer-events-none mix-blend-screen opacity-40">
       <Particles
         id="tsparticles"
-        init={particlesInit}
         options={{
           fullScreen: { enable: false, zIndex: 0 },
           fpsLimit: 60,
@@ -54,7 +61,8 @@ export function GlobalDust() {
             number: {
               density: {
                 enable: true,
-                area: 800,
+                width: 1920,
+                height: 1080
               },
               value: 150,
             },
@@ -63,7 +71,6 @@ export function GlobalDust() {
               animation: {
                 enable: true,
                 speed: 0.5,
-                minimumValue: 0.1,
                 sync: false,
               },
             },
