@@ -55,6 +55,7 @@ npm run build
 *   **[v1.2.0]** - Added procedural, reactive chime sounds on global click using Web Audio API. Disable UI-breaking text selection. Lock background audio to "always-on" for cinematic effect.
 *   **[v1.3.0]** - Added interactive Easter Eggs: A 3-tap wax seal confetti knock to open the envelope, and a hidden clickable Heart Constellation that zooms the camera and reveals a secret note.
 *   **[v1.4.0]** - Implemented a comprehensive cinematic Preloader and PWA Service Worker. The site rigorously caches all assets upfront ensuring zero buffering and absolute seamless offline availability forever.
+*   **[v1.5.0]** - "Searchlight" Journal Feature: Subverted standard scrolling on the journal page, replacing it with a tactile exploratory mechanic. Journal entries are shrouded in a heavy blur, requiring the user to touch/hover coordinates to illuminate the text underneath, creating an intimate, active reading experience controlled by custom spatial navigation arrows.
 *   *Planned:* Parallax memory carousels mapped to real-world star coordinates.
 
 ---
