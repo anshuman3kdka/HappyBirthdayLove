@@ -66,16 +66,22 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
 
     const previousPath = currentPathRef.current;
     
-    // Default to sky track for any unknown paths
-    const normalizedCurrentPath = TRACKS[pathname as keyof typeof TRACKS] ? pathname : '/';
-    const normalizedPreviousPath = TRACKS[previousPath as keyof typeof TRACKS] ? previousPath : '/';
+    let normalizedCurrentPath: string | null = pathname;
+    if (!TRACKS[normalizedCurrentPath as keyof typeof TRACKS]) {
+      normalizedCurrentPath = null;
+    }
+    
+    let normalizedPreviousPath: string | null = previousPath;
+    if (!TRACKS[normalizedPreviousPath as keyof typeof TRACKS]) {
+      normalizedPreviousPath = null;
+    }
 
     if (normalizedPreviousPath === normalizedCurrentPath) return;
 
-    currentPathRef.current = normalizedCurrentPath;
+    currentPathRef.current = pathname;
 
-    const fadeOutAudio = audioRefs.current[normalizedPreviousPath];
-    const fadeInAudio = audioRefs.current[normalizedCurrentPath];
+    const fadeOutAudio = normalizedPreviousPath ? audioRefs.current[normalizedPreviousPath] : null;
+    const fadeInAudio = normalizedCurrentPath ? audioRefs.current[normalizedCurrentPath] : null;
 
     let fadeOutTimer: NodeJS.Timeout;
     let fadeInTimer: NodeJS.Timeout;
@@ -123,8 +129,8 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
   useEffect(() => {
     if (!isPlaying) return;
 
-    const normalizedCurrentPath = TRACKS[pathname as keyof typeof TRACKS] ? pathname : '/';
-    const activeTrack = audioRefs.current[normalizedCurrentPath];
+    const normalizedCurrentPath = TRACKS[pathname as keyof typeof TRACKS] ? pathname : null;
+    const activeTrack = normalizedCurrentPath ? audioRefs.current[normalizedCurrentPath] : null;
 
     if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
 

@@ -19,6 +19,7 @@ import { GlobalDust } from './components/GlobalDust';
 import { Home } from './pages/Home';
 import { Journal } from './pages/Journal';
 import { Archive } from './pages/Archive';
+import { Projection } from './pages/Projection';
 import { WishProvider, useWish } from './contexts/WishContext';
 
 function WishUIWrapper({ children }: { children: React.ReactNode }) {
@@ -74,6 +75,7 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/journal" element={<Journal />} />
         <Route path="/archive" element={<Archive />} />
+        <Route path="/projection" element={<Projection />} />
       </Routes>
     </AnimatePresence>
   );

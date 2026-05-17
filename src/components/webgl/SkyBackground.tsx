@@ -4,7 +4,7 @@ import { Stars, Sparkles } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import gsap from 'gsap';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWish } from '../../contexts/WishContext';
 
@@ -18,9 +18,10 @@ interface ConstellationProps {
   pulseOffset?: number;
   interactive?: boolean;
   onClick?: () => void;
+  glowing?: boolean;
 }
 
-function Constellation({ points, indices, position, rotation, scale, pulseSpeed = 2, pulseOffset = 0, interactive = false, onClick }: ConstellationProps) {
+function Constellation({ points, indices, position, rotation, scale, pulseSpeed = 2, pulseOffset = 0, interactive = false, onClick, glowing = false }: ConstellationProps) {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
   const [hovered, setHovered] = useState(false);
@@ -34,16 +35,19 @@ function Constellation({ points, indices, position, rotation, scale, pulseSpeed 
   useFrame((state) => {
     const t = state.clock.elapsedTime * pulseSpeed + pulseOffset;
     if (pointsRef.current) {
-      (pointsRef.current.material as THREE.PointsMaterial).size = 0.08 + Math.sin(t) * 0.03 + (hovered ? 0.05 : 0);
-      (pointsRef.current.material as THREE.PointsMaterial).opacity = 0.8 + Math.sin(t * 0.5) * 0.2 + (hovered ? 0.2 : 0);
+      const baseSize = glowing ? 0.3 : 0.08;
+      const glowScale = glowing ? 2.5 : 1.0;
+      (pointsRef.current.material as THREE.PointsMaterial).size = (baseSize + Math.sin(t) * 0.03 + (hovered ? 0.05 : 0)) * glowScale;
+      (pointsRef.current.material as THREE.PointsMaterial).opacity = glowing ? 1.0 : (0.8 + Math.sin(t * 0.5) * 0.2 + (hovered ? 0.2 : 0));
     }
     if (linesRef.current) {
-      (linesRef.current.material as THREE.LineBasicMaterial).opacity = 0.25 + Math.sin(t * 0.25) * 0.15 + (hovered ? 0.3 : 0);
+      (linesRef.current.material as THREE.LineBasicMaterial).opacity = glowing ? 1.0 : (0.25 + Math.sin(t * 0.25) * 0.15 + (hovered ? 0.3 : 0));
     }
     if (pointsRef.current && linesRef.current) {
       // Gentle slow rotation for life
-      pointsRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.1 + pulseOffset) * 0.05;
-      linesRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.1 + pulseOffset) * 0.05;
+      const drift = Math.sin(state.clock.elapsedTime * 0.1 + pulseOffset) * 0.05;
+      pointsRef.current.rotation.z = drift;
+      linesRef.current.rotation.z = drift;
     }
   });
 
@@ -55,8 +59,8 @@ function Constellation({ points, indices, position, rotation, scale, pulseSpeed 
           onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
           onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }}
         >
-          {/* Invisible click target to cover the heart shape */}
-          <sphereGeometry args={[2.5, 16, 16]} />
+          {/* Much tighter and better positioned click target */}
+          <sphereGeometry args={[2, 12, 12]} />
           <meshBasicMaterial visible={false} />
         </mesh>
       )}
@@ -333,14 +337,16 @@ function WishStar() {
 
 function WishFadingOverlay() {
   const { isWishing } = useWish();
+  const location = useLocation();
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.MeshBasicMaterial>(null);
   const { scene } = useThree();
 
   useFrame((state) => {
     if (materialRef.current) {
-      const targetOpacity = isWishing ? 1.0 : 0.0;
-      materialRef.current.opacity += (targetOpacity - materialRef.current.opacity) * 0.05; 
+      const isProjection = location.pathname === '/projection';
+      const targetOpacity = isWishing ? 1.0 : (isProjection ? 0.95 : 0.0);
+      materialRef.current.opacity += (targetOpacity - materialRef.current.opacity) * (isWishing ? 0.05 : 0.02); 
 
       if (scene.background && (scene.background as THREE.Color).isColor) {
         materialRef.current.color.copy(scene.background as THREE.Color);
@@ -367,93 +373,58 @@ function SceneController() {
   const location = useLocation();
 
   useEffect(() => {
-    // Determine target background color based on route
+    // Determine target color and desired rotation for the specific route
     let targetColor = '#020202';
+    let targetRotationZ = 0;
+    
     if (location.pathname === '/journal') {
-      targetColor = '#1a052e'; // Deep purple/nebula
+      targetColor = '#1a052e';
+      targetRotationZ = Math.PI / 4;
     } else if (location.pathname === '/archive') {
-      targetColor = '#2a1a05'; // Deep sepia/copper
+      targetColor = '#2a1a05';
+      targetRotationZ = -Math.PI / 4;
+    } else if (location.pathname === '/projection') {
+      targetColor = '#000000';
+      targetRotationZ = 0;
     }
 
-    // Camera Hyperspace Animation
     const tl = gsap.timeline();
 
-    // 1. Initial pullback and FOV increase to prepare for jump
+    // Aggressive hyperspace feel on route change
     tl.to(camera, {
       fov: 160,
-      duration: 1,
-      ease: 'power2.in',
+      duration: 0.8,
+      ease: 'power3.in',
       onUpdate: () => camera.updateProjectionMatrix()
-    }, 0);
+    });
 
-    // 2. The aggressive jump forward
     tl.to(camera.position, {
-      z: -50,
-      duration: 1.5,
+      z: -100,
+      duration: 1.2,
       ease: 'power4.inOut'
     }, 0);
 
-    // Provide a dramatic chromatic aberration burst by animating custom properties
-    const effectValues = { abOffset: 0.001 };
-    tl.to(effectValues, {
-      abOffset: 0.03, // strong split
-      duration: 0.8,
-      ease: 'power2.in',
-      onUpdate: () => {
-        // We'll pass this via a global state or simple mutation if needed, 
-        // but for now relying on standard FOV jump makes it intense enough.
-      }
-    }, 0);
-    tl.to(effectValues, {
-      abOffset: 0.001,
-      duration: 0.7,
-      ease: 'power2.out'
-    }, 0.8);
-
-    // 3. Change the background color & fog at the peak of the jump
-    tl.to(scene.background, {
-      r: new THREE.Color(targetColor).r,
-      g: new THREE.Color(targetColor).g,
-      b: new THREE.Color(targetColor).b,
-      duration: 0.5,
-      ease: 'none'
+    // Swap environment state at peak
+    tl.add(() => {
+      scene.background = new THREE.Color(targetColor);
+      if (scene.fog) scene.fog.color.set(targetColor);
+      scene.rotation.z = targetRotationZ;
+      camera.position.z = 100; // Warp around
     }, 1.0);
-    
-    if (scene.fog) {
-      tl.to(scene.fog.color, {
-        r: new THREE.Color(targetColor).r,
-        g: new THREE.Color(targetColor).g,
-        b: new THREE.Color(targetColor).b,
-        duration: 0.5,
-        ease: 'none'
-      }, 1.0);
-    }
-    
-    // Rotate the entire scene slightly during the jump so the stars and constellations are in new positions
-    tl.to(scene.rotation, {
-      z: scene.rotation.z + Math.PI / 1.5, // Rotate more dramatically
-      duration: 1.5,
-      ease: 'power2.inOut'
-    }, 0);
 
-    // 4. Reset position seamlessly (by warping back while fov is high)
-    tl.set(camera.position, {
-      z: 50 // Place camera far back so it continues floating in or just reset
-    }, 1.5);
-
-    // 5. Settle into the new page's layout
+    // Settle
     tl.to(camera.position, {
       z: 5,
       duration: 1.5,
       ease: 'power3.out'
-    }, 1.5);
+    }, 1.2);
 
     tl.to(camera, {
       fov: 60,
       duration: 1.5,
       ease: 'power3.out',
       onUpdate: () => camera.updateProjectionMatrix()
-    }, 1.5);
+    }, 1.2);
 
   }, [location.pathname, camera, scene]);
 
@@ -462,6 +433,18 @@ function SceneController() {
 
 export function SkyBackground() {
   const [showHeartSecret, setShowHeartSecret] = useState(false);
+  const [projectionGlowing, setProjectionGlowing] = useState(false);
+  const navigate = useNavigate();
+
+  const handleProjectionTransition = () => {
+    setProjectionGlowing(true);
+    // Glow intensifies for a moment, then transitions
+    setTimeout(() => {
+       navigate('/projection');
+       // Don't reset glow immediately so it stays glowing during exit transition
+       setTimeout(() => setProjectionGlowing(false), 1500);
+    }, 1200);
+  };
 
   return (
     <div className="fixed inset-0 z-[-1] bg-[#020202]">
@@ -488,63 +471,68 @@ export function SkyBackground() {
           speed={0.8} 
         />
 
-        {/* Floating Sparkles for depth */}
-        <Sparkles 
-          count={500} 
-          scale={20} 
-          size={4} 
-          speed={0.4} 
-          opacity={0.2} 
-          color="#ffffff" 
-        />
-        <Sparkles 
-          count={200} 
-          scale={30} 
-          size={10} 
-          speed={0.2} 
-          opacity={0.1} 
-          color="#ffccaa" 
-        />
+        <group>
+          {/* Floating Sparkles for depth */}
+          <Sparkles 
+            count={500} 
+            scale={20} 
+            size={4} 
+            speed={0.4} 
+            opacity={0.2} 
+            color="#ffffff" 
+          />
+          <Sparkles 
+            count={200} 
+            scale={30} 
+            size={10} 
+            speed={0.2} 
+            opacity={0.1} 
+            color="#ffccaa" 
+          />
 
-        {/* Custom additions */}
-        <Constellation 
-          points={shapeHeartPoints} 
-          indices={shapeHeartIndices} 
-          position={[2, 1, -2]} 
-          rotation={[0, -0.2, 0.1]} 
-          scale={0.8}
-          pulseSpeed={2}
-          pulseOffset={0}
-          interactive={true}
-          onClick={() => setShowHeartSecret(true)}
-        />
-        <Constellation 
-          points={shapeWPoints} 
-          indices={shapeWIndices} 
-          position={[-3, 2, -4]} 
-          rotation={[0, 0.5, -0.2]} 
-          scale={0.5}
-          pulseSpeed={1.5}
-          pulseOffset={1}
-        />
-        <Constellation 
-          points={shapeDipperPoints} 
-          indices={shapeDipperIndices} 
-          position={[1, -2, -3]} 
-          rotation={[0, -0.4, 0.3]} 
-          scale={0.4}
-          pulseSpeed={2.5}
-          pulseOffset={2}
-        />
-        <Constellation 
-          points={shapeKitePoints} 
-          indices={shapeKiteIndices} 
-          position={[-2, -1.5, -5]} 
-          rotation={[0.1, 0.2, -0.1]} 
-          scale={0.6}
-          pulseSpeed={1.8}
-          pulseOffset={3}
-        />
+          {/* Custom additions - Clean quadrant layout */}
+          <Constellation 
+            points={shapeHeartPoints} 
+            indices={shapeHeartIndices} 
+            position={[-4, -3, -5]} 
+            rotation={[0, -0.2, 0.1]} 
+            scale={0.6}
+            pulseSpeed={2}
+            pulseOffset={0}
+            interactive={true}
+            onClick={() => setShowHeartSecret(true)}
+          />
+          <Constellation 
+            points={shapeWPoints} 
+            indices={shapeWIndices} 
+            position={[-4, 3, -8]} 
+            rotation={[0, 0.5, -0.2]} 
+            scale={0.5}
+            pulseSpeed={1.5}
+            pulseOffset={1}
+          />
+          <Constellation 
+            points={shapeDipperPoints} 
+            indices={shapeDipperIndices} 
+            position={[4, 3, -6]} 
+            rotation={[0, -0.4, 0.3]} 
+            scale={0.4}
+            pulseSpeed={2.5}
+            pulseOffset={2}
+          />
+          <Constellation 
+            points={shapeKitePoints} 
+            indices={shapeKiteIndices} 
+            position={[4, -3, -7]} 
+            rotation={[0.1, 0.2, -0.1]} 
+            scale={0.6}
+            pulseSpeed={1.8}
+            pulseOffset={3}
+            interactive={true}
+            glowing={projectionGlowing}
+            onClick={handleProjectionTransition}
+          />
+        </group>
         <ShootingStar />
         <WishFadingOverlay />
         <WishStar />
