@@ -61,6 +61,7 @@ npm run build
 *   **[v1.6.0]** - The Orchestral Update: Replaced the static background audio with a stateful, three-part adaptive soundtrack. Uses smooth crossfading on route changes and persistent playback tracking so returning to a view feels like stepping right back into a paused moment in space.
 *   **[v1.7.0]** - Cinematic Parallax Integration: Added `framer-motion` scroll hooks to the Archive page's vintage film strip photos, enabling a subtle, multi-layered parallax effect for enhanced depth-of-field during navigation.
 *   **[v1.8.0]** - The "Make a Wish" Mechanic: Added a hidden, global interaction triggered by a 1.5s long-press (or Spacebar). The UI gentle-shakes to indicate the wish building, followed by a transformational event: the interface enters a dreamlike blur, ambient audio softens, a cinematic orchestral swell ascends, and a massive, brilliant shooting star streaks across the WebGL skybox, while a "Make a wish." text appears.
+*   *Exploration:* Investigating invisible, generative AI mechanics (Gemini) as a background "director" to orchestrate physics and asset curation without exposing obvious generated text.
 *   *Planned:* Parallax memory carousels mapped to real-world star coordinates.
 
 ---
