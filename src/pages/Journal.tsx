@@ -41,26 +41,26 @@ const JournalContent = forwardRef<HTMLDivElement, { isForeground?: boolean; isRe
       <div className={`w-full flex flex-col items-center transition-all duration-1000 ${(!props.isForeground && !props.isRevealed) ? 'opacity-20 blur-[8px]' : ''}`}>
         {ENTRIES.map((entry) => (
           <div key={entry.id} className="relative min-h-[100vh] w-full flex items-center justify-center py-20 px-6">
-          <div className="absolute inset-0 w-full h-[120%] -top-[10%] z-0 pointer-events-none">
-            <img 
-              src={entry.image} 
-              alt="" 
-              className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
-          </div>
-
-          <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col px-4 md:px-0 border-l border-white/10 pl-6 py-2">
-            <div className="mb-12 font-mono text-[10px] uppercase tracking-[0.2em] opacity-50 flex flex-col gap-2">
-              <span>{entry.coord} / {entry.date}</span>
+            <div className="absolute inset-0 w-full h-[120%] -top-[10%] z-0 pointer-events-none">
+              <img 
+                src={entry.image} 
+                alt="" 
+                className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
             </div>
-            
-            <p className="font-serif text-2xl md:text-[32px] lg:text-[40px] leading-relaxed md:leading-[1.6] opacity-90 italic font-light max-w-4xl mx-auto drop-shadow-md">
-              {entry.text}
-            </p>
+
+            <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col px-4 md:px-0 border-l border-white/10 pl-6 py-2">
+              <div className="mb-12 font-mono text-[10px] uppercase tracking-[0.2em] opacity-50 flex flex-col gap-2">
+                <span>{entry.coord} / {entry.date}</span>
+              </div>
+              
+              <p className="font-serif text-2xl md:text-[32px] lg:text-[40px] leading-relaxed md:leading-[1.6] opacity-90 italic font-light max-w-4xl mx-auto drop-shadow-md">
+                {entry.text}
+              </p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
 
         {/* The Final Star */}
         <div className="min-h-[80vh] w-full flex items-center justify-center relative">
