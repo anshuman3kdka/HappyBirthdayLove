@@ -19,6 +19,10 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
     if (audioRef.current) {
       audioRef.current.play().catch(e => console.log('Audio error:', e));
     }
+    
+    // Dispatch synchronously to immediately unlock global audio contexts while still in user interaction handler
+    window.dispatchEvent(new Event('envelopeOpened'));
+
     // After animation sequence, trigger enter
     setTimeout(() => {
       onEnter();

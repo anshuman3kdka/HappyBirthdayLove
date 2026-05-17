@@ -115,22 +115,23 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      
-      <AnimatePresence mode="wait">
-        {!isPreloaded && (
-          <SitePreloader key="preloader" onComplete={() => setIsPreloaded(true)} />
-        )}
-      </AnimatePresence>
+      <WishProvider>
+        <ScrollToTop />
+        
+        <AnimatePresence mode="wait">
+          {!isPreloaded && (
+            <SitePreloader key="preloader" onComplete={() => setIsPreloaded(true)} />
+          )}
+        </AnimatePresence>
 
-      {isPreloaded && !hasEntered ? (
-        <EnvelopeEntry onEnter={handleEnter} />
-      ) : isPreloaded && hasEntered ? (
-        <WishProvider>
+        {isPreloaded && <GlobalAudio hasEntered={hasEntered} />}
+
+        {isPreloaded && !hasEntered ? (
+          <EnvelopeEntry onEnter={handleEnter} />
+        ) : isPreloaded && hasEntered ? (
           <div className="relative min-h-screen w-full flex flex-col font-sans">
             <SkyBackground />
             <GlobalDust />
-            <GlobalAudio hasEntered={hasEntered} />
             <InteractiveChimes />
             
             <WishUIWrapper>
@@ -140,8 +141,8 @@ export default function App() {
               </main>
             </WishUIWrapper>
           </div>
-        </WishProvider>
-      ) : null}
+        ) : null}
+      </WishProvider>
     </BrowserRouter>
   );
 }

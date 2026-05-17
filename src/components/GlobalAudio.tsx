@@ -42,8 +42,22 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
       }
     };
 
-    // Try immediately when hasEntered changes or URL changes
+    // Try starting if hasEntered is already true (e.g. from session storage)
     tryPlay();
+
+    // Triggered precisely when the user clicks the envelope, ensuring we are within a trusted interaction event.
+    const handleEnvelopeOpen = () => {
+      if (isPlaying) return;
+      const currentTrack = audioRefs.current[pathname] || audioRefs.current['/'];
+      if (currentTrack) {
+        currentTrack.volume = TARGET_VOLUME;
+        currentTrack.play().then(() => {
+          setIsPlaying(true);
+        }).catch(err => {
+          console.warn("Audio autoplay blocked by browser:", err);
+        });
+      }
+    };
 
     // Browser fallback: if blocked, any subsequent click will unlock and play the audio synchronously
     const handleInteraction = () => {
@@ -52,10 +66,12 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
       }
     };
 
+    window.addEventListener('envelopeOpened', handleEnvelopeOpen);
     window.addEventListener('click', handleInteraction);
     window.addEventListener('touchstart', handleInteraction);
 
     return () => {
+      window.removeEventListener('envelopeOpened', handleEnvelopeOpen);
       window.removeEventListener('click', handleInteraction);
       window.removeEventListener('touchstart', handleInteraction);
     };
