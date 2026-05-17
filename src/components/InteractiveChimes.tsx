@@ -21,12 +21,10 @@ export function InteractiveChimes() {
         ctx.resume();
       }
 
-      // Calculate spatial positions from -1 to 1 based on click coordinates
-      const xPos = (e.clientX / window.innerWidth) * 2 - 1;
-      // Invert Y so that top of screen (0) maps to positive Y in audio space
-      const yPos = -((e.clientY / window.innerHeight) * 2 - 1);
+      // Calculate pan from -1 (left) to 1 (right) based on click position
+      const panValue = (e.clientX / window.innerWidth) * 2 - 1;
 
-      playChime(ctx, xPos, yPos);
+      playChime(ctx, panValue);
     };
 
     window.addEventListener('mousedown', handleGlobalClick);
@@ -40,11 +38,10 @@ export function InteractiveChimes() {
     };
   }, []);
 
-  const playChime = (ctx: AudioContext, xPos: number, yPos: number) => {
+  const playChime = (ctx: AudioContext, panValue: number) => {
     const t = ctx.currentTime;
 
     // Use a high C Major Pentatonic scale for a pleasant, twinkling sound
-    // C6, D6, E6, G6, A6, C7, D7, E7
     const frequencies = [1046.50, 1174.66, 1318.51, 1567.98, 1760.00, 2093.00, 2349.32, 2637.02];
     
     // Choose a random note
@@ -55,29 +52,21 @@ export function InteractiveChimes() {
     masterGain.gain.value = 0.04; // Keep it subtle and low volume
     masterGain.connect(ctx.destination);
 
-    // 3D Panner (Spatial Audio)
-    // Use HRTF (Head-Related Transfer Function) for superior 2D/3D positioning
-    const panner = ctx.createPanner();
-    panner.panningModel = 'HRTF';
-    panner.distanceModel = 'inverse';
-    panner.refDistance = 1;
-    panner.maxDistance = 10000;
-    panner.rolloffFactor = 1;
-
-    // Map screen coordinates to audio space
-    // We place the sound slightly in front of the listener (Z = -0.5) to avoid the "inside-head" effect
-    panner.positionX.setValueAtTime(xPos, t);
-    panner.positionY.setValueAtTime(yPos, t);
-    panner.positionZ.setValueAtTime(-0.5, t);
-    
-    panner.connect(masterGain);
-    const finalNode: AudioNode = panner;
+    // Stereo Panner
+    // Use modern standard createStereoPanner if available, gracefully fallback
+    let finalNode: AudioNode = masterGain;
+    if (ctx.createStereoPanner) {
+      const panner = ctx.createStereoPanner();
+      panner.pan.value = panValue;
+      panner.connect(masterGain);
+      finalNode = panner;
+    }
 
     // Main Envelope (Controls output volume over time)
     const env = ctx.createGain();
     env.gain.setValueAtTime(0, t);
-    env.gain.linearRampToValueAtTime(1, t + 0.02); // Fast attack
-    env.gain.exponentialRampToValueAtTime(0.001, t + 1.5); // Sweet, long decay (1.5s)
+    env.gain.linearRampToValueAtTime(1, t + 0.02); 
+    env.gain.exponentialRampToValueAtTime(0.001, t + 1.5); 
     env.connect(finalNode);
 
     // Oscillator factory for complex bell harmonic structures
@@ -94,7 +83,7 @@ export function InteractiveChimes() {
       oscGain.connect(env);
       
       osc.start(t);
-      osc.stop(t + 1.6); // Stop slightly after decay drops off
+      osc.stop(t + 1.6); 
     };
 
     // 1. Fundamental frequency
