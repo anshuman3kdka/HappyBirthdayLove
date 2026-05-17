@@ -51,10 +51,13 @@
 }
 
 /* Custom Scrollbar hidden for cinematic effect */
+html {
+  scrollbar-width: none;
+}
+
 ::-webkit-scrollbar {
   display: none;
 }
-scrollbar-width: none;
 
 /* Filmstrip specific utility */
 .film-strip-pattern {
