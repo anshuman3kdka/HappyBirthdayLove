@@ -13,14 +13,22 @@ export const WishProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isHolding, setIsHolding] = useState(false);
   const [isWishing, setIsWishing] = useState(false);
   const pressTimer = useRef<NodeJS.Timeout | null>(null);
+  const vibrationDelayTimer = useRef<NodeJS.Timeout | null>(null);
+  const isPressing = useRef(false);
 
   useEffect(() => {
     let touchStartX = 0;
     let touchStartY = 0;
 
     const startHold = () => {
-      if (!isHolding && !isWishing) {
-        setIsHolding(true);
+      if (!isPressing.current && !isWishing) {
+        isPressing.current = true;
+        
+        if (vibrationDelayTimer.current) clearTimeout(vibrationDelayTimer.current);
+        vibrationDelayTimer.current = setTimeout(() => {
+          setIsHolding(true);
+        }, 500); // 0.5 seconds delay before vibration starts
+
         if (pressTimer.current) clearTimeout(pressTimer.current);
         pressTimer.current = setTimeout(() => {
           setIsHolding(false);
@@ -30,8 +38,14 @@ export const WishProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const stopHold = () => {
+      isPressing.current = false;
       setIsHolding(false);
       setIsWishing(false); // They let go, we cancel the wish state so they can do it again later
+      
+      if (vibrationDelayTimer.current) {
+        clearTimeout(vibrationDelayTimer.current);
+        vibrationDelayTimer.current = null;
+      }
       if (pressTimer.current) {
         clearTimeout(pressTimer.current);
         pressTimer.current = null;
@@ -107,6 +121,7 @@ export const WishProvider: React.FC<{ children: React.ReactNode }> = ({ children
       window.removeEventListener('contextmenu', handleContextMenu);
       window.removeEventListener('blur', handleBlur);
       
+      if (vibrationDelayTimer.current) clearTimeout(vibrationDelayTimer.current);
       if (pressTimer.current) clearTimeout(pressTimer.current);
     };
   }, [isWishing]);
