@@ -13,6 +13,7 @@ import { GlobalAudio } from './components/GlobalAudio';
 import { InteractiveChimes } from './components/InteractiveChimes';
 import { SkyBackground } from './components/webgl/SkyBackground';
 import { EnvelopeEntry } from './components/EnvelopeEntry';
+import { SitePreloader } from './components/SitePreloader';
 
 import { Home } from './pages/Home';
 import { Journal } from './pages/Journal';
@@ -65,6 +66,7 @@ function AppRoutes() {
 }
 
 export default function App() {
+  const [isPreloaded, setIsPreloaded] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
 
   useEffect(() => {
@@ -99,9 +101,15 @@ export default function App() {
     <BrowserRouter>
       <ScrollToTop />
       
-      {!hasEntered ? (
+      <AnimatePresence>
+        {!isPreloaded && (
+          <SitePreloader onComplete={() => setIsPreloaded(true)} />
+        )}
+      </AnimatePresence>
+
+      {isPreloaded && !hasEntered ? (
         <EnvelopeEntry onEnter={handleEnter} />
-      ) : (
+      ) : isPreloaded && hasEntered ? (
         <motion.div 
           initial={{ opacity: 0 }} 
           animate={{ opacity: 1 }} 
@@ -117,7 +125,7 @@ export default function App() {
             <AppRoutes />
           </main>
         </motion.div>
-      )}
+      ) : null}
     </BrowserRouter>
   );
 }

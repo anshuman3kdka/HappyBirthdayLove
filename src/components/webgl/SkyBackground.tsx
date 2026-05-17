@@ -1,9 +1,10 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ConstellationProps {
   points: THREE.Vector3[];
@@ -13,11 +14,14 @@ interface ConstellationProps {
   scale: number;
   pulseSpeed?: number;
   pulseOffset?: number;
+  interactive?: boolean;
+  onClick?: () => void;
 }
 
-function Constellation({ points, indices, position, rotation, scale, pulseSpeed = 2, pulseOffset = 0 }: ConstellationProps) {
+function Constellation({ points, indices, position, rotation, scale, pulseSpeed = 2, pulseOffset = 0, interactive = false, onClick }: ConstellationProps) {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
+  const [hovered, setHovered] = useState(false);
 
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry().setFromPoints(points);
@@ -28,11 +32,11 @@ function Constellation({ points, indices, position, rotation, scale, pulseSpeed 
   useFrame((state) => {
     const t = state.clock.elapsedTime * pulseSpeed + pulseOffset;
     if (pointsRef.current) {
-      (pointsRef.current.material as THREE.PointsMaterial).size = 0.05 + Math.sin(t) * 0.02;
-      (pointsRef.current.material as THREE.PointsMaterial).opacity = 0.6 + Math.sin(t * 0.5) * 0.4;
+      (pointsRef.current.material as THREE.PointsMaterial).size = 0.05 + Math.sin(t) * 0.02 + (hovered ? 0.03 : 0);
+      (pointsRef.current.material as THREE.PointsMaterial).opacity = 0.6 + Math.sin(t * 0.5) * 0.4 + (hovered ? 0.4 : 0);
     }
     if (linesRef.current) {
-      (linesRef.current.material as THREE.LineBasicMaterial).opacity = 0.15 + Math.sin(t * 0.25) * 0.1;
+      (linesRef.current.material as THREE.LineBasicMaterial).opacity = 0.15 + Math.sin(t * 0.25) * 0.1 + (hovered ? 0.2 : 0);
     }
     if (pointsRef.current && linesRef.current) {
       // Gentle slow rotation for life
@@ -43,6 +47,17 @@ function Constellation({ points, indices, position, rotation, scale, pulseSpeed 
 
   return (
     <group position={position} rotation={rotation} scale={scale}>
+      {interactive && (
+        <mesh
+          onClick={(e) => { e.stopPropagation(); onClick?.(); }}
+          onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
+          onPointerOut={(e) => { e.stopPropagation(); setHovered(false); document.body.style.cursor = 'auto'; }}
+        >
+          {/* Invisible click target to cover the heart shape */}
+          <sphereGeometry args={[2.5, 16, 16]} />
+          <meshBasicMaterial visible={false} />
+        </mesh>
+      )}
       <points ref={pointsRef} geometry={geometry}>
         <pointsMaterial 
           size={0.05} 
@@ -245,6 +260,8 @@ function SceneController() {
 }
 
 export function SkyBackground() {
+  const [showHeartSecret, setShowHeartSecret] = useState(false);
+
   return (
     <div className="fixed inset-0 z-[-1] bg-[#020202]">
       <Canvas
@@ -278,6 +295,8 @@ export function SkyBackground() {
           scale={0.8}
           pulseSpeed={2}
           pulseOffset={0}
+          interactive={true}
+          onClick={() => setShowHeartSecret(true)}
         />
         <Constellation 
           points={shapeWPoints} 
@@ -309,6 +328,41 @@ export function SkyBackground() {
         <ShootingStar />
 
       </Canvas>
+
+      {/* Secret Heart Overlay */}
+      <AnimatePresence>
+        {showHeartSecret && (
+          <motion.div
+            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            animate={{ opacity: 1, backdropFilter: 'blur(10px)' }}
+            exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+            onClick={() => setShowHeartSecret(false)}
+          >
+             <motion.div
+               initial={{ scale: 0.8, rotate: -5 }}
+               animate={{ scale: 1, rotate: 0 }}
+               className="bg-[#fcfaf8] p-8 max-w-sm rounded shadow-2xl origin-center"
+               onClick={(e) => e.stopPropagation()}
+             >
+               <div className="font-handwriting text-3xl text-zinc-800 text-center mb-4">
+                 You found it!
+               </div>
+               <p className="text-zinc-600 text-base leading-relaxed text-center font-serif mb-6">
+                 Even hidden among the stars,<br/>my heart always points to you.
+               </p>
+               <div className="flex justify-center">
+                 <button 
+                   onClick={() => setShowHeartSecret(false)}
+                   className="px-6 py-2 border border-zinc-200 text-zinc-500 rounded hover:bg-zinc-100 transition-colors font-serif text-sm"
+                 >
+                   Return to the stars
+                 </button>
+               </div>
+             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

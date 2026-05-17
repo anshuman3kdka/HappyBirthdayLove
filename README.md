@@ -19,6 +19,7 @@ The universe is vast, but it finds meaning in the constellations we draw. The co
 
 ## ✨ Core Features
 *   **The Envelope Entry:** A physical-feeling onboarding process that requires a deliberate "click to open," granting the browser required permissions to autoplay the cinematic audio.
+*   **Offline-Ready Seamless Preloader:** A rigorous initialization sequence that caches every image, video, memory, and musical note before the curtain rises. Using a Service Worker and immediate memory preloading, the entire digital birthday gift can be experienced offline with absolute zero buffering.
 *   **Interactive WebGL Sky:** A dynamic `Three.js` background with starry particle systems. When navigating between memories, the camera seamlessly "hyperjumps" through the cosmos while the scene dynamically rotates.
 *   **Generative Stardust Audio:** Clicking anywhere on the screen generates a unique, one-second twinkle. Using a procedural C-Major Pentatonic synth and stereo panning based on click coordinates, it feels like birthing stars directly into the void.
 *   **Global Ambient Audio:** A continuous track scoring the website across all routes, heightening the emotional impact without interruption.
@@ -52,7 +53,8 @@ npm run build
 *   **[v1.0.0]** - Initial concept: Three.js skybox and basic routing.
 *   **[v1.1.0]** - Typographic overhaul (Lora, Inter, JetBrains Mono).
 *   **[v1.2.0]** - Added procedural, reactive chime sounds on global click using Web Audio API. Disable UI-breaking text selection. Lock background audio to "always-on" for cinematic effect.
-*   *Planned:* Hidden constellation Easter eggs upon specific click sequences.
+*   **[v1.3.0]** - Added interactive Easter Eggs: A 3-tap wax seal confetti knock to open the envelope, and a hidden clickable Heart Constellation that zooms the camera and reveals a secret note.
+*   **[v1.4.0]** - Implemented a comprehensive cinematic Preloader and PWA Service Worker. The site rigorously caches all assets upfront ensuring zero buffering and absolute seamless offline availability forever.
 *   *Planned:* Parallax memory carousels mapped to real-world star coordinates.
 
 ---

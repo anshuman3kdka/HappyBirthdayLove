@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Heart } from 'lucide-react';
 
 interface EnvelopeEntryProps {
   onEnter: () => void;
@@ -7,6 +8,8 @@ interface EnvelopeEntryProps {
 
 export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [sealClicks, setSealClicks] = useState(0);
+  const [showSealSecret, setShowSealSecret] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const handleClick = () => {
@@ -18,6 +21,19 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
     setTimeout(() => {
       onEnter();
     }, 3500); // 3.5s total duration for the sequence
+  };
+
+  const handleSealClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // prevent opening envelope
+    if (isOpen) return;
+    
+    const newClicks = sealClicks + 1;
+    setSealClicks(newClicks);
+    if (newClicks === 3) {
+      setShowSealSecret(true);
+      // Let it stay visible for a bit before allowing normal click?
+      // Or they just click the envelope afterwards to open.
+    }
   };
 
   return (
@@ -60,8 +76,36 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
                          border-b-[96px] border-b-transparent z-10" />
 
             {/* Wax Seal */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[10px] w-12 h-12 bg-red-800 rounded-full shadow-inner z-30 flex items-center justify-center transition-all group-hover:scale-110">
-              <span className="font-serif text-red-900/50 text-xl select-none">N</span>
+            <div 
+              onClick={handleSealClick}
+              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[10px] w-12 h-12 bg-red-800 rounded-full shadow-inner z-30 flex items-center justify-center transition-all hover:scale-125 ${showSealSecret ? 'shadow-[0_0_15px_rgba(220,38,38,0.8)] bg-red-700' : 'group-hover:scale-110'}`}
+            >
+              <span className={`font-serif text-xl select-none transition-colors flex items-center justify-center ${showSealSecret ? 'text-red-100' : 'text-red-900/50'}`}>
+                {showSealSecret ? <Heart className="w-5 h-5 fill-red-100 text-red-100" /> : 'N'}
+              </span>
+              
+              {/* Confetti Burst */}
+              {showSealSecret && (
+                <motion.div className="absolute inset-0 pointer-events-none" initial="hidden" animate="visible">
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-1.5 h-1.5 rounded-full"
+                      style={{ backgroundColor: i % 2 === 0 ? '#fbbf24' : '#f87171' }}
+                      variants={{
+                        hidden: { x: '-50%', y: '-50%', scale: 0, opacity: 1, top: '50%', left: '50%' },
+                        visible: {
+                          x: `calc(-50% + ${Math.cos(i * (Math.PI / 4)) * 50}px)`,
+                          y: `calc(-50% + ${Math.sin(i * (Math.PI / 4)) * 50}px)`,
+                          scale: [0, 1.5, 0],
+                          opacity: [1, 1, 0],
+                          transition: { duration: 0.8, ease: "easeOut" }
+                        }
+                      }}
+                    />
+                  ))}
+                </motion.div>
+              )}
             </div>
           </motion.div>
         ) : (
