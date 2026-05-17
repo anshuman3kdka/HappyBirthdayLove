@@ -1,7 +1,7 @@
 import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars, Sparkles } from '@react-three/drei';
-import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, Noise, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -306,7 +306,7 @@ function WishStar() {
 
     if (activeWishAnimation && wishStartTime.current !== null) {
       const elapsed = state.clock.elapsedTime - wishStartTime.current;
-      const DURATION = 2.5; // Make the star taking slightly longer to finish its journey
+      const DURATION = 2.0; 
       
       if (elapsed < DURATION) {
         const progress = elapsed / DURATION;
@@ -367,9 +367,7 @@ function WishFadingOverlay() {
     }
     
     if (meshRef.current) {
-      meshRef.current.position.copy(state.camera.position);
-      meshRef.current.position.add(state.camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(1));
-      meshRef.current.quaternion.copy(state.camera.quaternion);
+      meshRef.current.position.set(0, 0, 0); // Static relative to camera
     }
   });
 
@@ -537,15 +535,15 @@ export function SkyBackground() {
         {/* Ambient very dim lighting */}
         <ambientLight intensity={0.25} />
         
-        {/* Standard Drei Stars map */}
+        {/* Massive 360 Stars map */}
         <Stars 
-          radius={50} 
-          depth={50} 
-          count={4000} 
-          factor={5} 
-          saturation={0.5} 
+          radius={200} 
+          depth={150} 
+          count={10000} 
+          factor={12} 
+          saturation={0.8} 
           fade 
-          speed={0.8} 
+          speed={0.4} 
         />
 
         <group>
@@ -567,13 +565,13 @@ export function SkyBackground() {
             color="#fecaca" // Warm sunset / Carnation pink
           />
 
-          {/* Custom additions - Clean quadrant layout */}
+          {/* Constellations scaled up for huge 360 universe */}
           <Constellation 
             points={shapeHeartPoints} 
             indices={shapeHeartIndices} 
-            position={[-4, -3, -5]} 
-            rotation={[0, -0.2, 0.1]} 
-            scale={0.6}
+            position={[0, 0, -50]} 
+            rotation={[0, 0, 0]} 
+            scale={6.0}
             pulseSpeed={2}
             pulseOffset={0}
             interactive={true}
@@ -582,9 +580,9 @@ export function SkyBackground() {
           <Constellation 
             points={shapeCatPoints} 
             indices={shapeCatIndices} 
-            position={[-4, 3, -8]} 
-            rotation={[0, 0.5, -0.2]} 
-            scale={0.5}
+            position={[40, 20, -30]} 
+            rotation={[0, -0.8, -0.2]} 
+            scale={5.0}
             pulseSpeed={1.5}
             pulseOffset={1}
             interactive={true}
@@ -594,18 +592,18 @@ export function SkyBackground() {
           <Constellation 
             points={shapeDipperPoints} 
             indices={shapeDipperIndices} 
-            position={[4, 3, -6]} 
-            rotation={[0, -0.4, 0.3]} 
-            scale={0.4}
+            position={[-40, 30, 30]} 
+            rotation={[0, 2.5, 0.3]} 
+            scale={7.0}
             pulseSpeed={2.5}
             pulseOffset={2}
           />
           <Constellation 
             points={shapeKitePoints} 
             indices={shapeKiteIndices} 
-            position={[4, -3, -7]} 
-            rotation={[0.1, 0.2, -0.1]} 
-            scale={0.6}
+            position={[20, -30, 40]} 
+            rotation={[0.1, 3.5, -0.1]} 
+            scale={6.5}
             pulseSpeed={1.8}
             pulseOffset={3}
             interactive={true}
