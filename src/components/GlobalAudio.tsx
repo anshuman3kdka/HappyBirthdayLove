@@ -4,12 +4,12 @@ import { useWish } from '../contexts/WishContext';
 
 // Cohesive, universe-themed ambient tracks (Creative Commons - Stellardrone)
 const TRACKS = {
-  '/': 'https://archive.org/download/Stellardrone_-_Light_Years_2013/02_Airglow.mp3', // The Sky - Vast, expansive space
-  '/journal': 'https://archive.org/download/Stellardrone_-_Light_Years_2013/09_The_Opus.mp3', // The Journal - Quiet, minimal drone
-  '/archive': 'https://archive.org/download/Stellardrone_-_Light_Years_2013/04_Eternity.mp3' // The Archive - Warm, nostalgic
+  '/': '/assets/audio/audio-ambient.mp3', // The Sky - Vast, expansive space
+  '/journal': '/assets/audio/audio-intimate.mp3', // The Journal - Quiet, minimal drone
+  '/archive': '/assets/audio/audio-nostalgic.mp3' // The Archive - Warm, nostalgic
 };
 
-const WISH_SWELL = 'https://archive.org/download/Stellardrone_-_Light_Years_2013/06_Billion_Years.mp3'; // Grand track, jumps directly to peak
+const WISH_SWELL = '/assets/audio/wish-swell.mp3'; // Grand track, jumps directly to peak
 
 const TARGET_VOLUME = 0.45; // Moderately low background volume for ambient tracks
 const WISH_DIM_VOLUME = 0.05; // Drop background track volume heavily during wish

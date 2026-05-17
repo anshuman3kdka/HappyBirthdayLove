@@ -3,10 +3,10 @@ import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 
 const POLAROIDS = [
-  { id: 1, src: '/assets/home-photo-1.jpg', caption: 'Paris, 2024', rotation: -4 },
-  { id: 2, src: '/assets/home-photo-2.jpg', caption: 'coffee at 2pm', rotation: 3 },
-  { id: 3, src: '/assets/home-photo-3.jpg', caption: 'you wouldn\'t stop laughing', rotation: -6 },
-  { id: 4, src: '/assets/home-photo-4.jpg', caption: 'That night on the roof', rotation: 5 },
+  { id: 1, src: '/assets/image/home-photo-1.jpg', caption: 'Paris, 2024', rotation: -4 },
+  { id: 2, src: '/assets/image/home-photo-2.jpg', caption: 'coffee at 2pm', rotation: 3 },
+  { id: 3, src: '/assets/image/home-photo-3.jpg', caption: 'you wouldn\'t stop laughing', rotation: -6 },
+  { id: 4, src: '/assets/image/home-photo-4.jpg', caption: 'That night on the roof', rotation: 5 },
 ];
 
 function Typewriter({ text, delay = 0 }: { text: string; delay?: number }) {

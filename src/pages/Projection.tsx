@@ -4,7 +4,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
 // An ethereal ambient royalty-free video
-const VIDEO_URL = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+const VIDEO_URL = "/assets/video/projection-video.mp4";
 
 // The shader to project the video out like volumetric light and ambient glow
 const ProjectionShader = {

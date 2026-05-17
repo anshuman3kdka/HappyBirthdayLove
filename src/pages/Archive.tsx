@@ -4,20 +4,20 @@ import { Play, Pause, X } from 'lucide-react';
 import { AutoplayVideo } from '../components/AutoplayVideo';
 
 const ARCHIVE_PHOTOS = [
-  { id: 1, src: '/assets/archive-photo-1.jpg', x: 20, y: 30 },
-  { id: 2, src: '/assets/archive-photo-2.jpg', x: 60, y: 15 },
-  { id: 3, src: '/assets/archive-photo-3.jpg', x: 80, y: 50 },
-  { id: 4, src: '/assets/archive-photo-4.jpg', x: 40, y: 70 },
-  { id: 5, src: '/assets/archive-photo-5.jpg', x: 10, y: 80 },
+  { id: 1, src: '/assets/image/archive-photo-1.jpg', x: 20, y: 30 },
+  { id: 2, src: '/assets/image/archive-photo-2.jpg', x: 60, y: 15 },
+  { id: 3, src: '/assets/image/archive-photo-3.jpg', x: 80, y: 50 },
+  { id: 4, src: '/assets/image/archive-photo-4.jpg', x: 40, y: 70 },
+  { id: 5, src: '/assets/image/archive-photo-5.jpg', x: 10, y: 80 },
 ];
 
 const FILMSTRIP_PHOTOS = [
-  '/assets/archive-film-1.jpg',
-  '/assets/archive-film-2.jpg',
-  '/assets/archive-film-3.jpg',
-  '/assets/archive-film-4.jpg',
-  '/assets/archive-film-5.jpg',
-  '/assets/archive-film-6.jpg',
+  '/assets/image/archive-film-1.jpg',
+  '/assets/image/archive-film-2.jpg',
+  '/assets/image/archive-film-3.jpg',
+  '/assets/image/archive-film-4.jpg',
+  '/assets/image/archive-film-5.jpg',
+  '/assets/image/archive-film-6.jpg',
 ];
 
 function ConstellationMap() {
@@ -141,7 +141,7 @@ function FilmStrip() {
       
       {/* Strip */}
       <div className="relative w-full overflow-hidden bg-[#0A0A0A] py-8 border-y border-white/5">
-        <audio ref={audioRef} src="/assets/slide-projector.mp3" />
+        <audio ref={audioRef} src="/assets/audio/slide-projector.mp3" />
         
         <div className="flex items-center justify-center gap-4 relative">
           <button 
@@ -194,7 +194,7 @@ function VideoMoment() {
     <div className="w-full max-w-4xl mx-auto px-6 mb-32 z-10 relative">
       <div className="relative aspect-video bg-[#0a0a0a] shadow-[0_0_40px_rgba(255,255,255,0.05)] overflow-hidden rounded-sm group">
          <AutoplayVideo 
-           src="/assets/archive-video.mp4" 
+           src="/assets/video/archive-video.mp4" 
            className="w-full h-full"
          />
       </div>
@@ -229,7 +229,7 @@ function LittleThings() {
       >
         <audio 
           ref={audioRef} 
-          src="/assets/archive-voicenote.mp3" 
+          src="/assets/audio/archive-voicenote.mp3" 
           onEnded={() => setIsPlaying(false)}
         />
         <div className="flex justify-between items-start">

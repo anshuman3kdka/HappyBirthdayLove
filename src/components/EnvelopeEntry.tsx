@@ -36,7 +36,7 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
 
   return (
     <div className="fixed inset-0 z-50 bg-[#050505] flex items-center justify-center">
-      <audio ref={audioRef} src="/assets/envelope-open.mp3" />
+      <audio ref={audioRef} src="/assets/audio/envelope-open.mp3" />
       <AnimatePresence>
         {!isOpen ? (
           <motion.div
