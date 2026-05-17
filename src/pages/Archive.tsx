@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Play, Pause, X } from 'lucide-react';
 import { AutoplayVideo } from '../components/AutoplayVideo';
 
@@ -104,6 +104,14 @@ function ConstellationMap() {
 function FilmStrip() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+  
+  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
 
   const slideLeft = () => {
     if (currentIndex > 0) {
@@ -127,7 +135,7 @@ function FilmStrip() {
   };
   
   return (
-    <div className="w-full relative py-16 mb-32 z-10 bg-[#050505] overflow-hidden group">
+    <div ref={containerRef} className="w-full relative py-16 mb-32 z-10 bg-[#050505] overflow-hidden group">
       {/* Top sprockets */}
       <div className="w-full h-8 film-strip-pattern opacity-30" />
       
@@ -151,11 +159,15 @@ function FilmStrip() {
               transition={{ type: "spring", stiffness: 200, damping: 25 }}
             >
                {FILMSTRIP_PHOTOS.map((src, i) => (
-                 <div key={i} className="flex-shrink-0 w-full aspect-[3/2] border-[12px] md:border-[24px] border-[#111] transition-colors relative bg-[#050505]">
-                   <div className="absolute top-2 left-2 md:top-4 md:left-4 font-mono text-[10px] md:text-sm text-white/30 tracking-widest">{String(i + 1).padStart(2, '0')}A</div>
-                   <div className="absolute top-2 right-2 md:top-4 md:right-4 font-mono text-[10px] md:text-sm text-white/30 tracking-widest">KODAK 400TX</div>
-                   <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 font-mono text-[10px] text-white/20 tracking-wider">FRAME {i + 1}</div>
-                   <img src={src} className="w-full h-full object-cover sepia-[20%] contrast-110 opacity-90 mx-auto pointer-events-none" />
+                 <div key={i} className="flex-shrink-0 w-full aspect-[3/2] border-[12px] md:border-[24px] border-[#111] transition-colors relative bg-[#050505] overflow-hidden">
+                   <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{String(i + 1).padStart(2, '0')}A</div>
+                   <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">KODAK 400TX</div>
+                   <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 font-mono text-[10px] text-white/20 tracking-wider pointer-events-none">FRAME {i + 1}</div>
+                   <motion.img 
+                     src={src} 
+                     style={{ y }}
+                     className="w-full h-full object-cover sepia-[20%] contrast-110 opacity-90 mx-auto pointer-events-none scale-[1.3] origin-center" 
+                   />
                  </div>
                ))}
             </motion.div>
