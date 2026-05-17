@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { Navigation } from './components/Navigation';
 import { GlobalAudio } from './components/GlobalAudio';
+import { InteractiveChimes } from './components/InteractiveChimes';
 import { SkyBackground } from './components/webgl/SkyBackground';
 import { EnvelopeEntry } from './components/EnvelopeEntry';
 
@@ -110,6 +111,7 @@ export default function App() {
           <SkyBackground />
           <Navigation />
           <GlobalAudio hasEntered={hasEntered} />
+          <InteractiveChimes />
           
           <main className="flex-grow z-10 w-full relative">
             <AppRoutes />
