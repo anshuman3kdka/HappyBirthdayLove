@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart } from 'lucide-react';
+import { Cat, Heart } from 'lucide-react';
 
 interface EnvelopeEntryProps {
   onEnter: () => void;
@@ -48,7 +48,19 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
             onClick={handleClick}
           >
             {/* Base Envelope */}
-            <div className="absolute inset-0 bg-[#e3d5c8] rounded shadow-2xl transition-transform duration-500 group-hover:scale-105" />
+            <div className="absolute inset-0 bg-[#e3d5c8] rounded shadow-2xl transition-transform duration-500 group-hover:scale-105 overflow-hidden">
+               {/* Faint watermark of entwined bougainvillea & carnation flowers */}
+               <svg className="absolute -bottom-6 -right-6 w-32 h-32 opacity-[0.04] text-pink-950 pointer-events-none rotate-12" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                 <path d="M 180 180 C 130 100, 70 140, 20 20" />
+                 <path d="M 120 70 C 140 30, 160 50, 140 90 Z" />
+                 <path d="M 130 80 C 170 80, 160 110, 120 100 Z" />
+                 <path d="M 60 110 C 20 90, 30 50, 70 70 C 80 60, 100 80, 80 100 Z" fill="currentColor" fillOpacity="0.2"/>
+                 <circle cx="80" cy="40" r="8" />
+                 <circle cx="150" cy="130" r="6" />
+                 <path d="M 80 40 Q 70 50 65 75" />
+                 <path d="M 150 130 Q 140 140 135 125" />
+               </svg>
+            </div>
             
             {/* Flap (Closed) */}
             <div 
@@ -76,20 +88,20 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
             {/* Wax Seal */}
             <div 
               onClick={handleSealClick}
-              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[10px] w-12 h-12 bg-red-800 rounded-full shadow-inner z-30 flex items-center justify-center transition-all hover:scale-125 ${showSealSecret ? 'shadow-[0_0_15px_rgba(220,38,38,0.8)] bg-red-700' : 'group-hover:scale-110'}`}
+              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[10px] w-12 h-12 bg-red-800 rounded-full shadow-inner z-30 flex items-center justify-center transition-all hover:scale-125 ${showSealSecret ? 'shadow-[0_0_15px_rgba(230,230,250,0.6)] bg-purple-900' : 'group-hover:scale-110'}`}
             >
-              <span className={`font-serif text-xl select-none transition-colors flex items-center justify-center ${showSealSecret ? 'text-red-100' : 'text-red-900/50'}`}>
-                {showSealSecret ? <Heart className="w-5 h-5 fill-red-100 text-red-100" /> : 'N'}
+              <span className={`font-serif text-xl select-none transition-colors flex items-center justify-center ${showSealSecret ? 'text-purple-100' : 'text-red-900/50'}`}>
+                {showSealSecret ? <Cat className="w-5 h-5 fill-purple-200 text-purple-200" /> : 'N'}
               </span>
               
-              {/* Confetti Burst */}
+              {/* Confetti Burst (Bougainvillea and Carnation colors) */}
               {showSealSecret && (
                 <motion.div className="absolute inset-0 pointer-events-none" initial="hidden" animate="visible">
                   {[...Array(8)].map((_, i) => (
                     <motion.div
                       key={i}
                       className="absolute w-1.5 h-1.5 rounded-full"
-                      style={{ backgroundColor: i % 2 === 0 ? '#fbbf24' : '#f87171' }}
+                      style={{ backgroundColor: i % 2 === 0 ? '#D94689' : '#FFB3BA' }}
                       variants={{
                         hidden: { x: '-50%', y: '-50%', scale: 0, opacity: 1, top: '50%', left: '50%' },
                         visible: {
@@ -114,7 +126,19 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
             animate={{ opacity: 0, transition: { delay: 2.8, duration: 0.8 } }}
           >
             {/* Base Envelope */}
-            <div className="absolute inset-0 bg-[#e3d5c8] rounded z-0" />
+            <div className="absolute inset-0 bg-[#e3d5c8] rounded z-0 overflow-hidden">
+               {/* Faint watermark of entwined bougainvillea & carnation flowers */}
+               <svg className="absolute -bottom-6 -right-6 w-32 h-32 opacity-[0.04] text-pink-950 pointer-events-none rotate-12" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                 <path d="M 180 180 C 130 100, 70 140, 20 20" />
+                 <path d="M 120 70 C 140 30, 160 50, 140 90 Z" />
+                 <path d="M 130 80 C 170 80, 160 110, 120 100 Z" />
+                 <path d="M 60 110 C 20 90, 30 50, 70 70 C 80 60, 100 80, 80 100 Z" fill="currentColor" fillOpacity="0.2"/>
+                 <circle cx="80" cy="40" r="8" />
+                 <circle cx="150" cy="130" r="6" />
+                 <path d="M 80 40 Q 70 50 65 75" />
+                 <path d="M 150 130 Q 140 140 135 125" />
+               </svg>
+            </div>
             
             {/* Letter pulling up */}
             <motion.div

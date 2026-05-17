@@ -46,7 +46,7 @@ export function GlobalDust() {
           },
           particles: {
             color: {
-              value: "#ffffff",
+              value: ["#ffffff", "#E6E6FA", "#D94689", "#FFB3BA"], // White, Lavender, Bougainvillea, Carnation
             },
             move: {
               direction: "none",
@@ -67,18 +67,18 @@ export function GlobalDust() {
               value: 150,
             },
             opacity: {
-              value: { min: 0.1, max: 0.5 },
+              value: { min: 0.1, max: 0.8 },
               animation: {
                 enable: true,
-                speed: 0.5,
+                speed: 1,
                 sync: false,
               },
             },
             shape: {
-              type: "circle",
+              type: "circle", // Keeping circle but scaling to mimic soft petals
             },
             size: {
-              value: { min: 0.5, max: 2 },
+              value: { min: 1, max: 3 }, // Slightly larger for out-of-focus petal effect
             },
           },
           detectRetina: true,

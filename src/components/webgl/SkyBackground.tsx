@@ -103,16 +103,29 @@ const shapeHeartIndices = new Uint16Array([
   7, 8, 8, 2, 5, 9, 9, 2
 ]);
 
-// Data for Cassiopeia (W Shape)
-const shapeWPoints = [
-  new THREE.Vector3(-3, 1, -8),
-  new THREE.Vector3(-1.5, -1, -8),
-  new THREE.Vector3(0, 0.5, -8),
-  new THREE.Vector3(1.5, -1.5, -8),
-  new THREE.Vector3(3, 1.5, -8),
+// Data for Cat Constellation (Profile of a seated cat)
+const shapeCatPoints = [
+  new THREE.Vector3(0.5, 1.5, -8),  // R ear tip 0
+  new THREE.Vector3(0, 0.8, -8),    // Head top 1
+  new THREE.Vector3(-0.6, 1.2, -8), // L ear tip 2
+  new THREE.Vector3(-1.0, 0.5, -8), // Face front 3
+  new THREE.Vector3(-0.6, -0.1, -8),// Chin 4
+  new THREE.Vector3(0.5, 0.2, -8),  // Back of neck 5
+  
+  new THREE.Vector3(1.0, -1.0, -8), // Back curve 6
+  new THREE.Vector3(1.2, -2.5, -8), // Butt 7
+  
+  new THREE.Vector3(0.5, -3.0, -8), // Tail start 8
+  new THREE.Vector3(-0.2, -2.8, -8),// Tail curl 9
+  new THREE.Vector3(-0.5, -2.2, -8),// Tail tip 10
+  
+  new THREE.Vector3(-0.8, -2.5, -8),// Front paws 11
+  new THREE.Vector3(-0.5, -1.0, -8),// Chest 12
 ];
-const shapeWIndices = new Uint16Array([
-  0, 1, 1, 2, 2, 3, 3, 4
+const shapeCatIndices = new Uint16Array([
+  0, 1, 1, 2, 2, 3, 3, 4, 4, 12, // Face and front
+  0, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, // Back and tail
+  12, 11, 11, 7 // Chest down to paws, paws to butt
 ]);
 
 // Data for Big Dipper-esque
@@ -152,7 +165,7 @@ function ShootingStar() {
 
   const geometry = useMemo(() => new THREE.BufferGeometry().setFromPoints(points), [points]);
 
-  const material = useMemo(() => new THREE.LineBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0, linewidth: 2 }), []);
+  const material = useMemo(() => new THREE.LineBasicMaterial({ color: "#d6bcfa", transparent: true, opacity: 0, linewidth: 2 }), []);
   const lineObj = useMemo(() => new THREE.Line(geometry, material), [geometry, material]);
 
   useFrame((state) => {
@@ -218,8 +231,8 @@ function WishStar() {
     const geo = new THREE.BufferGeometry().setFromPoints(points);
     // Add vertex colors (head is opaque white, tail is transparent)
     const colors = new Float32Array([
-      1, 1, 1,   // vertex 0 (head): rgb
-      1, 1, 1    // vertex 1 (tail): rgb
+      0.9, 0.9, 1.0, // vertex 0 (head): rgb (soft lavender tint)
+      0.8, 0.7, 1.0  // vertex 1 (tail): rgb
     ]);
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     return geo;
@@ -328,8 +341,8 @@ function WishStar() {
     <group ref={groupRef}>
       <primitive object={lineObj} />
       <mesh renderOrder={101}>
-        <circleGeometry args={[0.015, 16]} />
-        <meshBasicMaterial ref={headMaterialRef} color="#ffffff" transparent opacity={0} depthTest={false} />
+        <circleGeometry args={[0.02, 16]} />
+        <meshBasicMaterial ref={headMaterialRef} color="#f3e8ff" transparent opacity={0} depthTest={false} />
       </mesh>
     </group>
   );
@@ -374,17 +387,17 @@ function SceneController() {
 
   useEffect(() => {
     // Determine target color and desired rotation for the specific route
-    let targetColor = '#020202';
+    let targetColor = '#1c0d2a'; // Deep dusky lavender
     let targetRotationZ = 0;
     
     if (location.pathname === '/journal') {
-      targetColor = '#1a052e';
+      targetColor = '#3a1b40'; // Warm lavender / sunset blend
       targetRotationZ = Math.PI / 4;
     } else if (location.pathname === '/archive') {
-      targetColor = '#2a1a05';
+      targetColor = '#4a2531'; // Bougainvillea rich twilight
       targetRotationZ = -Math.PI / 4;
     } else if (location.pathname === '/projection') {
-      targetColor = '#000000';
+      targetColor = '#080512'; // Deep space void
       targetRotationZ = 0;
     }
 
@@ -433,8 +446,72 @@ function SceneController() {
 
 export function SkyBackground() {
   const [showHeartSecret, setShowHeartSecret] = useState(false);
+  const [showCatSecret, setShowCatSecret] = useState(false);
+  const [catGlowing, setCatGlowing] = useState(false);
   const [projectionGlowing, setProjectionGlowing] = useState(false);
   const navigate = useNavigate();
+
+  const playPurr = () => {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+    
+    // Resume context if suspended
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    
+    const duration = 6;
+    const t = ctx.currentTime;
+
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0, t);
+    masterGain.gain.linearRampToValueAtTime(0.15, t + 1);
+    masterGain.gain.setValueAtTime(0.15, t + duration - 2);
+    masterGain.gain.linearRampToValueAtTime(0.01, t + duration);
+    masterGain.connect(ctx.destination);
+
+    // Filter to keep it warm and deep
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 200;
+    filter.connect(masterGain);
+
+    // Carrier (sub bass)
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth'; 
+    osc.frequency.value = 35; 
+    
+    // Amplitude modulation for the "motor" sound (purring)
+    const amOsc = ctx.createOscillator();
+    amOsc.type = 'sine';
+    amOsc.frequency.value = 23; 
+    
+    const amGain = ctx.createGain();
+    // Start with 0 so the carrier is muted initially? No, amGain multiplies
+    // To do true AM, we need to add a DC offset or just let it modulate.
+    // If amGain goes from -1 to 1, it modulates fully.
+    
+    osc.connect(amGain);
+    amOsc.connect(amGain.gain);
+    
+    amGain.connect(filter);
+
+    osc.start(t);
+    amOsc.start(t);
+    osc.stop(t + duration);
+    amOsc.stop(t + duration);
+    
+    setTimeout(() => {
+      if (ctx.state !== 'closed') ctx.close().catch(() => {});
+    }, (duration + 0.5) * 1000);
+  };
+
+  const handleCatClick = () => {
+    setShowCatSecret(true);
+    setCatGlowing(true);
+    playPurr();
+  };
 
   const handleProjectionTransition = () => {
     setProjectionGlowing(true);
@@ -447,18 +524,18 @@ export function SkyBackground() {
   };
 
   return (
-    <div className="fixed inset-0 z-[-1] bg-[#020202]">
+    <div className="fixed inset-0 z-[-1] bg-[#1c0d2a]">
       <Canvas
         camera={{ position: [0, 0, 5], fov: 60 }}
         dpr={[1, 1.5]}
         gl={{ antialias: false, toneMapping: THREE.ACESFilmicToneMapping, powerPreference: "high-performance" }}
       >
         <SceneController />
-        <color attach="background" args={['#020202']} />
-        <fog attach="fog" args={['#020202', 5, 50]} />
+        <color attach="background" args={['#1c0d2a']} />
+        <fog attach="fog" args={['#1c0d2a', 5, 50]} />
         
         {/* Ambient very dim lighting */}
-        <ambientLight intensity={0.2} />
+        <ambientLight intensity={0.25} />
         
         {/* Standard Drei Stars map */}
         <Stars 
@@ -478,16 +555,16 @@ export function SkyBackground() {
             scale={20} 
             size={4} 
             speed={0.4} 
-            opacity={0.2} 
-            color="#ffffff" 
+            opacity={0.3} 
+            color="#e9d5ff" // Lavender sparkles
           />
           <Sparkles 
             count={200} 
             scale={30} 
             size={10} 
             speed={0.2} 
-            opacity={0.1} 
-            color="#ffccaa" 
+            opacity={0.2} 
+            color="#fecaca" // Warm sunset / Carnation pink
           />
 
           {/* Custom additions - Clean quadrant layout */}
@@ -503,13 +580,16 @@ export function SkyBackground() {
             onClick={() => setShowHeartSecret(true)}
           />
           <Constellation 
-            points={shapeWPoints} 
-            indices={shapeWIndices} 
+            points={shapeCatPoints} 
+            indices={shapeCatIndices} 
             position={[-4, 3, -8]} 
             rotation={[0, 0.5, -0.2]} 
             scale={0.5}
             pulseSpeed={1.5}
             pulseOffset={1}
+            interactive={true}
+            glowing={catGlowing}
+            onClick={handleCatClick}
           />
           <Constellation 
             points={shapeDipperPoints} 
@@ -551,27 +631,62 @@ export function SkyBackground() {
             initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
             animate={{ opacity: 1, backdropFilter: 'blur(10px)' }}
             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-purple-900/40 p-4"
             onClick={() => setShowHeartSecret(false)}
           >
              <motion.div
                initial={{ scale: 0.8, rotate: -5 }}
                animate={{ scale: 1, rotate: 0 }}
-               className="bg-[#fcfaf8] p-8 max-w-sm rounded shadow-2xl origin-center"
+               className="bg-[#fcfaf8] p-8 max-w-sm rounded shadow-2xl origin-center border border-purple-200"
                onClick={(e) => e.stopPropagation()}
              >
-               <div className="font-handwriting text-3xl text-zinc-800 text-center mb-4">
+               <div className="font-handwriting text-3xl text-purple-900 text-center mb-4">
                  You found it!
                </div>
-               <p className="text-zinc-600 text-base leading-relaxed text-center font-serif mb-6">
+               <p className="text-purple-800 text-base leading-relaxed text-center font-serif mb-6">
                  Even hidden among the stars,<br/>my heart always points to you.
                </p>
                <div className="flex justify-center">
                  <button 
                    onClick={() => setShowHeartSecret(false)}
-                   className="px-6 py-2 border border-zinc-200 text-zinc-500 rounded hover:bg-zinc-100 transition-colors font-serif text-sm"
+                   className="px-6 py-2 border border-purple-200 text-purple-600 rounded hover:bg-purple-50 transition-colors font-serif text-sm"
                  >
                    Return to the stars
+                 </button>
+               </div>
+             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Secret Cat Overlay */}
+      <AnimatePresence>
+        {showCatSecret && (
+          <motion.div
+            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            animate={{ opacity: 1, backdropFilter: 'blur(10px)' }}
+            exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-purple-900/40 p-4"
+            onClick={() => { setShowCatSecret(false); setCatGlowing(false); }}
+          >
+             <motion.div
+               initial={{ scale: 0.8, rotate: 5 }}
+               animate={{ scale: 1, rotate: 0 }}
+               className="bg-[#fff0f5] p-8 max-w-sm rounded shadow-2xl origin-center border border-pink-200"
+               onClick={(e) => e.stopPropagation()}
+             >
+               <div className="font-handwriting text-3xl text-pink-900 text-center mb-4">
+                 *purrrrr*
+               </div>
+               <p className="text-pink-800 text-base leading-relaxed text-center font-serif mb-6">
+                 Even the stars curl up to sleep when they look at you. <br/><span className="text-sm opacity-80">(P.S. They're dreaming of you too.)</span>
+               </p>
+               <div className="flex justify-center">
+                 <button 
+                   onClick={() => { setShowCatSecret(false); setCatGlowing(false); }}
+                   className="px-6 py-2 border border-pink-200 text-pink-600 rounded hover:bg-pink-50 transition-colors font-serif text-sm"
+                 >
+                   Back to stargazing
                  </button>
                </div>
              </motion.div>

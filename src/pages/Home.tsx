@@ -44,10 +44,10 @@ export function Home() {
         >
           <h1 className="text-[80px] md:text-[112px] leading-[0.9] font-light tracking-tighter mb-4 italic font-serif relative">
             nehal.
-            {/* Soft decorative glow behind text */}
-            <div className="absolute -inset-4 bg-white/5 blur-2xl rounded-full z-[-1] pointer-events-none"></div>
+            {/* Soft lavender/bougainvillea decorative glow behind text */}
+            <div className="absolute -inset-4 bg-purple-400/10 blur-2xl rounded-full z-[-1] pointer-events-none"></div>
           </h1>
-          <div className="h-[1px] w-24 bg-gradient-to-r from-white/40 to-transparent mb-6"></div>
+          <div className="h-[1px] w-24 bg-gradient-to-r from-purple-300/40 to-transparent mb-6"></div>
           <div className="text-xl md:text-2xl font-light opacity-80 leading-relaxed max-w-sm mb-2 font-serif">
             <Typewriter text="happy birthday. this took longer than it should have." delay={2} />
             <motion.p 

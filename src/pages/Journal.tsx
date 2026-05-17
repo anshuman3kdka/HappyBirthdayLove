@@ -7,21 +7,21 @@ const ENTRIES = [
     id: 1,
     coord: "RA 14h 29m · Dec +18° 11'",
     date: "march 4, 2025",
-    text: "i remember you ordered the same thing twice because you were distracted talking and didn't notice. i didn't tell you. i just watched you explain your theory about clouds being proof the sky has moods.",
+    text: "i remember you explaining your theory about clouds being proof the sky has moods, while your cat slept curled up on your lap. i didn't tell you i stopped listening. i was just watching you.",
     image: "/assets/journal-bg-1.jpg"
   },
   {
     id: 2,
     coord: "RA 09h 14m · Dec -43° 22'",
     date: "july 12, 2024",
-    text: "you fell asleep during the movie we planned for weeks to watch. i paused it. i ended up just watching the city lights hit your face through the window. it was a better movie anyway.",
+    text: "you fell asleep during the movie we planned for weeks to watch. i paused it. i ended up just watching the city lights hit your face through the window, catching the dancing shadow of the bougainvillea outside. it was a better movie anyway.",
     image: "/assets/journal-bg-2.jpg"
   },
   {
     id: 3,
     coord: "RA 19h 50m · Dec +08° 52'",
     date: "november 18, 2024",
-    text: "it was raining so hard we stepped into that tiny bookstore. you bought a book you fully admitted you would never read, just because you liked the texture of the cover. i still think about that.",
+    text: "it was raining so hard we stepped into that tiny floral shop. you bought a small bouquet of pink carnations you fully admitted you didn't need, just because you liked the way they looked in the damp air. i still think about that.",
     image: "/assets/journal-bg-3.jpg"
   }
 ];
@@ -47,10 +47,10 @@ const JournalContent = forwardRef<HTMLDivElement, { isForeground?: boolean; isRe
                 alt="" 
                 className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-purple-900/10 to-[#050505]" />
             </div>
 
-            <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col px-4 md:px-0 border-l border-white/10 pl-6 py-2">
+            <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col px-4 md:px-0 border-l border-purple-200/10 pl-6 py-2">
               <div className="mb-12 font-mono text-[10px] uppercase tracking-[0.2em] opacity-50 flex flex-col gap-2">
                 <span>{entry.coord} / {entry.date}</span>
               </div>
@@ -65,7 +65,7 @@ const JournalContent = forwardRef<HTMLDivElement, { isForeground?: boolean; isRe
         {/* The Final Star */}
         <div className="min-h-[80vh] w-full flex items-center justify-center relative">
           <div className="text-center flex flex-col items-center gap-8">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white opacity-80 animate-pulse">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-purple-300 opacity-80 animate-pulse">
               <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
             </svg>
             <p className="font-serif text-2xl md:text-[32px] italic opacity-80 px-4">
