@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 
 // Using public domain/royalty free placeholders
 const TRACKS = {
-  ambient: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3', // Lo-fi piano
-  intimate: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=sad-piano-110034.mp3' // Quiet piano
+  ambient: '/assets/audio-ambient.mp3', // Lo-fi piano
+  intimate: '/assets/audio-intimate.mp3' // Quiet piano
 };
 
 export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {

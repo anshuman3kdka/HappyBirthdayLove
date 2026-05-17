@@ -7,21 +7,21 @@ const ENTRIES = [
     coord: "RA 14h 29m · Dec +18° 11'",
     date: "march 4, 2025",
     text: "i remember you ordered the same thing twice because you were distracted talking and didn't notice. i didn't tell you. i just watched you explain your theory about clouds being proof the sky has moods.",
-    image: "https://images.unsplash.com/photo-1495344517868-8ebaf0a2044e?w=1600&q=80"
+    image: "/assets/journal-bg-1.jpg"
   },
   {
     id: 2,
     coord: "RA 09h 14m · Dec -43° 22'",
     date: "july 12, 2024",
     text: "you fell asleep during the movie we planned for weeks to watch. i paused it. i ended up just watching the city lights hit your face through the window. it was a better movie anyway.",
-    image: "https://images.unsplash.com/photo-1507721999472-8ed4421bca96?w=1600&q=80"
+    image: "/assets/journal-bg-2.jpg"
   },
   {
     id: 3,
     coord: "RA 19h 50m · Dec +08° 52'",
     date: "november 18, 2024",
     text: "it was raining so hard we stepped into that tiny bookstore. you bought a book you fully admitted you would never read, just because you liked the texture of the cover. i still think about that.",
-    image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1600&q=80"
+    image: "/assets/journal-bg-3.jpg"
   }
 ];
 

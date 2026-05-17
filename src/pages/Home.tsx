@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const POLAROIDS = [
-  { id: 1, src: 'https://images.unsplash.com/photo-1518104593124-ac1fcbd7cedb?w=800&q=80', caption: 'that one thursday', rotation: -4 },
-  { id: 2, src: 'https://images.unsplash.com/photo-1522674515714-383783fd0a2f?w=800&q=80', caption: 'coffee at 2pm', rotation: 3 },
-  { id: 3, src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80', caption: 'you wouldn\'t stop laughing', rotation: -6 },
-  { id: 4, src: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80', caption: 'the best day', rotation: 5 },
+  { id: 1, src: '/assets/home-photo-1.jpg', caption: 'Paris, 2024', rotation: -4 },
+  { id: 2, src: '/assets/home-photo-2.jpg', caption: 'coffee at 2pm', rotation: 3 },
+  { id: 3, src: '/assets/home-photo-3.jpg', caption: 'you wouldn\'t stop laughing', rotation: -6 },
+  { id: 4, src: '/assets/home-photo-4.jpg', caption: 'That night on the roof', rotation: 5 },
 ];
 
 function Typewriter({ text, delay = 0 }: { text: string; delay?: number }) {
