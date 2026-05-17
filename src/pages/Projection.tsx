@@ -2,9 +2,10 @@ import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { resolveAssetUrl } from '../lib/assetUtils';
 
 // An ethereal ambient royalty-free video
-const VIDEO_URL = "/assets/video/projection-video.mp4";
+const VIDEO_BASE = "/assets/video/projection-video";
 
 // The shader to project the video out like volumetric light and ambient glow
 const ProjectionShader = {
@@ -156,7 +157,7 @@ export function Projection() {
             {/* The floating borderless frame */}
             <video
               ref={videoRef}
-              src={VIDEO_URL}
+              src={resolveAssetUrl(VIDEO_BASE, 'video')}
               className="w-full h-auto object-cover rounded-sm border-0"
               loop
               crossOrigin="anonymous"

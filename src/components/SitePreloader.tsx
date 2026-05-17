@@ -1,38 +1,39 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { preloadAsset } from '../lib/assetUtils';
 
 const ALL_ASSETS = [
   // Images
-  '/assets/image/home-photo-1.jpg',
-  '/assets/image/home-photo-2.jpg',
-  '/assets/image/home-photo-3.jpg',
-  '/assets/image/home-photo-4.jpg',
-  '/assets/image/journal-bg-1.jpg',
-  '/assets/image/journal-bg-2.jpg',
-  '/assets/image/journal-bg-3.jpg',
-  '/assets/image/archive-photo-1.jpg',
-  '/assets/image/archive-photo-2.jpg',
-  '/assets/image/archive-photo-3.jpg',
-  '/assets/image/archive-photo-4.jpg',
-  '/assets/image/archive-photo-5.jpg',
-  '/assets/image/archive-film-1.jpg',
-  '/assets/image/archive-film-2.jpg',
-  '/assets/image/archive-film-3.jpg',
-  '/assets/image/archive-film-4.jpg',
-  '/assets/image/archive-film-5.jpg',
-  '/assets/image/archive-film-6.jpg',
+  { basePath: '/assets/image/home-photo-1', type: 'image' },
+  { basePath: '/assets/image/home-photo-2', type: 'image' },
+  { basePath: '/assets/image/home-photo-3', type: 'image' },
+  { basePath: '/assets/image/home-photo-4', type: 'image' },
+  { basePath: '/assets/image/journal-bg-1', type: 'image' },
+  { basePath: '/assets/image/journal-bg-2', type: 'image' },
+  { basePath: '/assets/image/journal-bg-3', type: 'image' },
+  { basePath: '/assets/image/archive-photo-1', type: 'image' },
+  { basePath: '/assets/image/archive-photo-2', type: 'image' },
+  { basePath: '/assets/image/archive-photo-3', type: 'image' },
+  { basePath: '/assets/image/archive-photo-4', type: 'image' },
+  { basePath: '/assets/image/archive-photo-5', type: 'image' },
+  { basePath: '/assets/image/archive-film-1', type: 'image' },
+  { basePath: '/assets/image/archive-film-2', type: 'image' },
+  { basePath: '/assets/image/archive-film-3', type: 'image' },
+  { basePath: '/assets/image/archive-film-4', type: 'image' },
+  { basePath: '/assets/image/archive-film-5', type: 'image' },
+  { basePath: '/assets/image/archive-film-6', type: 'image' },
   // Audio
-  '/assets/audio/envelope-open.mp3',
-  '/assets/audio/audio-ambient.mp3',
-  '/assets/audio/audio-intimate.mp3',
-  '/assets/audio/audio-nostalgic.mp3',
-  '/assets/audio/wish-swell.mp3',
-  '/assets/audio/slide-projector.mp3',
-  '/assets/audio/archive-voicenote.mp3',
+  { basePath: '/assets/audio/envelope-open', type: 'audio' },
+  { basePath: '/assets/audio/audio-ambient', type: 'audio' },
+  { basePath: '/assets/audio/audio-intimate', type: 'audio' },
+  { basePath: '/assets/audio/audio-nostalgic', type: 'audio' },
+  { basePath: '/assets/audio/wish-swell', type: 'audio' },
+  { basePath: '/assets/audio/slide-projector', type: 'audio' },
+  { basePath: '/assets/audio/archive-voicenote', type: 'audio' },
   // Video
-  '/assets/video/archive-video.mp4',
-  '/assets/video/projection-video.mp4',
-];
+  { basePath: '/assets/video/archive-video', type: 'video' },
+  { basePath: '/assets/video/projection-video', type: 'video' },
+] as const;
 
 export function SitePreloader({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
@@ -42,11 +43,6 @@ export function SitePreloader({ onComplete }: { onComplete: () => void }) {
     let loadedCount = 0;
     const totalAssets = ALL_ASSETS.length;
     let hasReturned = false;
-
-    if (totalAssets === 0) {
-      setIsFinished(true);
-      return;
-    }
 
     const updateProgress = () => {
       loadedCount++;
@@ -61,27 +57,8 @@ export function SitePreloader({ onComplete }: { onComplete: () => void }) {
       }
     };
 
-    ALL_ASSETS.forEach((src) => {
-      if (src.endsWith('.jpg') || src.endsWith('.png') || src.endsWith('.svg')) {
-        const img = new Image();
-        img.src = src;
-        img.onload = updateProgress;
-        img.onerror = updateProgress; // still continue even if some placeholder is missing
-      } else if (src.endsWith('.mp3') || src.endsWith('.wav')) {
-        const audio = new Audio();
-        audio.src = src;
-        audio.oncanplaythrough = updateProgress;
-        audio.onerror = updateProgress;
-        audio.load();
-      } else if (src.endsWith('.mp4')) {
-        const video = document.createElement('video');
-        video.src = src;
-        video.oncanplaythrough = updateProgress;
-        video.onerror = updateProgress;
-        video.load();
-      } else {
-        updateProgress();
-      }
+    ALL_ASSETS.forEach(({ basePath, type }) => {
+      preloadAsset(basePath, type, updateProgress);
     });
   }, []);
 

@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
+import { resolveAssetUrl } from '../lib/assetUtils';
 
 const POLAROIDS = [
-  { id: 1, src: '/assets/image/home-photo-1.jpg', caption: 'Paris, 2024', rotation: -4 },
-  { id: 2, src: '/assets/image/home-photo-2.jpg', caption: 'coffee at 2pm', rotation: 3 },
-  { id: 3, src: '/assets/image/home-photo-3.jpg', caption: 'you wouldn\'t stop laughing', rotation: -6 },
-  { id: 4, src: '/assets/image/home-photo-4.jpg', caption: 'That night on the roof', rotation: 5 },
+  { id: 1, basePath: '/assets/image/home-photo-1', caption: 'Paris, 2024', rotation: -4 },
+  { id: 2, basePath: '/assets/image/home-photo-2', caption: 'coffee at 2pm', rotation: 3 },
+  { id: 3, basePath: '/assets/image/home-photo-3', caption: 'you wouldn\'t stop laughing', rotation: -6 },
+  { id: 4, basePath: '/assets/image/home-photo-4', caption: 'That night on the roof', rotation: 5 },
 ];
 
 function Typewriter({ text, delay = 0 }: { text: string; delay?: number }) {
@@ -101,7 +102,7 @@ export function Home() {
                   {/* Subtle inner shadow for depth */}
                   <div className="absolute inset-0 shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] z-10 pointer-events-none"></div>
                   <img 
-                    src={p.src} 
+                    src={resolveAssetUrl(p.basePath, 'image')} 
                     alt="Memory" 
                     className="w-full h-full object-cover grayscale-[10%] sepia-[10%] contrast-110 opacity-90 transition-transform duration-700 hover:scale-105" 
                     draggable={false} 

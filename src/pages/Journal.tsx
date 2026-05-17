@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { resolveAssetUrl } from '../lib/assetUtils';
 
 const ENTRIES = [
   {
@@ -8,21 +9,21 @@ const ENTRIES = [
     coord: "RA 14h 29m · Dec +18° 11'",
     date: "march 4, 2025",
     text: "i remember you explaining your theory about clouds being proof the sky has moods, while your cat slept curled up on your lap. i didn't tell you i stopped listening. i was just watching you.",
-    image: "/assets/image/journal-bg-1.jpg"
+    basePath: "/assets/image/journal-bg-1"
   },
   {
     id: 2,
     coord: "RA 09h 14m · Dec -43° 22'",
     date: "july 12, 2024",
     text: "you fell asleep during the movie we planned for weeks to watch. i paused it. i ended up just watching the city lights hit your face through the window, catching the dancing shadow of the bougainvillea outside. it was a better movie anyway.",
-    image: "/assets/image/journal-bg-2.jpg"
+    basePath: "/assets/image/journal-bg-2"
   },
   {
     id: 3,
     coord: "RA 19h 50m · Dec +08° 52'",
     date: "november 18, 2024",
     text: "it was raining so hard we stepped into that tiny floral shop. you bought a small bouquet of pink carnations you fully admitted you didn't need, just because you liked the way they looked in the damp air. i still think about that.",
-    image: "/assets/image/journal-bg-3.jpg"
+    basePath: "/assets/image/journal-bg-3"
   }
 ];
 
@@ -43,7 +44,7 @@ const JournalContent = forwardRef<HTMLDivElement, { isForeground?: boolean; isRe
           <div key={entry.id} className="relative min-h-[100vh] w-full flex items-center justify-center py-20 px-6">
             <div className="absolute inset-0 w-full h-[120%] -top-[10%] z-0 pointer-events-none">
               <img 
-                src={entry.image} 
+                src={resolveAssetUrl(entry.basePath, 'image')} 
                 alt="" 
                 className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity"
               />

@@ -2,22 +2,23 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Play, Pause, X } from 'lucide-react';
 import { AutoplayVideo } from '../components/AutoplayVideo';
+import { resolveAssetUrl } from '../lib/assetUtils';
 
 const ARCHIVE_PHOTOS = [
-  { id: 1, src: '/assets/image/archive-photo-1.jpg', x: 20, y: 30 },
-  { id: 2, src: '/assets/image/archive-photo-2.jpg', x: 60, y: 15 },
-  { id: 3, src: '/assets/image/archive-photo-3.jpg', x: 80, y: 50 },
-  { id: 4, src: '/assets/image/archive-photo-4.jpg', x: 40, y: 70 },
-  { id: 5, src: '/assets/image/archive-photo-5.jpg', x: 10, y: 80 },
+  { id: 1, basePath: '/assets/image/archive-photo-1', x: 20, y: 30 },
+  { id: 2, basePath: '/assets/image/archive-photo-2', x: 60, y: 15 },
+  { id: 3, basePath: '/assets/image/archive-photo-3', x: 80, y: 50 },
+  { id: 4, basePath: '/assets/image/archive-photo-4', x: 40, y: 70 },
+  { id: 5, basePath: '/assets/image/archive-photo-5', x: 10, y: 80 },
 ];
 
 const FILMSTRIP_PHOTOS = [
-  '/assets/image/archive-film-1.jpg',
-  '/assets/image/archive-film-2.jpg',
-  '/assets/image/archive-film-3.jpg',
-  '/assets/image/archive-film-4.jpg',
-  '/assets/image/archive-film-5.jpg',
-  '/assets/image/archive-film-6.jpg',
+  '/assets/image/archive-film-1',
+  '/assets/image/archive-film-2',
+  '/assets/image/archive-film-3',
+  '/assets/image/archive-film-4',
+  '/assets/image/archive-film-5',
+  '/assets/image/archive-film-6',
 ];
 
 function ConstellationMap() {
@@ -63,10 +64,10 @@ function ConstellationMap() {
           whileHover={{ scale: 1.1, zIndex: 20 }}
           className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
           style={{ left: `${photo.x}%`, top: `${photo.y}%` }}
-          onClick={() => setSelectedImage(photo.src)}
+          onClick={() => setSelectedImage(photo.basePath)}
         >
           <div className="w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden border border-zinc-500/30 group-hover:border-zinc-300 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.3)]">
-            <img src={photo.src} className="w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:mix-blend-normal transition-all" />
+            <img src={resolveAssetUrl(photo.basePath, 'image')} className="w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:mix-blend-normal transition-all" />
           </div>
         </motion.div>
       ))}
@@ -89,7 +90,7 @@ function ConstellationMap() {
                <button onClick={() => setSelectedImage(null)} className="absolute top-4 right-4 z-10 text-zinc-800 mix-blend-difference hover:scale-110 transition-transform">
                  <X size={24} />
                </button>
-               <img src={selectedImage} className="w-full h-full object-contain max-h-[75vh]" />
+               <img src={resolveAssetUrl(selectedImage, 'image')} className="w-full h-full object-contain max-h-[75vh]" />
                <div className="absolute bottom-4 left-0 w-full text-center font-handwriting text-2xl text-zinc-800">
                   memorabilia.
                </div>
@@ -141,7 +142,7 @@ function FilmStrip() {
       
       {/* Strip */}
       <div className="relative w-full overflow-hidden bg-[#0A0A0A] py-8 border-y border-white/5">
-        <audio ref={audioRef} src="/assets/audio/slide-projector.mp3" />
+        <audio ref={audioRef} src={resolveAssetUrl("/assets/audio/slide-projector", "audio")} />
         
         <div className="flex items-center justify-center gap-4 relative">
           <button 
@@ -164,7 +165,7 @@ function FilmStrip() {
                    <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">KODAK 400TX</div>
                    <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 font-mono text-[10px] text-white/20 tracking-wider pointer-events-none">FRAME {i + 1}</div>
                    <motion.img 
-                     src={src} 
+                     src={resolveAssetUrl(src, 'image')} 
                      style={{ y }}
                      className="w-full h-full object-cover sepia-[20%] contrast-110 opacity-90 mx-auto pointer-events-none scale-[1.3] origin-center" 
                    />
@@ -194,7 +195,7 @@ function VideoMoment() {
     <div className="w-full max-w-4xl mx-auto px-6 mb-32 z-10 relative">
       <div className="relative aspect-video bg-[#0a0a0a] shadow-[0_0_40px_rgba(255,255,255,0.05)] overflow-hidden rounded-sm group">
          <AutoplayVideo 
-           src="/assets/video/archive-video.mp4" 
+           src={resolveAssetUrl("/assets/video/archive-video", "video")} 
            className="w-full h-full"
          />
       </div>
@@ -229,7 +230,7 @@ function LittleThings() {
       >
         <audio 
           ref={audioRef} 
-          src="/assets/audio/archive-voicenote.mp3" 
+          src={resolveAssetUrl("/assets/audio/archive-voicenote", "audio")} 
           onEnded={() => setIsPlaying(false)}
         />
         <div className="flex justify-between items-start">

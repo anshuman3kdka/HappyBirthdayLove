@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useWish } from '../contexts/WishContext';
+import { resolveAssetUrl } from '../lib/assetUtils';
 
 // Cohesive, universe-themed ambient tracks (Creative Commons - Stellardrone)
-const TRACKS = {
-  '/': '/assets/audio/audio-ambient.mp3', // The Sky - Vast, expansive space
-  '/journal': '/assets/audio/audio-intimate.mp3', // The Journal - Quiet, minimal drone
-  '/archive': '/assets/audio/audio-nostalgic.mp3' // The Archive - Warm, nostalgic
+const TRACKS_BASES = {
+  '/': '/assets/audio/audio-ambient', // The Sky - Vast, expansive space
+  '/journal': '/assets/audio/audio-intimate', // The Journal - Quiet, minimal drone
+  '/archive': '/assets/audio/audio-nostalgic' // The Archive - Warm, nostalgic
 };
 
-const WISH_SWELL = '/assets/audio/wish-swell.mp3'; // Grand track, jumps directly to peak
+const WISH_SWELL_BASE = '/assets/audio/wish-swell'; // Grand track, jumps directly to peak
 
 const TARGET_VOLUME = 0.45; // Moderately low background volume for ambient tracks
 const WISH_DIM_VOLUME = 0.05; // Drop background track volume heavily during wish
@@ -67,12 +68,12 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
     const previousPath = currentPathRef.current;
     
     let normalizedCurrentPath: string | null = pathname;
-    if (!TRACKS[normalizedCurrentPath as keyof typeof TRACKS]) {
+    if (!TRACKS_BASES[normalizedCurrentPath as keyof typeof TRACKS_BASES]) {
       normalizedCurrentPath = null;
     }
     
     let normalizedPreviousPath: string | null = previousPath;
-    if (!TRACKS[normalizedPreviousPath as keyof typeof TRACKS]) {
+    if (!TRACKS_BASES[normalizedPreviousPath as keyof typeof TRACKS_BASES]) {
       normalizedPreviousPath = null;
     }
 
@@ -129,7 +130,7 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
   useEffect(() => {
     if (!isPlaying) return;
 
-    const normalizedCurrentPath = TRACKS[pathname as keyof typeof TRACKS] ? pathname : null;
+    const normalizedCurrentPath = TRACKS_BASES[pathname as keyof typeof TRACKS_BASES] ? pathname : null;
     const activeTrack = normalizedCurrentPath ? audioRefs.current[normalizedCurrentPath] : null;
 
     if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
@@ -186,16 +187,16 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
     <>
       <audio 
         ref={wishAudioRef}
-        src={WISH_SWELL}
+        src={resolveAssetUrl(WISH_SWELL_BASE, 'audio')}
         preload="auto"
       />
-      {Object.entries(TRACKS).map(([path, src]) => (
+      {Object.entries(TRACKS_BASES).map(([path, basePath]) => (
         <audio 
           key={path}
           ref={el => {
             if (el) audioRefs.current[path] = el;
           }}
-          src={src}
+          src={resolveAssetUrl(basePath, 'audio')}
           loop
           preload="auto"
         />

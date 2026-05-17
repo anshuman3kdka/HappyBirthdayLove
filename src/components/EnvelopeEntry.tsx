@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cat, Heart } from 'lucide-react';
+import { resolveAssetUrl } from '../lib/assetUtils';
 
 interface EnvelopeEntryProps {
   onEnter: () => void;
@@ -36,7 +37,7 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
 
   return (
     <div className="fixed inset-0 z-50 bg-[#050505] flex items-center justify-center">
-      <audio ref={audioRef} src="/assets/audio/envelope-open.mp3" />
+      <audio ref={audioRef} src={resolveAssetUrl("/assets/audio/envelope-open", "audio")} />
       <AnimatePresence>
         {!isOpen ? (
           <motion.div
