@@ -97,7 +97,7 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
           <div className={`w-[1px] bg-white/80 ${isPlaying ? 'h-4' : 'h-2'}`}></div>
         </div>
         <span className="font-mono text-[9px] uppercase tracking-widest text-white">
-          {isPlaying ? 'Suno Ambient • 0.2V' : 'Audio Muted'}
+          {isPlaying ? 'Audio Playing • 0.2V' : 'Audio Muted'}
         </span>
       </motion.button>
     </>

@@ -90,7 +90,7 @@ function JournalEntry({ entry }: { entry: typeof ENTRIES[0] }) {
 
 export function Journal() {
   return (
-    <div className="w-full bg-[#050505] text-[#E0D8D0]">
+    <div className="w-full bg-transparent text-[#E0D8D0]">
       <div className="pt-32 pb-16 px-6 max-w-5xl mx-auto text-center z-10 relative">
          <motion.h1 
            initial={{ opacity: 0, y: 20 }}
@@ -107,7 +107,7 @@ export function Journal() {
       ))}
 
       {/* The Final Star */}
-      <div className="min-h-screen w-full flex items-center justify-center relative bg-[#050505]">
+      <div className="min-h-screen w-full flex items-center justify-center relative bg-transparent">
         <motion.div
            initial={{ opacity: 0 }}
            whileInView={{ opacity: 1 }}

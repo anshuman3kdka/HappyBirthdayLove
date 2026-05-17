@@ -101,7 +101,29 @@ function ConstellationMap() {
 }
 
 function FilmStrip() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const slideLeft = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+      playClickSound();
+    }
+  };
+
+  const slideRight = () => {
+    if (currentIndex < FILMSTRIP_PHOTOS.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+      playClickSound();
+    }
+  };
+
+  const playClickSound = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(e => console.log('Audio play failed', e));
+    }
+  };
   
   return (
     <div className="w-full relative py-16 mb-32 z-10 bg-[#050505] overflow-hidden group">
@@ -109,20 +131,43 @@ function FilmStrip() {
       <div className="w-full h-8 film-strip-pattern opacity-30" />
       
       {/* Strip */}
-      <div className="relative w-full overflow-hidden bg-black py-4">
-        <motion.div 
-          className="flex gap-4 w-max px-4"
-          initial={{ x: "0%" }}
-          animate={{ x: "-50%" }}
-          transition={{ duration: 60, ease: "linear", repeat: Infinity }}
-        >
-           {/* Duplicate list to ensure seamless endless scrolling */}
-           {[...FILMSTRIP_PHOTOS, ...FILMSTRIP_PHOTOS].map((src, i) => (
-             <div key={i} className="flex-shrink-0 w-[60vw] md:w-[30vw] aspect-[3/2] border border-white/5 bg-[#111] group-hover:border-white/10 transition-colors">
-               <img src={src} className="w-full h-full object-cover sepia-[30%] contrast-110 opacity-90" />
-             </div>
-           ))}
-        </motion.div>
+      <div className="relative w-full overflow-hidden bg-[#0A0A0A] py-8 border-y border-white/5">
+        <audio ref={audioRef} src="/assets/slide-projector.mp3" />
+        
+        <div className="flex items-center justify-center gap-4 relative">
+          <button 
+            onClick={slideLeft}
+            disabled={currentIndex === 0}
+            className="absolute left-4 md:left-12 z-20 w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center text-white disabled:opacity-20 transition-all backdrop-blur"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          
+          <div className="w-[85vw] md:w-[60vw] overflow-hidden rounded-sm mx-auto shadow-[0_0_50px_rgba(255,255,255,0.02)]">
+            <motion.div 
+              className="flex"
+              animate={{ x: `-${currentIndex * 100}%` }}
+              transition={{ type: "spring", stiffness: 200, damping: 25 }}
+            >
+               {FILMSTRIP_PHOTOS.map((src, i) => (
+                 <div key={i} className="flex-shrink-0 w-full aspect-[3/2] border-[12px] md:border-[24px] border-[#111] transition-colors relative bg-[#050505]">
+                   <div className="absolute top-2 left-2 md:top-4 md:left-4 font-mono text-[10px] md:text-sm text-white/30 tracking-widest">{String(i + 1).padStart(2, '0')}A</div>
+                   <div className="absolute top-2 right-2 md:top-4 md:right-4 font-mono text-[10px] md:text-sm text-white/30 tracking-widest">KODAK 400TX</div>
+                   <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 font-mono text-[10px] text-white/20 tracking-wider">FRAME {i + 1}</div>
+                   <img src={src} className="w-full h-full object-cover sepia-[20%] contrast-110 opacity-90 mx-auto pointer-events-none" />
+                 </div>
+               ))}
+            </motion.div>
+          </div>
+
+          <button 
+            onClick={slideRight}
+            disabled={currentIndex === FILMSTRIP_PHOTOS.length - 1}
+            className="absolute right-4 md:right-12 z-20 w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center text-white disabled:opacity-20 transition-all backdrop-blur"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
       </div>
 
       {/* Bottom sprockets */}

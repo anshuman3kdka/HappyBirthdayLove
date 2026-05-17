@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface EnvelopeEntryProps {
@@ -7,9 +7,13 @@ interface EnvelopeEntryProps {
 
 export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const handleClick = () => {
     setIsOpen(true);
+    if (audioRef.current) {
+      audioRef.current.play().catch(e => console.log('Audio error:', e));
+    }
     // After animation sequence, trigger enter
     setTimeout(() => {
       onEnter();
@@ -17,7 +21,8 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+    <div className="fixed inset-0 z-50 bg-[#050505] flex items-center justify-center">
+      <audio ref={audioRef} src="/assets/envelope-open.mp3" />
       <AnimatePresence>
         {!isOpen ? (
           <motion.div

@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { Navigation } from './components/Navigation';
 import { GlobalAudio } from './components/GlobalAudio';
@@ -24,10 +25,46 @@ function ScrollToTop() {
   return null;
 }
 
+function AppRoutes() {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 1, delay: 1.2 } }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.5 } }}
+          >
+            <Home />
+          </motion.div>
+        } />
+        <Route path="/journal" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 1, delay: 1.2 } }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.5 } }}
+          >
+            <Journal />
+          </motion.div>
+        } />
+        <Route path="/archive" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 1, delay: 1.2 } }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.5 } }}
+          >
+            <Archive />
+          </motion.div>
+        } />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 export default function App() {
-  const [hasEntered, setHasEntered] = useState(() => {
-    return sessionStorage.getItem('hasEntered') === 'true';
-  });
+  const [hasEntered, setHasEntered] = useState(false);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -64,19 +101,20 @@ export default function App() {
       {!hasEntered ? (
         <EnvelopeEntry onEnter={handleEnter} />
       ) : (
-        <div className="relative min-h-screen w-full flex flex-col font-sans">
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          className="relative min-h-screen w-full flex flex-col font-sans"
+        >
           <SkyBackground />
           <Navigation />
           <GlobalAudio hasEntered={hasEntered} />
           
           <main className="flex-grow z-10 w-full relative">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/journal" element={<Journal />} />
-              <Route path="/archive" element={<Archive />} />
-            </Routes>
+            <AppRoutes />
           </main>
-        </div>
+        </motion.div>
       )}
     </BrowserRouter>
   );
