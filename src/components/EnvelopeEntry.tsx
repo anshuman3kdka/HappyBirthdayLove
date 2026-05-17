@@ -31,8 +31,6 @@ export function EnvelopeEntry({ onEnter }: EnvelopeEntryProps) {
     setSealClicks(newClicks);
     if (newClicks === 3) {
       setShowSealSecret(true);
-      // Let it stay visible for a bit before allowing normal click?
-      // Or they just click the envelope afterwards to open.
     }
   };
 

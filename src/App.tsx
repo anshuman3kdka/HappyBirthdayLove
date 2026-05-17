@@ -34,33 +34,9 @@ function AppRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 1, delay: 1.2 } }}
-            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.5 } }}
-          >
-            <Home />
-          </motion.div>
-        } />
-        <Route path="/journal" element={
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 1, delay: 1.2 } }}
-            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.5 } }}
-          >
-            <Journal />
-          </motion.div>
-        } />
-        <Route path="/archive" element={
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 1, delay: 1.2 } }}
-            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.5 } }}
-          >
-            <Archive />
-          </motion.div>
-        } />
+        <Route path="/" element={<Home />} />
+        <Route path="/journal" element={<Journal />} />
+        <Route path="/archive" element={<Archive />} />
       </Routes>
     </AnimatePresence>
   );
@@ -102,31 +78,25 @@ export default function App() {
     <BrowserRouter>
       <ScrollToTop />
       
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {!isPreloaded && (
-          <SitePreloader onComplete={() => setIsPreloaded(true)} />
+          <SitePreloader key="preloader" onComplete={() => setIsPreloaded(true)} />
         )}
       </AnimatePresence>
 
       {isPreloaded && !hasEntered ? (
         <EnvelopeEntry onEnter={handleEnter} />
       ) : isPreloaded && hasEntered ? (
-        <motion.div 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
-          transition={{ duration: 1.5, ease: "easeOut" }}
-          className="relative min-h-screen w-full flex flex-col font-sans"
-        >
+        <div className="relative min-h-screen w-full flex flex-col font-sans">
           <SkyBackground />
           <GlobalDust />
-          <Navigation />
           <GlobalAudio hasEntered={hasEntered} />
           <InteractiveChimes />
-          
+          <Navigation />
           <main className="flex-grow z-10 w-full relative">
             <AppRoutes />
           </main>
-        </motion.div>
+        </div>
       ) : null}
     </BrowserRouter>
   );

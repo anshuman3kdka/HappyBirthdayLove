@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, X } from 'lucide-react';
+import { AutoplayVideo } from '../components/AutoplayVideo';
 
 const ARCHIVE_PHOTOS = [
   { id: 1, src: '/assets/archive-photo-1.jpg', x: 20, y: 30 },
@@ -177,39 +178,13 @@ function FilmStrip() {
 }
 
 function VideoMoment() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      videoRef.current.pause();
-    } else {
-      videoRef.current.play();
-    }
-    setIsPlaying(!isPlaying);
-  };
-
   return (
     <div className="w-full max-w-4xl mx-auto px-6 mb-32 z-10 relative">
       <div className="relative aspect-video bg-[#0a0a0a] shadow-[0_0_40px_rgba(255,255,255,0.05)] overflow-hidden rounded-sm group">
-         {/* Placeholder video using public domain source */}
-         <video 
-           ref={videoRef}
+         <AutoplayVideo 
            src="/assets/archive-video.mp4" 
-           className="w-full h-full object-cover"
-           loop
-           playsInline
+           className="w-full h-full"
          />
-         
-         <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity duration-500 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
-           <button 
-             onClick={togglePlay}
-             className="w-16 h-16 rounded-full bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all hover:scale-105"
-           >
-             {isPlaying ? <Pause fill="currentColor" /> : <Play fill="currentColor" className="ml-1" />}
-           </button>
-         </div>
       </div>
       <p className="font-serif text-center opacity-50 mt-6 italic text-lg tracking-wide">
         that one perfect afternoon.

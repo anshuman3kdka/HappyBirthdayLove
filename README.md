@@ -22,7 +22,7 @@ The universe is vast, but it finds meaning in the constellations we draw. The co
 *   **Offline-Ready Seamless Preloader:** A rigorous initialization sequence that caches every image, video, memory, and musical note before the curtain rises. Using a Service Worker and immediate memory preloading, the entire digital birthday gift can be experienced offline with absolute zero buffering.
 *   **Interactive WebGL Sky:** A dynamic `Three.js` background with starry particle systems. When navigating between memories, the camera seamlessly "hyperjumps" through the cosmos while the scene dynamically rotates.
 *   **Generative Stardust Audio:** Clicking anywhere on the screen generates a unique, one-second twinkle. Using a procedural C-Major Pentatonic synth and stereo panning based on click coordinates, it feels like birthing stars directly into the void.
-*   **Global Ambient Audio:** A continuous track scoring the website across all routes, heightening the emotional impact without interruption.
+*   **Stateful, Contextual Soundtracks:** Rather than a single looping track, the website behaves like an immersive video game world. As you navigate from 'The Sky' to 'The Journal' and 'The Archive', the background audio seamlessly crossfades between distinct, theme-fitting ambient pieces. Crucially, each track remembers its playback time—meaning returning to a page seamlessly resumes its exact atmospheric moment, creating an uninterrupted, persistent emotional cadence while remaining quiet enough to let the procedural chimes shine.
 *   **Framed Memories:** Cinematic layout cards and journal entries to recount milestones with grace and fluid `framer-motion` animations.
 
 ## 🛠 Tech Stack
@@ -56,6 +56,7 @@ npm run build
 *   **[v1.3.0]** - Added interactive Easter Eggs: A 3-tap wax seal confetti knock to open the envelope, and a hidden clickable Heart Constellation that zooms the camera and reveals a secret note.
 *   **[v1.4.0]** - Implemented a comprehensive cinematic Preloader and PWA Service Worker. The site rigorously caches all assets upfront ensuring zero buffering and absolute seamless offline availability forever.
 *   **[v1.5.0]** - "Searchlight" Journal Feature: Subverted standard scrolling on the journal page, replacing it with a tactile exploratory mechanic. Journal entries are shrouded in a heavy blur, requiring the user to touch/hover coordinates to illuminate the text underneath, creating an intimate, active reading experience controlled by custom spatial navigation arrows.
+*   **[v1.6.0]** - The Orchestral Update: Replaced the static background audio with a stateful, three-part adaptive soundtrack. Uses smooth crossfading on route changes and persistent playback tracking so returning to a view feels like stepping right back into a paused moment in space.
 *   *Planned:* Parallax memory carousels mapped to real-world star coordinates.
 
 ---
