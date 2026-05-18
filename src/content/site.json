@@ -1,0 +1,39 @@
+{
+  "wishOverlay": {
+    "message": "Make a wish."
+  },
+  "preloader": {
+    "label": "Preparing memories"
+  },
+  "accessibility": {
+    "polaroidAlt": "Memory",
+    "constellationPhotoAlt": "Archive memory",
+    "lightboxPhotoAlt": "Selected archive memory",
+    "scrollUpLabel": "Scroll Up",
+    "scrollDownLabel": "Scroll Down",
+    "previousFilmLabel": "Previous film photo",
+    "nextFilmLabel": "Next film photo",
+    "closeLightboxLabel": "Close archive memory",
+    "voiceNotePlayPauseLabel": "Play or pause voice note",
+    "projectionPlayPauseLabel": "Play or pause projection video"
+  },
+  "journalActions": {
+    "revealButton": "Illuminate All Pages",
+    "archiveButton": "Step into the Archive"
+  },
+  "archiveLabels": {
+    "lightboxCaption": "memorabilia.",
+    "filmStockLabel": "KODAK 400TX",
+    "filmFramePrefix": "FRAME",
+    "voiceNoteTimestamp": "Voice Note: 03-12"
+  },
+  "secretOverlays": {
+    "heartTitle": "You found it!",
+    "heartMessage": "Even hidden among the stars,\nmy heart always points to you.",
+    "heartButton": "Return to the stars",
+    "catTitle": "*purrrrr*",
+    "catMessage": "Even the stars curl up to sleep when they look at you.",
+    "catPostscript": "(P.S. They're dreaming of you too.)",
+    "catButton": "Back to stargazing"
+  }
+}

@@ -1,3 +1,4 @@
+import siteContent from '../../content/site.json';
 import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars, Sparkles } from '@react-three/drei';
@@ -757,17 +758,22 @@ export function SkyBackground() {
                onClick={(e) => e.stopPropagation()}
              >
                <div className="font-handwriting text-3xl text-purple-900 text-center mb-4">
-                 You found it!
+                 {siteContent.secretOverlays.heartTitle}
                </div>
                <p className="text-purple-800 text-base leading-relaxed text-center font-serif mb-6">
-                 Even hidden among the stars,<br/>my heart always points to you.
+                 {siteContent.secretOverlays.heartMessage.split('\n').map((line, index) => (
+                   <span key={line}>
+                     {index > 0 && <br />}
+                     {line}
+                   </span>
+                 ))}
                </p>
                <div className="flex justify-center">
                  <button 
                    onClick={() => setShowHeartSecret(false)}
                    className="px-6 py-2 border border-purple-200 text-purple-600 rounded hover:bg-purple-50 transition-colors font-serif text-sm"
                  >
-                   Return to the stars
+                   {siteContent.secretOverlays.heartButton}
                  </button>
                </div>
              </motion.div>
@@ -792,17 +798,17 @@ export function SkyBackground() {
                onClick={(e) => e.stopPropagation()}
              >
                <div className="font-handwriting text-3xl text-pink-900 text-center mb-4">
-                 *purrrrr*
+                 {siteContent.secretOverlays.catTitle}
                </div>
                <p className="text-pink-800 text-base leading-relaxed text-center font-serif mb-6">
-                 Even the stars curl up to sleep when they look at you. <br/><span className="text-sm opacity-80">(P.S. They're dreaming of you too.)</span>
+                 {siteContent.secretOverlays.catMessage} <br/><span className="text-sm opacity-80">{siteContent.secretOverlays.catPostscript}</span>
                </p>
                <div className="flex justify-center">
                  <button 
                    onClick={() => { setShowCatSecret(false); setCatGlowing(false); }}
                    className="px-6 py-2 border border-pink-200 text-pink-600 rounded hover:bg-pink-50 transition-colors font-serif text-sm"
                  >
-                   Back to stargazing
+                   {siteContent.secretOverlays.catButton}
                  </button>
                </div>
              </motion.div>

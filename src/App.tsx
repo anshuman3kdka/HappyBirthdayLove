@@ -15,6 +15,7 @@ import { SkyBackground } from './components/webgl/SkyBackground';
 import { EnvelopeEntry } from './components/EnvelopeEntry';
 import { SitePreloader } from './components/SitePreloader';
 import { GlobalDust } from './components/GlobalDust';
+import siteContent from './content/site.json';
 
 import { Home } from './pages/Home';
 import { Journal } from './pages/Journal';
@@ -49,7 +50,7 @@ function WishUIWrapper({ children }: { children: React.ReactNode }) {
             className="fixed top-1/4 left-0 right-0 z-50 flex justify-center items-center pointer-events-none"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl text-white font-serif italic tracking-wider font-light" style={{ textShadow: '0 0 20px rgba(255,255,255,0.4)' }}>
-              Make a wish.
+              {siteContent.wishOverlay.message}
             </h1>
           </motion.div>
         )}

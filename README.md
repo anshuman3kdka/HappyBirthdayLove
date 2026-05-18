@@ -17,6 +17,7 @@ The universe is vast, but it finds meaning in the constellations we draw. The co
 3. **Procedural Elegance:** Instead of relying on static assets for interactions, we use procedural generation. A prime example is the Web Audio API synthesis that triggers delicate, spatially-panned starlight chimes upon any click on the screen.
 4. **Sophisticated Typography:** The contrast between stark tech-forward layouts and deep romance is balanced through typography. We utilize `Inter` for clean legibility, `JetBrains Mono` for structural clarity, and `Lora` to provide that deeply personal, editorial, and romantic edge.
 5. **Launch-Night Stability:** Final polish favors invisible reliability over flashy changes: dependency installation is verified, TypeScript must pass, production builds must complete cleanly, and cinematic details like hidden scrollbars are kept standards-compliant so the birthday observatory feels effortless on opening night.
+6. **Editable Emotional Script:** All visible words now live in carefully categorized Pages CMS content files, so the birthday story can be rewritten like a film script—headings, journal entries, timestamps, captions, buttons, loading copy, hidden notes, and accessibility labels—without opening the application code.
 
 ## ✨ Core Features
 *   **The Envelope Entry:** A physical-feeling onboarding process that requires a deliberate "click to open," granting the browser required permissions to autoplay the cinematic audio.
@@ -28,6 +29,7 @@ The universe is vast, but it finds meaning in the constellations we draw. The co
 *   **Framed Memories:** Cinematic layout cards and journal entries to recount milestones with grace and fluid `framer-motion` animations.
 *   **Cinematic Parallax Scrolls:** In the Archive, the vintage film strip images gracefully slide within their frames at differing speeds as the user scrolls, creating an immersive, multi-layered sense of depth.
 *   **Launch-Ready Visual Polish:** Global scrollbar hiding is scoped to the page root for cleaner browser parsing, preserving the full-screen observatory illusion while keeping the production build calm and predictable.
+*   **Full Pages CMS Text Control:** The content model is now divided into broad editing rooms—global interface/navigation/envelope text and page-specific memories—so non-coders can adjust virtually every word in the experience from Pages CMS, including journals, headings, titles, timestamps, captions, film labels, hidden constellation messages, and button labels.
 
 ## 🛠 Tech Stack
 *   **Framework:** React 19 & Vite
@@ -75,6 +77,7 @@ npm run build
 *   **[v1.19.0]** - Global Sandbox Authorship: Integrated a comprehensive Git-based CMS configuration (`.pages.yml` via Pages CMS). The emotional core of the site—every caption, coordinate, polaroid, memory, and media piece—is now entirely modular and non-destructively editable via structured JSON content collections, enabling friction-free curation without touching code.
 *   **[v1.20.0]** - Holographic Video UI: Upgraded the global `AutoplayVideo` wrapper. Videos now interact with the background using `mix-blend-screen` and soft opacity to appear as projected holograms. Added a slow 3D spatial tilt, a pulsating light spill, and immersive CRT scanlines. Implemented scroll-linked "No Autonomy" playback—videos pause immediately when scrolled and spring life solely when perfectly centered.
 *   **[v1.21.0]** - Launch-Night Readiness: Installed the full dependency constellation, refreshed the lockfile, verified TypeScript and production build health, and corrected the global hidden-scrollbar rule so the final cinematic birthday run-up is quieter, cleaner, and ready for opening night.
+*   **[v1.22.0]** - Pages CMS Full Text Wiring: Rebuilt the CMS structure into clear content categories and added a dedicated global interface script file. The digital birthday observatory can now be copy-edited from Pages CMS across visible page copy, journal passages, headings, dates, captions, hidden star messages, loading language, interaction buttons, and accessibility labels without touching React code.
 *   *Exploration:* Investigating invisible, generative AI mechanics (Gemini) as a background "director" to orchestrate physics and asset curation without exposing obvious generated text.
 *   *Planned:* Parallax memory carousels mapped to real-world star coordinates.
 
