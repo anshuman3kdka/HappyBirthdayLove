@@ -7,6 +7,7 @@ interface AutoplayVideoProps {
   loop?: boolean;
   muted?: boolean;
   volume?: number;
+  pausable?: boolean;
 }
 
 export function AutoplayVideo({
@@ -16,11 +17,13 @@ export function AutoplayVideo({
   loop = true,
   muted = true,
   volume = 1,
+  pausable = false,
 }: AutoplayVideoProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [needsUserInteraction, setNeedsUserInteraction] = useState(false);
+  const [isManuallyPaused, setIsManuallyPaused] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const scrollTimeoutRef = useRef<number | null>(null);
 
@@ -69,8 +72,8 @@ export function AutoplayVideo({
   useEffect(() => {
     if (!videoRef.current) return;
 
-    // Pause immediately if scrolling or out of view
-    if (!isIntersecting || isScrolling) {
+    // Pause immediately if scrolling, out of view, or manually paused
+    if (!isIntersecting || isScrolling || isManuallyPaused) {
       videoRef.current.pause();
       setIsPlaying(false);
       return;
@@ -104,17 +107,18 @@ export function AutoplayVideo({
       }
     };
 
-    // Play if intersecting and completely stopped scrolling
-    if (isIntersecting && !isScrolling) {
+    // Play if intersecting, stopped scrolling, and not manually paused
+    if (isIntersecting && !isScrolling && !isManuallyPaused) {
       playVideo();
     }
-  }, [isIntersecting, isScrolling, muted, volume]);
+  }, [isIntersecting, isScrolling, muted, volume, isManuallyPaused]);
 
   useEffect(() => {
-    if (!needsUserInteraction || muted || !isIntersecting || isScrolling) return;
+    if (!needsUserInteraction || muted || !isIntersecting || isScrolling || isManuallyPaused) return;
 
     const retryWithSound = () => {
       if (!videoRef.current) return;
+      if (isManuallyPaused) return;
 
       videoRef.current.muted = false;
       videoRef.current.volume = Math.min(1, Math.max(0, volume));
@@ -131,10 +135,48 @@ export function AutoplayVideo({
       window.removeEventListener('click', retryWithSound);
       window.removeEventListener('touchstart', retryWithSound);
     };
-  }, [isIntersecting, isScrolling, muted, needsUserInteraction, volume]);
+  }, [isIntersecting, isScrolling, muted, needsUserInteraction, volume, isManuallyPaused]);
+
+  const handleTogglePlay = () => {
+    if (!pausable) return;
+
+    if (needsUserInteraction) {
+      if (!videoRef.current) return;
+
+      videoRef.current.muted = muted;
+      videoRef.current.volume = Math.min(1, Math.max(0, volume));
+      videoRef.current.play().then(() => {
+        setNeedsUserInteraction(false);
+        setIsManuallyPaused(false);
+        setIsPlaying(true);
+      }).catch(e => {
+        console.warn("Video play failed after direct interaction:", e);
+        setNeedsUserInteraction(true);
+        setIsPlaying(false);
+      });
+      return;
+    }
+
+    setIsManuallyPaused(prev => !prev);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!pausable) return;
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    handleTogglePlay();
+  };
 
   return (
-    <div className={`relative ${className} [perspective:1000px]`}>
+    <div
+      className={`relative ${className} [perspective:1000px] ${pausable ? 'cursor-pointer' : ''}`}
+      onClick={pausable ? handleTogglePlay : undefined}
+      onKeyDown={pausable ? handleKeyDown : undefined}
+      role={pausable ? 'button' : undefined}
+      tabIndex={pausable ? 0 : undefined}
+      aria-label={pausable ? (isPlaying && !isManuallyPaused ? 'Pause archive video' : 'Play archive video') : undefined}
+      aria-pressed={pausable ? !isManuallyPaused : undefined}
+    >
       <div 
         className={`w-full h-full relative transition-all duration-1000 preserve-3d
         animate-float-tilt ${isPlaying ? 'animate-glow-pulse' : 'opacity-70'}`}
