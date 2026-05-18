@@ -147,7 +147,11 @@ content:
             type: string
           - name: links
             label: Navigation Links
-            type: list
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{label} → {to}"
             fields:
               - name: to
                 label: Route Path
@@ -191,7 +195,11 @@ content:
             type: string
           - name: polaroids
             label: Polaroids
-            type: list
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{caption}"
             fields:
               - name: image
                 label: Image
@@ -218,7 +226,11 @@ content:
             type: text
           - name: entries
             label: Journal Entries
-            type: list
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{date} · {coord}"
             fields:
               - name: coord
                 label: Coordinates
@@ -252,7 +264,11 @@ content:
         fields:
           - name: constellationPhotos
             label: Constellation Photos
-            type: list
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{caption}"
             fields:
               - name: image
                 label: Image
@@ -270,7 +286,11 @@ content:
                 type: number
           - name: filmstripPhotos
             label: Film Strip Photos
-            type: list
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{frameCode} · {frameLabel}"
             fields:
               - name: image
                 label: Image
