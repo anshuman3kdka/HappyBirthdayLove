@@ -5,7 +5,14 @@ import { resolveAssetUrl } from '../lib/assetUtils';
 import journalContent from '../content/journal.json';
 import siteContent from '../content/site.json';
 
-const ENTRIES = journalContent.entries;
+type JournalEntry = {
+  coord: string;
+  date: string;
+  text: string;
+  image?: string;
+};
+
+const ENTRIES = journalContent.entries as JournalEntry[];
 
 const JournalContent = forwardRef<HTMLDivElement, { isForeground?: boolean; isRevealed?: boolean }>((props, ref) => {
   return (
@@ -23,11 +30,13 @@ const JournalContent = forwardRef<HTMLDivElement, { isForeground?: boolean; isRe
         {ENTRIES.map((entry, i) => (
           <div key={i} className="relative min-h-[100vh] w-full flex items-center justify-center py-20 px-6">
             <div className="absolute inset-0 w-full h-[120%] -top-[10%] z-0 pointer-events-none">
-              <img 
-                src={resolveAssetUrl(entry.image, 'image')} 
-                alt="" 
-                className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity"
-              />
+              {entry.image && (
+                <img 
+                  src={resolveAssetUrl(entry.image, 'image')} 
+                  alt="" 
+                  className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-purple-900/10 to-[#050505]" />
             </div>
 

@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Lenis from 'lenis';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -59,6 +59,19 @@ function WishUIWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
+
+function FreshBootReset({ onReset }: { onReset: () => void }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    sessionStorage.removeItem('hasEntered');
+    onReset();
+    navigate('/', { replace: true });
+  }, [navigate, onReset]);
+
+  return null;
+}
+
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -109,14 +122,18 @@ export default function App() {
     };
   }, []);
 
+  const resetToOpeningScene = useCallback(() => {
+    setHasEntered(false);
+  }, []);
+
   const handleEnter = () => {
     setHasEntered(true);
-    sessionStorage.setItem('hasEntered', 'true');
   };
 
   return (
     <BrowserRouter>
       <WishProvider>
+        <FreshBootReset onReset={resetToOpeningScene} />
         <ScrollToTop />
         
         <AnimatePresence mode="wait">
