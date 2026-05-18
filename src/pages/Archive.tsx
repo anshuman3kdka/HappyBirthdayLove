@@ -4,12 +4,13 @@ import { Play, Pause, X } from 'lucide-react';
 import { AutoplayVideo } from '../components/AutoplayVideo';
 import { resolveAssetUrl } from '../lib/assetUtils';
 import archiveContent from '../content/archive.json';
+import siteContent from '../content/site.json';
 
 const ARCHIVE_PHOTOS = archiveContent.constellationPhotos;
-const FILMSTRIP_PHOTOS = archiveContent.filmstripPhotos.map(p => p.image);
+const FILMSTRIP_PHOTOS = archiveContent.filmstripPhotos;
 
 function ConstellationMap() {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<(typeof ARCHIVE_PHOTOS)[number] | null>(null);
 
   // Simple SVG lines connecting the centers of the images
   const lines = [
@@ -51,35 +52,35 @@ function ConstellationMap() {
           whileHover={{ scale: 1.1, zIndex: 20 }}
           className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
           style={{ left: `${photo.x}%`, top: `${photo.y}%` }}
-          onClick={() => setSelectedImage(photo.image)}
+          onClick={() => setSelectedPhoto(photo)}
         >
           <div className="w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden border border-zinc-500/30 group-hover:border-zinc-300 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.3)]">
-            <img src={resolveAssetUrl(photo.image, 'image')} className="w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:mix-blend-normal transition-all" />
+            <img src={resolveAssetUrl(photo.image, 'image')} alt={siteContent.accessibility.constellationPhotoAlt} className="w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:mix-blend-normal transition-all" />
           </div>
         </motion.div>
       ))}
 
       {/* Lightbox */}
       <AnimatePresence>
-        {selectedImage && (
+        {selectedPhoto && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-6 md:p-12 cursor-zoom-out"
-            onClick={() => setSelectedImage(null)}
+            onClick={() => setSelectedPhoto(null)}
           >
             <motion.div
-              layoutId={selectedImage}
+              layoutId={selectedPhoto.image}
               className="relative max-w-5xl max-h-[90vh] bg-white p-4 md:p-6 pb-16 md:pb-20 shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
-               <button onClick={() => setSelectedImage(null)} className="absolute top-4 right-4 z-10 text-zinc-800 mix-blend-difference hover:scale-110 transition-transform">
+               <button onClick={() => setSelectedPhoto(null)} aria-label={siteContent.accessibility.closeLightboxLabel} className="absolute top-4 right-4 z-10 text-zinc-800 mix-blend-difference hover:scale-110 transition-transform">
                  <X size={24} />
                </button>
-               <img src={resolveAssetUrl(selectedImage, 'image')} className="w-full h-full object-contain max-h-[75vh]" />
+               <img src={resolveAssetUrl(selectedPhoto.image, 'image')} alt={siteContent.accessibility.lightboxPhotoAlt} className="w-full h-full object-contain max-h-[75vh]" />
                <div className="absolute bottom-4 left-0 w-full text-center font-handwriting text-2xl text-zinc-800">
-                  memorabilia.
+                  {selectedPhoto.caption || siteContent.archiveLabels.lightboxCaption}
                </div>
             </motion.div>
           </motion.div>
@@ -98,7 +99,7 @@ function FilmStrip() {
     target: containerRef,
     offset: ["start end", "end start"]
   });
-  
+
   const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
 
   const slideLeft = () => {
@@ -121,49 +122,51 @@ function FilmStrip() {
       audioRef.current.play().catch(e => console.log('Audio play failed', e));
     }
   };
-  
+
   return (
     <div ref={containerRef} className="w-full relative py-16 mb-32 z-10 bg-[#050505] overflow-hidden group">
       {/* Top sprockets */}
       <div className="w-full h-8 film-strip-pattern opacity-30" />
-      
+
       {/* Strip */}
       <div className="relative w-full overflow-hidden bg-[#0A0A0A] py-8 border-y border-white/5">
         <audio ref={audioRef} src={resolveAssetUrl("/assets/audio/slide-projector", "audio")} />
-        
+
         <div className="flex items-center justify-center gap-4 relative">
-          <button 
+          <button
             onClick={slideLeft}
             disabled={currentIndex === 0}
+            aria-label={siteContent.accessibility.previousFilmLabel}
             className="absolute left-4 md:left-12 z-20 w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center text-white disabled:opacity-20 transition-all backdrop-blur"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
-          
+
           <div className="w-[85vw] md:w-[60vw] overflow-hidden rounded-sm mx-auto shadow-[0_0_50px_rgba(255,255,255,0.02)]">
-            <motion.div 
+            <motion.div
               className="flex"
               animate={{ x: `-${currentIndex * 100}%` }}
               transition={{ type: "spring", stiffness: 200, damping: 25 }}
             >
-               {FILMSTRIP_PHOTOS.map((src, i) => (
+               {FILMSTRIP_PHOTOS.map((photo, i) => (
                  <div key={i} className="flex-shrink-0 w-full aspect-[3/2] border-[12px] md:border-[24px] border-[#111] transition-colors relative bg-[#050505] overflow-hidden">
-                   <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{String(i + 1).padStart(2, '0')}A</div>
-                   <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">KODAK 400TX</div>
-                   <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 font-mono text-[10px] text-white/20 tracking-wider pointer-events-none">FRAME {i + 1}</div>
-                   <motion.img 
-                     src={resolveAssetUrl(src, 'image')} 
+                   <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{photo.frameCode}</div>
+                   <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{siteContent.archiveLabels.filmStockLabel}</div>
+                   <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 font-mono text-[10px] text-white/20 tracking-wider pointer-events-none">{photo.frameLabel || `${siteContent.archiveLabels.filmFramePrefix} ${i + 1}`}</div>
+                   <motion.img
+                     src={resolveAssetUrl(photo.image, 'image')}
                      style={{ y }}
-                     className="w-full h-full object-cover sepia-[20%] contrast-110 opacity-90 mx-auto pointer-events-none scale-[1.3] origin-center" 
+                     className="w-full h-full object-cover sepia-[20%] contrast-110 opacity-90 mx-auto pointer-events-none scale-[1.3] origin-center"
                    />
                  </div>
                ))}
             </motion.div>
           </div>
 
-          <button 
+          <button
             onClick={slideRight}
             disabled={currentIndex === FILMSTRIP_PHOTOS.length - 1}
+            aria-label={siteContent.accessibility.nextFilmLabel}
             className="absolute right-4 md:right-12 z-20 w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center text-white disabled:opacity-20 transition-all backdrop-blur"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
@@ -181,8 +184,8 @@ function VideoMoment() {
   return (
     <div className="w-full max-w-4xl mx-auto px-6 mb-32 z-10 relative">
       <div className="relative aspect-video bg-[#0a0a0a] shadow-[0_0_40px_rgba(255,255,255,0.05)] overflow-hidden rounded-sm group">
-         <AutoplayVideo 
-           src={resolveAssetUrl(archiveContent.videoMoment.video, "video")} 
+         <AutoplayVideo
+           src={resolveAssetUrl(archiveContent.videoMoment.video, "video")}
            className="w-full h-full"
          />
       </div>
@@ -206,40 +209,41 @@ function LittleThings() {
     }
     setIsPlaying(!isPlaying);
   };
-  
+
   return (
     <div className="w-full max-w-5xl mx-auto px-6 mb-32 z-10 relative flex flex-wrap justify-center gap-12 items-center">
-      
+
       {/* A stylized cassette player */}
-      <motion.div 
+      <motion.div
         whileHover={{ scale: 1.05, rotate: 2 }}
         className="w-72 h-44 bg-[#111] rounded-md shadow-[0_0_30px_rgba(255,255,255,0.05)] border border-white/10 relative overflow-hidden flex flex-col justify-between p-4"
       >
-        <audio 
-          ref={audioRef} 
-          src={resolveAssetUrl(archiveContent.littleThings.audioVoiceNote, "audio")} 
+        <audio
+          ref={audioRef}
+          src={resolveAssetUrl(archiveContent.littleThings.audioVoiceNote, "audio")}
           onEnded={() => setIsPlaying(false)}
         />
         <div className="flex justify-between items-start">
-          <div className="font-mono text-[10px] text-white/50 uppercase tracking-widest">Voice Note: 03-12</div>
-          <button 
+          <div className="font-mono text-[10px] text-white/50 uppercase tracking-widest">{siteContent.archiveLabels.voiceNoteTimestamp}</div>
+          <button
             onClick={togglePlay}
+            aria-label={siteContent.accessibility.voiceNotePlayPauseLabel}
             className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 text-white transition-colors"
           >
             {isPlaying ? <Pause size={14} /> : <Play size={14} className="ml-0.5" />}
           </button>
         </div>
-        
+
         {/* Cassette spools */}
         <div className="w-full h-16 bg-[#050505] rounded-sm relative flex items-center justify-between px-8 border border-white/5">
-           <motion.div 
+           <motion.div
              animate={{ rotate: isPlaying ? 360 : 0 }}
              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
              className="w-10 h-10 rounded-full bg-[#111] border border-white/20 flex items-center justify-center shadow-inner"
            >
              <div className="w-1 h-3 bg-white/30" />
            </motion.div>
-           <motion.div 
+           <motion.div
              animate={{ rotate: isPlaying ? 360 : 0 }}
              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
              className="w-10 h-10 rounded-full bg-[#111] border border-white/20 flex items-center justify-center shadow-inner"
@@ -247,14 +251,14 @@ function LittleThings() {
              <div className="w-1 h-3 bg-white/30" />
            </motion.div>
         </div>
-        
+
         <div className="font-handwriting text-black/80 text-center w-full bg-[#E0D8D0] py-1 rounded-sm mt-2 text-sm">
           {archiveContent.littleThings.voiceNoteLabel}
         </div>
       </motion.div>
-      
+
       {/* A generic artifact like a ticket stub */}
-      <motion.div 
+      <motion.div
         whileHover={{ scale: 1.05, rotate: -2 }}
         className="w-48 h-24 bg-[#E0D8D0] shadow-2xl relative border-l-8 border-r-8 border-dashed border-black/10 flex items-center justify-center transform rotate-3"
       >
@@ -263,7 +267,7 @@ function LittleThings() {
           <div className="font-mono text-black/40 text-[9px] uppercase tracking-widest">{archiveContent.littleThings.ticketTitle}</div>
         </div>
       </motion.div>
-      
+
     </div>
   );
 }

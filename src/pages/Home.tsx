@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 import { resolveAssetUrl } from '../lib/assetUtils';
 import homeContent from '../content/home.json';
+import siteContent from '../content/site.json';
 
 function Typewriter({ text, delay = 0 }: { text: string; delay?: number }) {
   const [displayText, setDisplayText] = useState('');
@@ -28,10 +29,10 @@ export function Home() {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center pt-24 px-6 md:px-24">
-      
+
       {/* Hero Section */}
       <div className="w-full max-w-5xl z-10">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 2, delay: 0.5 }}
@@ -45,7 +46,7 @@ export function Home() {
           <div className="h-[1px] w-24 bg-gradient-to-r from-purple-300/40 to-transparent mb-6"></div>
           <div className="text-xl md:text-2xl font-light opacity-80 leading-relaxed max-w-sm mb-2 font-serif">
             <Typewriter text={homeContent.subtitle_1} delay={2} />
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 2, delay: 6.5 }}
@@ -75,7 +76,7 @@ export function Home() {
               whileDrag={{ scale: 1.1, zIndex: 60, cursor: 'grabbing' }}
               initial={{ opacity: 0, y: 50, rotate: p.rotation }}
               animate={{ opacity: 1, y: 0, rotate: p.rotation }}
-              transition={{ 
+              transition={{
                 opacity: { duration: 1, delay: 7 + i * 0.2 },
                 y: { duration: 1, delay: 7 + i * 0.2, type: "spring" },
                 rotate: { duration: 0 } // Keep rotation static initially
@@ -83,23 +84,23 @@ export function Home() {
               style={{ zIndex: 10 + i, willChange: 'transform' }}
               className="absolute cursor-grab"
             >
-              <Tilt 
-                tiltMaxAngleX={15} 
-                tiltMaxAngleY={15} 
-                glareEnable={true} 
-                glareMaxOpacity={0.3} 
-                glarePosition="all" 
+              <Tilt
+                tiltMaxAngleX={15}
+                tiltMaxAngleY={15}
+                glareEnable={true}
+                glareMaxOpacity={0.3}
+                glarePosition="all"
                 scale={1}
                 className="bg-[#f2f0eb] p-3 pb-8 cursor-grab shadow-2xl w-48 sm:w-56 polaroid-shadow border border-zinc-200/20"
               >
                 <div className="w-full aspect-[4/5] overflow-hidden bg-[#222] mb-3 relative">
                   {/* Subtle inner shadow for depth */}
                   <div className="absolute inset-0 shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] z-10 pointer-events-none"></div>
-                  <img 
-                    src={resolveAssetUrl(p.image, 'image')} 
-                    alt="Memory" 
-                    className="w-full h-full object-cover grayscale-[10%] sepia-[10%] contrast-110 opacity-90 transition-transform duration-700 hover:scale-105" 
-                    draggable={false} 
+                  <img
+                    src={resolveAssetUrl(p.image, 'image')}
+                    alt={siteContent.accessibility.polaroidAlt}
+                    className="w-full h-full object-cover grayscale-[10%] sepia-[10%] contrast-110 opacity-90 transition-transform duration-700 hover:scale-105"
+                    draggable={false}
                   />
                 </div>
                 <div className="w-full text-center">
@@ -112,7 +113,7 @@ export function Home() {
           ))}
         </div>
       </div>
-      
+
     </div>
   );
 }

@@ -1,18 +1,67 @@
 {
   "constellationPhotos": [
-    { "image": "/assets/image/archive-photo-1", "x": 20, "y": 30 },
-    { "image": "/assets/image/archive-photo-2", "x": 60, "y": 15 },
-    { "image": "/assets/image/archive-photo-3", "x": 80, "y": 50 },
-    { "image": "/assets/image/archive-photo-4", "x": 40, "y": 70 },
-    { "image": "/assets/image/archive-photo-5", "x": 10, "y": 80 }
+    {
+      "image": "/assets/image/archive-photo-1",
+      "x": 20,
+      "y": 30,
+      "caption": "memorabilia."
+    },
+    {
+      "image": "/assets/image/archive-photo-2",
+      "x": 60,
+      "y": 15,
+      "caption": "memorabilia."
+    },
+    {
+      "image": "/assets/image/archive-photo-3",
+      "x": 80,
+      "y": 50,
+      "caption": "memorabilia."
+    },
+    {
+      "image": "/assets/image/archive-photo-4",
+      "x": 40,
+      "y": 70,
+      "caption": "memorabilia."
+    },
+    {
+      "image": "/assets/image/archive-photo-5",
+      "x": 10,
+      "y": 80,
+      "caption": "memorabilia."
+    }
   ],
   "filmstripPhotos": [
-    { "image": "/assets/image/archive-film-1" },
-    { "image": "/assets/image/archive-film-2" },
-    { "image": "/assets/image/archive-film-3" },
-    { "image": "/assets/image/archive-film-4" },
-    { "image": "/assets/image/archive-film-5" },
-    { "image": "/assets/image/archive-film-6" }
+    {
+      "image": "/assets/image/archive-film-1",
+      "frameCode": "01A",
+      "frameLabel": "FRAME 1"
+    },
+    {
+      "image": "/assets/image/archive-film-2",
+      "frameCode": "02A",
+      "frameLabel": "FRAME 2"
+    },
+    {
+      "image": "/assets/image/archive-film-3",
+      "frameCode": "03A",
+      "frameLabel": "FRAME 3"
+    },
+    {
+      "image": "/assets/image/archive-film-4",
+      "frameCode": "04A",
+      "frameLabel": "FRAME 4"
+    },
+    {
+      "image": "/assets/image/archive-film-5",
+      "frameCode": "05A",
+      "frameLabel": "FRAME 5"
+    },
+    {
+      "image": "/assets/image/archive-film-6",
+      "frameCode": "06A",
+      "frameLabel": "FRAME 6"
+    }
   ],
   "videoMoment": {
     "video": "/assets/video/archive-video",
@@ -21,7 +70,7 @@
   "littleThings": {
     "audioVoiceNote": "/assets/audio/archive-voicenote",
     "voiceNoteLabel": "your laugh",
-    "ticketSeat": "Row F • Seat 12",
+    "ticketSeat": "Row F \u2022 Seat 12",
     "ticketTitle": "ADMIT ONE"
   }
 }

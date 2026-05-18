@@ -4,6 +4,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { resolveAssetUrl } from '../lib/assetUtils';
 import projectionContent from '../content/projection.json';
+import siteContent from '../content/site.json';
 
 // An ethereal ambient royalty-free video
 const VIDEO_BASE = projectionContent.video;
@@ -154,6 +155,7 @@ export function Projection() {
             transition={{ delay: 0.5, duration: 1.5, ease: "easeOut" }}
             className="w-full relative cursor-pointer shadow-2xl"
             onClick={togglePlay}
+            aria-label={siteContent.accessibility.projectionPlayPauseLabel}
         >
             {/* The floating borderless frame */}
             <video

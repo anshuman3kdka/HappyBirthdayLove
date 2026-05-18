@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { resolveAssetUrl } from '../lib/assetUtils';
 import journalContent from '../content/journal.json';
+import siteContent from '../content/site.json';
 
 const ENTRIES = journalContent.entries;
 
@@ -169,7 +170,7 @@ export function Journal() {
           onClick={scrollUp}
           className={`p-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-white transition-all duration-500 outline-none hover:bg-white/10
             ${scrollY > 10 ? 'opacity-70 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
-          aria-label="Scroll Up"
+          aria-label={siteContent.accessibility.scrollUpLabel}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M18 15l-6-6-6 6" />
@@ -180,7 +181,7 @@ export function Journal() {
           onClick={scrollDown}
           className={`p-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-white transition-all duration-500 outline-none hover:bg-white/10
             ${maxScroll > 0 && !isAtBottom ? 'opacity-70 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
-          aria-label="Scroll Down"
+          aria-label={siteContent.accessibility.scrollDownLabel}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
              <path d="M6 9l6 6 6-6" />
@@ -196,7 +197,7 @@ export function Journal() {
              onPointerDown={(e) => e.stopPropagation()}
              className="px-6 py-2 border border-white/20 text-white/70 uppercase tracking-[0.2em] font-mono text-[10px] hover:bg-white/10 hover:text-white transition-all backdrop-blur-md rounded-full shadow-[0_0_15px_rgba(255,255,255,0.05)]"
            >
-             Illuminate All Pages
+             {siteContent.journalActions.revealButton}
            </button>
          )}
          <button 
@@ -204,7 +205,7 @@ export function Journal() {
            onPointerDown={(e) => e.stopPropagation()}
            className="px-8 py-4 border border-white/30 text-white uppercase tracking-[0.2em] font-mono text-xs hover:bg-white/10 transition-colors backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.1)]"
          >
-           Step into the Archive
+           {siteContent.journalActions.archiveButton}
          </button>
       </div>
       

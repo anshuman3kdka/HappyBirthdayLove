@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { preloadAsset } from '../lib/assetUtils';
 import { ALL_ASSETS } from 'virtual:assets';
+import siteContent from '../content/site.json';
 
 export function SitePreloader({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
@@ -64,7 +65,7 @@ export function SitePreloader({ onComplete }: { onComplete: () => void }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              Preparing memories
+              {siteContent.preloader.label}
             </motion.div>
             
             <div className="w-full h-[1px] bg-gray-200 relative overflow-hidden">
