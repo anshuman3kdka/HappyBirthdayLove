@@ -1,14 +1,35 @@
 media:
-  input: public/assets
-  output: /assets
-collections:
+  - name: images
+    label: Images
+    input: public/assets/image
+    output: /assets/image
+    categories: [image]
+    extensions: [jpg, jpeg, png, webp, gif, avif]
+    rename: safe
+  - name: videos
+    label: Videos
+    input: public/assets/video
+    output: /assets/video
+    categories: [video]
+    extensions: [mp4, webm, mov, m4v, ogg]
+    rename: safe
+  - name: audio
+    label: Audio
+    input: public/assets/audio
+    output: /assets/audio
+    categories: [audio]
+    extensions: [mp3, wav, ogg, m4a, webm]
+    rename: safe
+content:
   - name: core_text
     label: Core Text & Navigation
-    type: file
-    files:
+    type: group
+    items:
       - name: global_interface
         label: Global Interface Text
-        file: src/content/site.json
+        type: file
+        path: src/content/site.json
+        format: json
         fields:
           - name: wishOverlay
             label: Wish Overlay
@@ -111,7 +132,9 @@ collections:
                 type: string
       - name: navigation
         label: Global Navigation
-        file: src/content/navigation.json
+        type: file
+        path: src/content/navigation.json
+        format: json
         fields:
           - name: title
             label: Navigation Title
@@ -134,7 +157,9 @@ collections:
                 type: string
       - name: envelope
         label: Envelope Entry Screen
-        file: src/content/envelope.json
+        type: file
+        path: src/content/envelope.json
+        format: json
         fields:
           - name: sealInitial
             label: Wax Seal Initial
@@ -144,11 +169,13 @@ collections:
             type: string
   - name: page_text
     label: Page Text & Memories
-    type: file
-    files:
+    type: group
+    items:
       - name: home
         label: Home Page
-        file: src/content/home.json
+        type: file
+        path: src/content/home.json
+        format: json
         fields:
           - name: title
             label: Hero Title
@@ -167,8 +194,10 @@ collections:
             type: list
             fields:
               - name: image
-                label: Image Path
-                type: string
+                label: Image
+                type: image
+                options:
+                  media: images
               - name: caption
                 label: Caption
                 type: string
@@ -177,7 +206,9 @@ collections:
                 type: number
       - name: journal
         label: Journal Page
-        file: src/content/journal.json
+        type: file
+        path: src/content/journal.json
+        format: json
         fields:
           - name: title
             label: Journal Heading
@@ -199,8 +230,10 @@ collections:
                 label: Entry Text
                 type: text
               - name: image
-                label: Background Image Path
-                type: string
+                label: Background Image
+                type: image
+                options:
+                  media: images
           - name: finalMessage
             label: Final Message
             type: object
@@ -213,15 +246,19 @@ collections:
                 type: string
       - name: archive
         label: Archive Page
-        file: src/content/archive.json
+        type: file
+        path: src/content/archive.json
+        format: json
         fields:
           - name: constellationPhotos
             label: Constellation Photos
             type: list
             fields:
               - name: image
-                label: Image Path
-                type: string
+                label: Image
+                type: image
+                options:
+                  media: images
               - name: caption
                 label: Lightbox Caption
                 type: string
@@ -236,8 +273,10 @@ collections:
             type: list
             fields:
               - name: image
-                label: Image Path
-                type: string
+                label: Image
+                type: image
+                options:
+                  media: images
               - name: frameCode
                 label: Corner Frame Code
                 type: string
@@ -249,8 +288,11 @@ collections:
             type: object
             fields:
               - name: video
-                label: Video Path
-                type: string
+                label: Video
+                type: file
+                options:
+                  media: videos
+                  categories: [video]
               - name: caption
                 label: Caption
                 type: text
@@ -259,8 +301,11 @@ collections:
             type: object
             fields:
               - name: audioVoiceNote
-                label: Voice Note Audio Path
-                type: string
+                label: Voice Note Audio
+                type: file
+                options:
+                  media: audio
+                  categories: [audio]
               - name: voiceNoteLabel
                 label: Voice Note Caption
                 type: string
@@ -272,11 +317,16 @@ collections:
                 type: string
       - name: projection
         label: Projection Page
-        file: src/content/projection.json
+        type: file
+        path: src/content/projection.json
+        format: json
         fields:
           - name: video
-            label: Video Path
-            type: string
+            label: Projection Video
+            type: file
+            options:
+              media: videos
+              categories: [video]
           - name: caption
             label: Projection Caption
             type: text

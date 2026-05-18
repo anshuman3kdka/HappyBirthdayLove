@@ -30,6 +30,7 @@ The universe is vast, but it finds meaning in the constellations we draw. The co
 *   **Cinematic Parallax Scrolls:** In the Archive, the vintage film strip images gracefully slide within their frames at differing speeds as the user scrolls, creating an immersive, multi-layered sense of depth.
 *   **Launch-Ready Visual Polish:** Global scrollbar hiding is scoped to the page root for cleaner browser parsing, preserving the full-screen observatory illusion while keeping the production build calm and predictable.
 *   **Full Pages CMS Text Control:** The content model is now divided into broad editing rooms—global interface/navigation/envelope text and page-specific memories—so non-coders can adjust virtually every word in the experience from Pages CMS, including journals, headings, titles, timestamps, captions, film labels, hidden constellation messages, and button labels.
+*   **Reliable Pages CMS Editing Rooms:** The CMS map now follows Pages CMS' current `content` and `path` structure, separating Core Text from Page Text while giving photos, videos, and voice notes real media pickers. Editors can step into the birthday observatory, choose the room they want, and safely swap memories without touching code.
 
 ## 🛠 Tech Stack
 *   **Framework:** React 19 & Vite
@@ -78,6 +79,7 @@ npm run build
 *   **[v1.20.0]** - Holographic Video UI: Upgraded the global `AutoplayVideo` wrapper. Videos now interact with the background using `mix-blend-screen` and soft opacity to appear as projected holograms. Added a slow 3D spatial tilt, a pulsating light spill, and immersive CRT scanlines. Implemented scroll-linked "No Autonomy" playback—videos pause immediately when scrolled and spring life solely when perfectly centered.
 *   **[v1.21.0]** - Launch-Night Readiness: Installed the full dependency constellation, refreshed the lockfile, verified TypeScript and production build health, and corrected the global hidden-scrollbar rule so the final cinematic birthday run-up is quieter, cleaner, and ready for opening night.
 *   **[v1.22.0]** - Pages CMS Full Text Wiring: Rebuilt the CMS structure into clear content categories and added a dedicated global interface script file. The digital birthday observatory can now be copy-edited from Pages CMS across visible page copy, journal passages, headings, dates, captions, hidden star messages, loading language, interaction buttons, and accessibility labels without touching React code.
+*   **[v1.23.0]** - Pages CMS Restoration: Repaired the Pages CMS configuration to use the current `content`/`path` schema and cinematic group menus, then upgraded memory fields to dedicated image, video, and audio pickers. Uploaded files now keep their exact extensions at runtime, so new CMS-selected media can appear inside the observatory without breaking the illusion.
 *   *Exploration:* Investigating invisible, generative AI mechanics (Gemini) as a background "director" to orchestrate physics and asset curation without exposing obvious generated text.
 *   *Planned:* Parallax memory carousels mapped to real-world star coordinates.
 

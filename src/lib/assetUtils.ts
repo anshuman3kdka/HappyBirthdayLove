@@ -7,8 +7,12 @@ export const FORMATS = {
 export const ASSET_MAP: Record<string, string> = {};
 
 export const resolveAssetUrl = (basePath: string, type: keyof typeof FORMATS): string => {
+  const hasExplicitExtension = /\.[a-z0-9]+$/i.test(basePath);
   const base = basePath.replace(/\.[a-z0-9]+$/i, "");
-  return ASSET_MAP[base] || `${base}.${FORMATS[type][0]}`;
+
+  if (ASSET_MAP[base]) return ASSET_MAP[base];
+
+  return hasExplicitExtension ? basePath : `${base}.${FORMATS[type][0]}`;
 };
 
 export const preloadAsset = (
