@@ -187,6 +187,8 @@ function VideoMoment() {
          <AutoplayVideo
            src={resolveAssetUrl(archiveContent.videoMoment.video, "video")}
            className="w-full h-full"
+           muted={false}
+           volume={0.7}
          />
       </div>
       <p className="font-serif text-center opacity-50 mt-6 italic text-lg tracking-wide">
