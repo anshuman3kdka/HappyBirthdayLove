@@ -1,76 +1,65 @@
 {
   "constellationPhotos": [
     {
-      "image": "/assets/image/archive-photo-1",
+      "caption": "memorabilia.",
       "x": 20,
-      "y": 30,
-      "caption": "memorabilia."
+      "y": 30
     },
     {
-      "image": "/assets/image/archive-photo-2",
+      "caption": "memorabilia.",
       "x": 60,
-      "y": 15,
-      "caption": "memorabilia."
+      "y": 15
     },
     {
-      "image": "/assets/image/archive-photo-3",
+      "caption": "memorabilia.",
       "x": 80,
-      "y": 50,
-      "caption": "memorabilia."
+      "y": 50
     },
     {
-      "image": "/assets/image/archive-photo-4",
+      "caption": "memorabilia.",
       "x": 40,
-      "y": 70,
-      "caption": "memorabilia."
+      "y": 70
     },
     {
-      "image": "/assets/image/archive-photo-5",
+      "caption": "memorabilia.",
       "x": 10,
-      "y": 80,
-      "caption": "memorabilia."
+      "y": 80
     }
   ],
   "filmstripPhotos": [
     {
-      "image": "/assets/image/archive-film-1",
       "frameCode": "01A",
       "frameLabel": "FRAME 1"
     },
     {
-      "image": "/assets/image/archive-film-2",
       "frameCode": "02A",
       "frameLabel": "FRAME 2"
     },
     {
-      "image": "/assets/image/archive-film-3",
       "frameCode": "03A",
       "frameLabel": "FRAME 3"
     },
     {
-      "image": "/assets/image/archive-film-4",
       "frameCode": "04A",
       "frameLabel": "FRAME 4"
     },
     {
-      "image": "/assets/image/archive-film-5",
       "frameCode": "05A",
       "frameLabel": "FRAME 5"
     },
     {
-      "image": "/assets/image/archive-film-6",
       "frameCode": "06A",
       "frameLabel": "FRAME 6"
     }
   ],
   "videoMoment": {
     "video": "/assets/video/archive-video",
-    "caption": "that one perfect afternoon."
+    "caption": "13th December, 2025\nthat one perfect afternoon"
   },
   "littleThings": {
     "audioVoiceNote": "/assets/audio/archive-voicenote",
     "voiceNoteLabel": "your laugh",
-    "ticketSeat": "Row F \u2022 Seat 12",
+    "ticketSeat": "Row F • Seat 12",
     "ticketTitle": "ADMIT ONE"
   }
 }
