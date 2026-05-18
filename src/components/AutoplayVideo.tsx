@@ -5,12 +5,22 @@ interface AutoplayVideoProps {
   poster?: string;
   className?: string;
   loop?: boolean;
+  muted?: boolean;
+  volume?: number;
 }
 
-export function AutoplayVideo({ src, poster, className, loop = true }: AutoplayVideoProps) {
+export function AutoplayVideo({
+  src,
+  poster,
+  className,
+  loop = true,
+  muted = true,
+  volume = 1,
+}: AutoplayVideoProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isIntersecting, setIsIntersecting] = useState(false);
+  const [needsUserInteraction, setNeedsUserInteraction] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const scrollTimeoutRef = useRef<number | null>(null);
 
@@ -52,6 +62,13 @@ export function AutoplayVideo({ src, poster, className, loop = true }: AutoplayV
   useEffect(() => {
     if (!videoRef.current) return;
 
+    videoRef.current.muted = muted;
+    videoRef.current.volume = Math.min(1, Math.max(0, volume));
+  }, [muted, volume]);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
     // Pause immediately if scrolling or out of view
     if (!isIntersecting || isScrolling) {
       videoRef.current.pause();
@@ -59,21 +76,62 @@ export function AutoplayVideo({ src, poster, className, loop = true }: AutoplayV
       return;
     }
 
-    // Play if intersecting and completely stopped scrolling
-    if (isIntersecting && !isScrolling) {
+    const playVideo = () => {
+      if (!videoRef.current) return;
+
+      videoRef.current.muted = muted;
+      videoRef.current.volume = Math.min(1, Math.max(0, volume));
+
       const playPromise = videoRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.then(() => setIsPlaying(true)).catch(() => {
-          // Auto-play might be blocked by browser if not muted
-          // Ensure muted for autoplay
+        playPromise.then(() => {
+          setNeedsUserInteraction(false);
+          setIsPlaying(true);
+        }).catch(e => {
+          if (!muted) {
+            console.warn("Video with sound needs a direct user interaction before playback:", e);
+            setNeedsUserInteraction(true);
+            setIsPlaying(false);
+            return;
+          }
+
+          // Silent hologram videos can still fall back to muted autoplay.
           if (videoRef.current) {
             videoRef.current.muted = true;
-            videoRef.current.play().then(() => setIsPlaying(true)).catch(e => console.error("Video play failed:", e));
+            videoRef.current.play().then(() => setIsPlaying(true)).catch(error => console.error("Video play failed:", error));
           }
         });
       }
+    };
+
+    // Play if intersecting and completely stopped scrolling
+    if (isIntersecting && !isScrolling) {
+      playVideo();
     }
-  }, [isIntersecting, isScrolling]);
+  }, [isIntersecting, isScrolling, muted, volume]);
+
+  useEffect(() => {
+    if (!needsUserInteraction || muted || !isIntersecting || isScrolling) return;
+
+    const retryWithSound = () => {
+      if (!videoRef.current) return;
+
+      videoRef.current.muted = false;
+      videoRef.current.volume = Math.min(1, Math.max(0, volume));
+      videoRef.current.play().then(() => {
+        setNeedsUserInteraction(false);
+        setIsPlaying(true);
+      }).catch(e => console.warn("Video play failed after interaction:", e));
+    };
+
+    window.addEventListener('click', retryWithSound, { once: true });
+    window.addEventListener('touchstart', retryWithSound, { once: true });
+
+    return () => {
+      window.removeEventListener('click', retryWithSound);
+      window.removeEventListener('touchstart', retryWithSound);
+    };
+  }, [isIntersecting, isScrolling, muted, needsUserInteraction, volume]);
 
   return (
     <div className={`relative ${className} [perspective:1000px]`}>
@@ -93,7 +151,7 @@ export function AutoplayVideo({ src, poster, className, loop = true }: AutoplayV
           }}
           loop={loop}
           playsInline
-          muted // Autoplay usually requires muted
+          muted={muted}
         />
         
         {/* Film grain / Static Scanlines */}
