@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import type { SceneId } from '../App';
 import { useWish } from '../contexts/WishContext';
 import { resolveAssetUrl } from '../lib/assetUtils';
 
 // Cohesive, universe-themed ambient tracks (Creative Commons - Stellardrone)
-const TRACKS_BASES = {
-  '/': '/assets/audio/audio-ambient', // The Sky - Vast, expansive space
-  '/journal': '/assets/audio/audio-intimate', // The Journal - Quiet, minimal drone
-  '/archive': '/assets/audio/audio-nostalgic' // The Archive - Warm, nostalgic
+const TRACKS_BASES: Partial<Record<SceneId, string>> = {
+  home: '/assets/audio/audio-ambient', // The Sky - Vast, expansive space
+  journal: '/assets/audio/audio-intimate', // The Journal - Quiet, minimal drone
+  archive: '/assets/audio/audio-nostalgic' // The Archive - Warm, nostalgic
 };
 
 const WISH_SWELL_BASE = '/assets/audio/wish-swell'; // Grand track, jumps directly to peak
@@ -17,12 +17,11 @@ const WISH_DIM_VOLUME = 0.05; // Drop background track volume heavily during wis
 const FADE_STEP = 0.01;
 const FADE_INTERVAL = 30; // 30ms
 
-export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
+export function GlobalAudio({ hasEntered, activeScene }: { hasEntered: boolean; activeScene: SceneId }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRefs = useRef<{ [key: string]: HTMLAudioElement | null }>({});
   const wishAudioRef = useRef<HTMLAudioElement | null>(null);
-  const { pathname } = useLocation();
-  const currentPathRef = useRef<string>(pathname);
+  const currentSceneRef = useRef<SceneId>(activeScene);
   const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { isWishing } = useWish();
 
@@ -31,7 +30,7 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
     const tryPlay = () => {
       if (!hasEntered || isPlaying) return;
 
-      const currentTrack = audioRefs.current[pathname] || audioRefs.current['/'];
+      const currentTrack = audioRefs.current[activeScene] || audioRefs.current.home;
       if (currentTrack) {
         currentTrack.volume = TARGET_VOLUME;
         currentTrack.play().then(() => {
@@ -48,7 +47,7 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
     // Triggered precisely when the user clicks the envelope, ensuring we are within a trusted interaction event.
     const handleEnvelopeOpen = () => {
       if (isPlaying) return;
-      const currentTrack = audioRefs.current[pathname] || audioRefs.current['/'];
+      const currentTrack = audioRefs.current[activeScene] || audioRefs.current.home;
       if (currentTrack) {
         currentTrack.volume = TARGET_VOLUME;
         currentTrack.play().then(() => {
@@ -75,30 +74,23 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
       window.removeEventListener('click', handleInteraction);
       window.removeEventListener('touchstart', handleInteraction);
     };
-  }, [hasEntered, isPlaying, pathname]);
+  }, [activeScene, hasEntered, isPlaying]);
 
-  // Handle route transitions (Crossfading & Pausing/Resuming state)
+  // Handle scene transitions (Crossfading & Pausing/Resuming state)
   useEffect(() => {
     if (!isPlaying) return;
 
-    const previousPath = currentPathRef.current;
+    const previousScene = currentSceneRef.current;
     
-    let normalizedCurrentPath: string | null = pathname;
-    if (!TRACKS_BASES[normalizedCurrentPath as keyof typeof TRACKS_BASES]) {
-      normalizedCurrentPath = null;
-    }
-    
-    let normalizedPreviousPath: string | null = previousPath;
-    if (!TRACKS_BASES[normalizedPreviousPath as keyof typeof TRACKS_BASES]) {
-      normalizedPreviousPath = null;
-    }
+    const normalizedCurrentScene = TRACKS_BASES[activeScene] ? activeScene : null;
+    const normalizedPreviousScene = TRACKS_BASES[previousScene] ? previousScene : null;
 
-    if (normalizedPreviousPath === normalizedCurrentPath) return;
+    if (normalizedPreviousScene === normalizedCurrentScene) return;
 
-    currentPathRef.current = pathname;
+    currentSceneRef.current = activeScene;
 
-    const fadeOutAudio = normalizedPreviousPath ? audioRefs.current[normalizedPreviousPath] : null;
-    const fadeInAudio = normalizedCurrentPath ? audioRefs.current[normalizedCurrentPath] : null;
+    const fadeOutAudio = normalizedPreviousScene ? audioRefs.current[normalizedPreviousScene] : null;
+    const fadeInAudio = normalizedCurrentScene ? audioRefs.current[normalizedCurrentScene] : null;
 
     let fadeOutTimer: NodeJS.Timeout;
     let fadeInTimer: NodeJS.Timeout;
@@ -140,14 +132,14 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
       clearInterval(fadeOutTimer);
       clearInterval(fadeInTimer);
     };
-  }, [pathname, isPlaying]);
+  }, [activeScene, isPlaying]);
 
   // Handle Wish State (Swell logic)
   useEffect(() => {
     if (!isPlaying) return;
 
-    const normalizedCurrentPath = TRACKS_BASES[pathname as keyof typeof TRACKS_BASES] ? pathname : null;
-    const activeTrack = normalizedCurrentPath ? audioRefs.current[normalizedCurrentPath] : null;
+    const normalizedCurrentScene = TRACKS_BASES[activeScene] ? activeScene : null;
+    const activeTrack = normalizedCurrentScene ? audioRefs.current[normalizedCurrentScene] : null;
 
     if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
 
@@ -197,7 +189,7 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
     return () => {
       if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
     };
-  }, [isWishing, isPlaying, pathname]);
+  }, [activeScene, isPlaying, isWishing]);
 
   return (
     <>
@@ -206,11 +198,11 @@ export function GlobalAudio({ hasEntered }: { hasEntered: boolean }) {
         src={resolveAssetUrl(WISH_SWELL_BASE, 'audio')}
         preload="auto"
       />
-      {Object.entries(TRACKS_BASES).map(([path, basePath]) => (
+      {Object.entries(TRACKS_BASES).map(([scene, basePath]) => (
         <audio 
-          key={path}
+          key={scene}
           ref={el => {
-            if (el) audioRefs.current[path] = el;
+            if (el) audioRefs.current[scene] = el;
           }}
           src={resolveAssetUrl(basePath, 'audio')}
           loop

@@ -5,7 +5,7 @@ import { Stars, Sparkles } from '@react-three/drei';
 import { EffectComposer, Bloom, Noise, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import gsap from 'gsap';
-import { useLocation, useNavigate } from 'react-router-dom';
+import type { SceneId } from '../../App';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWish } from '../../contexts/WishContext';
 
@@ -67,18 +67,18 @@ function Constellation({ points, indices, position, rotation, scale, pulseSpeed 
         </mesh>
       )}
       <points ref={pointsRef} geometry={geometry}>
-        <pointsMaterial 
-          size={0.15} 
-          color="#ffffff" 
-          transparent 
+        <pointsMaterial
+          size={0.15}
+          color="#ffffff"
+          transparent
           opacity={0.8 * intensity}
-          blending={THREE.AdditiveBlending} 
+          blending={THREE.AdditiveBlending}
         />
       </points>
       <lineSegments ref={linesRef} geometry={geometry}>
-        <lineBasicMaterial 
-          color="#ffffff" 
-          transparent 
+        <lineBasicMaterial
+          color="#ffffff"
+          transparent
           opacity={0.5 * intensity}
           blending={THREE.AdditiveBlending}
         />
@@ -113,14 +113,14 @@ const shapeCatPoints = [
   new THREE.Vector3(-1.0, 0.5, -8), // Face front 3
   new THREE.Vector3(-0.6, -0.1, -8),// Chin 4
   new THREE.Vector3(0.5, 0.2, -8),  // Back of neck 5
-  
+
   new THREE.Vector3(1.0, -1.0, -8), // Back curve 6
   new THREE.Vector3(1.2, -2.5, -8), // Butt 7
-  
+
   new THREE.Vector3(0.5, -3.0, -8), // Tail start 8
   new THREE.Vector3(-0.2, -2.8, -8),// Tail curl 9
   new THREE.Vector3(-0.5, -2.2, -8),// Tail tip 10
-  
+
   new THREE.Vector3(-0.8, -2.5, -8),// Front paws 11
   new THREE.Vector3(-0.5, -1.0, -8),// Chest 12
 ];
@@ -248,14 +248,14 @@ function ShootingStar() {
   useFrame((state) => {
     // Cycle every 12 seconds
     const t = state.clock.elapsedTime % 12;
-    
+
     if (t < 0.5) {
       // Shooting phase
       const progress = t * 2; // 0 to 1 over 0.5 seconds
-      
+
       const startX = viewport.width / 2 + 2;
       const startY = viewport.height / 2 + 2;
-      
+
       const distanceX = viewport.width + 4;
       const distanceY = viewport.height + 4;
 
@@ -264,7 +264,7 @@ function ShootingStar() {
         startY - progress * distanceY,
         -2
       );
-      
+
       (lineObj.material as THREE.LineBasicMaterial).opacity = Math.sin(progress * Math.PI) * 0.8;
     } else {
       (lineObj.material as THREE.LineBasicMaterial).opacity = 0;
@@ -277,9 +277,9 @@ function ShootingStar() {
 function WishStar() {
   const { viewport } = useThree();
   const { isWishing } = useWish();
-  
+
   const [hasWished, setHasWished] = useState(false);
-  
+
   // We want to guarantee the star completes its animation once triggered,
   // even if the user lets go of the spacebar.
   const [activeWishAnimation, setActiveWishAnimation] = useState(false);
@@ -303,7 +303,7 @@ function WishStar() {
     new THREE.Vector3(0, 0, 0), // Head
     new THREE.Vector3(1, -1, 0) // Tail end
   ], []);
-  
+
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry().setFromPoints(points);
     // Add vertex colors (head is opaque white, tail is transparent)
@@ -314,7 +314,7 @@ function WishStar() {
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     return geo;
   }, [points]);
-  
+
   // Custom shader for line fading since LineBasicMaterial's vertexColors doesn't support alpha per-vertex natively in all WebGL implementations as easily
   const material = useMemo(() => new THREE.ShaderMaterial({
     transparent: true,
@@ -338,7 +338,7 @@ function WishStar() {
       }
     `
   }), []);
-  
+
   // Re-write geometry to use the custom alpha attribute for the shader
   useMemo(() => {
     const alphas = new Float32Array([1.0, 0.0]); // head is 1.0, tail is 0.0
@@ -357,24 +357,24 @@ function WishStar() {
 
       const angle = Math.random() * Math.PI * 2;
       const radius = Math.max(viewport.width, viewport.height) * 1.5; // ensure it starts off-screen
-      
+
       const sX = Math.cos(angle) * radius;
       const sY = Math.sin(angle) * radius;
-      
-      const targetAngle = angle + Math.PI + (Math.random() - 0.5) * 1.5; 
+
+      const targetAngle = angle + Math.PI + (Math.random() - 0.5) * 1.5;
       const tEndX = Math.cos(targetAngle) * radius;
       const tEndY = Math.sin(targetAngle) * radius;
 
       const dX = sX - tEndX;
       const dY = sY - tEndY;
-      
+
       trajectory.current = { startX: sX, startY: sY, distanceX: dX, distanceY: dY };
 
       const distLen = Math.sqrt(dX * dX + dY * dY);
-      const tailLength = 2.0; 
+      const tailLength = 2.0;
       const tX = (dX / distLen) * tailLength;
       const tY = (dY / distLen) * tailLength;
-      
+
       geometry.setFromPoints([
         new THREE.Vector3(0, 0, 0),
         new THREE.Vector3(tX, tY, 0)
@@ -383,8 +383,8 @@ function WishStar() {
 
     if (activeWishAnimation && wishStartTime.current !== null) {
       const elapsed = state.clock.elapsedTime - wishStartTime.current;
-      const DURATION = 2.0; 
-      
+      const DURATION = 2.0;
+
       if (elapsed < DURATION) {
         const progress = elapsed / DURATION;
         const { startX, startY, distanceX, distanceY } = trajectory.current;
@@ -393,10 +393,10 @@ function WishStar() {
           groupRef.current.position.set(
             startX - progress * distanceX,
             startY - progress * distanceY,
-            -5 
+            -5
           );
         }
-        
+
         // Smooth sine wave for opacity fading in and out over the duration
         const opacity = Math.sin(progress * Math.PI) * 1.0;
         (lineObj.material as THREE.ShaderMaterial).uniforms.globalOpacity.value = opacity;
@@ -425,60 +425,58 @@ function WishStar() {
   );
 }
 
-function WishFadingOverlay() {
+function WishFadingOverlay({ activeScene }: { activeScene: SceneId }) {
   const { isWishing } = useWish();
-  const location = useLocation();
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.MeshBasicMaterial>(null);
   const { scene } = useThree();
 
   useFrame((state) => {
     if (materialRef.current) {
-      const isProjection = location.pathname === '/projection';
+      const isProjection = activeScene === 'projection';
       const targetOpacity = isWishing ? 1.0 : (isProjection ? 0.95 : 0.0);
-      materialRef.current.opacity += (targetOpacity - materialRef.current.opacity) * (isWishing ? 0.05 : 0.02); 
+      materialRef.current.opacity += (targetOpacity - materialRef.current.opacity) * (isWishing ? 0.05 : 0.02);
 
       if (scene.background && (scene.background as THREE.Color).isColor) {
         materialRef.current.color.copy(scene.background as THREE.Color);
       }
     }
-    
+
     if (meshRef.current) {
       meshRef.current.position.set(0, 0, 0); // Static relative to camera
     }
   });
 
   return (
-    <mesh ref={meshRef} renderOrder={99}> 
+    <mesh ref={meshRef} renderOrder={99}>
       <planeGeometry args={[100, 100]} />
       <meshBasicMaterial ref={materialRef} transparent opacity={0} depthTest={false} depthWrite={false} color="#020202" />
     </mesh>
   );
 }
 
-function SceneController() {
+function SceneController({ activeScene }: { activeScene: SceneId }) {
   const { camera, scene } = useThree();
-  const location = useLocation();
 
   useEffect(() => {
-    // Determine target color and desired rotation for the specific route
+    // Determine target color and desired rotation for the active scene
     let targetColor = '#1c0d2a'; // Deep dusky lavender
     let targetRotationZ = 0;
-    
-    if (location.pathname === '/journal') {
+
+    if (activeScene === 'journal') {
       targetColor = '#3a1b40'; // Warm lavender / sunset blend
       targetRotationZ = Math.PI / 4;
-    } else if (location.pathname === '/archive') {
+    } else if (activeScene === 'archive') {
       targetColor = '#4a2531'; // Bougainvillea rich twilight
       targetRotationZ = -Math.PI / 4;
-    } else if (location.pathname === '/projection') {
+    } else if (activeScene === 'projection') {
       targetColor = '#080512'; // Deep space void
       targetRotationZ = 0;
     }
 
     const tl = gsap.timeline();
 
-    // Aggressive hyperspace feel on route change
+    // Aggressive hyperspace feel on scene change
     tl.to(camera, {
       fov: 160,
       duration: 0.8,
@@ -514,28 +512,27 @@ function SceneController() {
       onUpdate: () => camera.updateProjectionMatrix()
     }, 1.2);
 
-  }, [location.pathname, camera, scene]);
+  }, [activeScene, camera, scene]);
 
   return null;
 }
 
-export function SkyBackground() {
+export function SkyBackground({ activeScene, onOpenProjection }: { activeScene: SceneId; onOpenProjection: () => void }) {
   const [showHeartSecret, setShowHeartSecret] = useState(false);
   const [showCatSecret, setShowCatSecret] = useState(false);
   const [catGlowing, setCatGlowing] = useState(false);
   const [projectionGlowing, setProjectionGlowing] = useState(false);
-  const navigate = useNavigate();
 
   const playPurr = () => {
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioContextClass) return;
     const ctx = new AudioContextClass();
-    
+
     // Resume context if suspended
     if (ctx.state === 'suspended') {
       ctx.resume();
     }
-    
+
     const duration = 6;
     const t = ctx.currentTime;
 
@@ -554,29 +551,29 @@ export function SkyBackground() {
 
     // Carrier (sub bass)
     const osc = ctx.createOscillator();
-    osc.type = 'sawtooth'; 
-    osc.frequency.value = 35; 
-    
+    osc.type = 'sawtooth';
+    osc.frequency.value = 35;
+
     // Amplitude modulation for the "motor" sound (purring)
     const amOsc = ctx.createOscillator();
     amOsc.type = 'sine';
-    amOsc.frequency.value = 23; 
-    
+    amOsc.frequency.value = 23;
+
     const amGain = ctx.createGain();
     // Start with 0 so the carrier is muted initially? No, amGain multiplies
     // To do true AM, we need to add a DC offset or just let it modulate.
     // If amGain goes from -1 to 1, it modulates fully.
-    
+
     osc.connect(amGain);
     amOsc.connect(amGain.gain);
-    
+
     amGain.connect(filter);
 
     osc.start(t);
     amOsc.start(t);
     osc.stop(t + duration);
     amOsc.stop(t + duration);
-    
+
     setTimeout(() => {
       if (ctx.state !== 'closed') ctx.close().catch(() => {});
     }, (duration + 0.5) * 1000);
@@ -592,7 +589,7 @@ export function SkyBackground() {
     setProjectionGlowing(true);
     // Glow intensifies for a moment, then transitions
     setTimeout(() => {
-       navigate('/projection');
+       onOpenProjection();
        // Don't reset glow immediately so it stays glowing during exit transition
        setTimeout(() => setProjectionGlowing(false), 1500);
     }, 1200);
@@ -605,60 +602,60 @@ export function SkyBackground() {
         dpr={[1, 1.5]}
         gl={{ antialias: false, toneMapping: THREE.ACESFilmicToneMapping, powerPreference: "high-performance" }}
       >
-        <SceneController />
+        <SceneController activeScene={activeScene} />
         <color attach="background" args={['#1c0d2a']} />
         <fog attach="fog" args={['#1c0d2a', 5, 50]} />
-        
+
         {/* Ambient very dim lighting */}
         <ambientLight intensity={0.25} />
-        
+
         {/* Massive 360 Stars map */}
-        <Stars 
-          radius={200} 
-          depth={150} 
-          count={10000} 
-          factor={12} 
-          saturation={0.8} 
-          fade 
-          speed={0.4} 
+        <Stars
+          radius={200}
+          depth={150}
+          count={10000}
+          factor={12}
+          saturation={0.8}
+          fade
+          speed={0.4}
         />
 
         <group>
           {/* Floating Sparkles for depth */}
-          <Sparkles 
-            count={500} 
-            scale={20} 
-            size={4} 
-            speed={0.4} 
-            opacity={0.3} 
+          <Sparkles
+            count={500}
+            scale={20}
+            size={4}
+            speed={0.4}
+            opacity={0.3}
             color="#e9d5ff" // Lavender sparkles
           />
-          <Sparkles 
-            count={200} 
-            scale={30} 
-            size={10} 
-            speed={0.2} 
-            opacity={0.2} 
+          <Sparkles
+            count={200}
+            scale={30}
+            size={10}
+            speed={0.2}
+            opacity={0.2}
             color="#fecaca" // Warm sunset / Carnation pink
           />
 
           {/* Constellations scaled up for huge 360 universe */}
-          <Constellation 
-            points={shapeHeartPoints} 
-            indices={shapeHeartIndices} 
-            position={[0, 0, -50]} 
-            rotation={[0, 0, 0]} 
+          <Constellation
+            points={shapeHeartPoints}
+            indices={shapeHeartIndices}
+            position={[0, 0, -50]}
+            rotation={[0, 0, 0]}
             scale={6.0}
             pulseSpeed={2}
             pulseOffset={0}
             interactive={true}
             onClick={() => setShowHeartSecret(true)}
           />
-          <Constellation 
-            points={shapeCatPoints} 
-            indices={shapeCatIndices} 
-            position={[40, 20, -30]} 
-            rotation={[0, -0.8, -0.2]} 
+          <Constellation
+            points={shapeCatPoints}
+            indices={shapeCatIndices}
+            position={[40, 20, -30]}
+            rotation={[0, -0.8, -0.2]}
             scale={5.0}
             pulseSpeed={1.5}
             pulseOffset={1}
@@ -666,20 +663,20 @@ export function SkyBackground() {
             glowing={catGlowing}
             onClick={handleCatClick}
           />
-          <Constellation 
-            points={shapeDipperPoints} 
-            indices={shapeDipperIndices} 
-            position={[-40, 30, 30]} 
-            rotation={[0, 2.5, 0.3]} 
+          <Constellation
+            points={shapeDipperPoints}
+            indices={shapeDipperIndices}
+            position={[-40, 30, 30]}
+            rotation={[0, 2.5, 0.3]}
             scale={7.0}
             pulseSpeed={2.5}
             pulseOffset={2}
           />
-          <Constellation 
-            points={shapeKitePoints} 
-            indices={shapeKiteIndices} 
-            position={[20, -30, 40]} 
-            rotation={[0.1, 3.5, -0.1]} 
+          <Constellation
+            points={shapeKitePoints}
+            indices={shapeKiteIndices}
+            position={[20, -30, 40]}
+            rotation={[0.1, 3.5, -0.1]}
             scale={6.5}
             pulseSpeed={1.8}
             pulseOffset={3}
@@ -687,43 +684,43 @@ export function SkyBackground() {
             glowing={projectionGlowing}
             onClick={handleProjectionTransition}
           />
-          
+
           {/* New fainter constellations */}
-          <Constellation 
-            points={shapeFlowerPoints} 
-            indices={shapeFlowerIndices} 
-            position={[15, 35, -25]} 
-            rotation={[-0.2, 0.4, 0.1]} 
+          <Constellation
+            points={shapeFlowerPoints}
+            indices={shapeFlowerIndices}
+            position={[15, 35, -25]}
+            rotation={[-0.2, 0.4, 0.1]}
             scale={4.0}
             pulseSpeed={1.5}
             pulseOffset={4}
             intensity={1.0}
           />
-          <Constellation 
-            points={shapePlayfulCatPoints} 
-            indices={shapePlayfulCatIndices} 
-            position={[-25, -15, -45]} 
-            rotation={[0.2, -0.3, -0.1]} 
+          <Constellation
+            points={shapePlayfulCatPoints}
+            indices={shapePlayfulCatIndices}
+            position={[-25, -15, -45]}
+            rotation={[0.2, -0.3, -0.1]}
             scale={4.5}
             pulseSpeed={1.7}
             pulseOffset={5}
             intensity={1.1}
           />
-          <Constellation 
-            points={shapeAmbiguous1Points} 
-            indices={shapeAmbiguous1Indices} 
-            position={[-35, -25, 10]} 
-            rotation={[0.4, 1.2, 0.3]} 
+          <Constellation
+            points={shapeAmbiguous1Points}
+            indices={shapeAmbiguous1Indices}
+            position={[-35, -25, 10]}
+            rotation={[0.4, 1.2, 0.3]}
             scale={5.0}
             pulseSpeed={1.2}
             pulseOffset={1.5}
             intensity={0.9}
           />
-          <Constellation 
-            points={shapeAmbiguous2Points} 
-            indices={shapeAmbiguous2Indices} 
-            position={[30, 5, 45]} 
-            rotation={[-0.5, 2.8, -0.2]} 
+          <Constellation
+            points={shapeAmbiguous2Points}
+            indices={shapeAmbiguous2Indices}
+            position={[30, 5, 45]}
+            rotation={[-0.5, 2.8, -0.2]}
             scale={6.0}
             pulseSpeed={1.9}
             pulseOffset={2.5}
@@ -731,7 +728,7 @@ export function SkyBackground() {
           />
         </group>
         <ShootingStar />
-        <WishFadingOverlay />
+        <WishFadingOverlay activeScene={activeScene} />
         <WishStar />
 
         <EffectComposer multisampling={0}>
@@ -769,7 +766,7 @@ export function SkyBackground() {
                  ))}
                </p>
                <div className="flex justify-center">
-                 <button 
+                 <button
                    onClick={() => setShowHeartSecret(false)}
                    className="px-6 py-2 border border-purple-200 text-purple-600 rounded hover:bg-purple-50 transition-colors font-serif text-sm"
                  >
@@ -804,7 +801,7 @@ export function SkyBackground() {
                  {siteContent.secretOverlays.catMessage} <br/><span className="text-sm opacity-80">{siteContent.secretOverlays.catPostscript}</span>
                </p>
                <div className="flex justify-center">
-                 <button 
+                 <button
                    onClick={() => { setShowCatSecret(false); setCatGlowing(false); }}
                    className="px-6 py-2 border border-pink-200 text-pink-600 rounded hover:bg-pink-50 transition-colors font-serif text-sm"
                  >
