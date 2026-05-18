@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, forwardRef } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { resolveAssetUrl } from '../lib/assetUtils';
 import journalContent from '../content/journal.json';
 import siteContent from '../content/site.json';
@@ -71,14 +70,13 @@ const JournalContent = forwardRef<HTMLDivElement, { isForeground?: boolean; isRe
   );
 });
 
-export function Journal() {
+export function Journal({ onOpenArchive }: { onOpenArchive: () => void }) {
   const [isRevealed, setIsRevealed] = useState(false);
   const [touchPoint, setTouchPoint] = useState<{x: number, y: number} | null>(null);
   const [scrollY, setScrollY] = useState(0);
   const [maxScroll, setMaxScroll] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const updateMaxScroll = () => {
@@ -210,7 +208,7 @@ export function Journal() {
            </button>
          )}
          <button 
-           onClick={() => navigate('/archive')}
+           onClick={onOpenArchive}
            onPointerDown={(e) => e.stopPropagation()}
            className="px-8 py-4 border border-white/30 text-white uppercase tracking-[0.2em] font-mono text-xs hover:bg-white/10 transition-colors backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.1)]"
          >

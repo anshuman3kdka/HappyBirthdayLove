@@ -4,7 +4,6 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Lenis from 'lenis';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -23,13 +22,15 @@ import { Archive } from './pages/Archive';
 import { Projection } from './pages/Projection';
 import { WishProvider, useWish } from './contexts/WishContext';
 
+export type SceneId = 'home' | 'journal' | 'archive' | 'projection';
+
 function WishUIWrapper({ children }: { children: React.ReactNode }) {
   const { isHolding, isWishing } = useWish();
-  
+
   return (
     <>
       <div className={`h-full w-full flex-grow flex flex-col relative z-20 ${isHolding ? 'animate-gentle-shake' : ''}`}>
-        <motion.div 
+        <motion.div
           initial={false}
           animate={{ opacity: isWishing ? 0.05 : 1, filter: isWishing ? 'blur(8px)' : 'blur(0px)' }}
           transition={{ duration: 3, ease: 'easeInOut' }}
@@ -59,38 +60,17 @@ function WishUIWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-
-function FreshBootReset({ onReset }: { onReset: () => void }) {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    sessionStorage.removeItem('hasEntered');
-    onReset();
-    navigate('/', { replace: true });
-  }, [navigate, onReset]);
-
-  return null;
-}
-
-function ScrollToTop() {
-  const { pathname } = useLocation();
+function ActiveScene({ activeScene, onSceneChange }: { activeScene: SceneId; onSceneChange: (scene: SceneId) => void }) {
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [pathname]);
-  return null;
-}
+  }, [activeScene]);
 
-function AppRoutes() {
-  const location = useLocation();
-  
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Home />} />
-        <Route path="/journal" element={<Journal />} />
-        <Route path="/archive" element={<Archive />} />
-        <Route path="/projection" element={<Projection />} />
-      </Routes>
+      {activeScene === 'home' && <Home key="home" />}
+      {activeScene === 'journal' && <Journal key="journal" onOpenArchive={() => onSceneChange('archive')} />}
+      {activeScene === 'archive' && <Archive key="archive" />}
+      {activeScene === 'projection' && <Projection key="projection" />}
     </AnimatePresence>
   );
 }
@@ -98,6 +78,11 @@ function AppRoutes() {
 export default function App() {
   const [isPreloaded, setIsPreloaded] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
+  const [activeScene, setActiveScene] = useState<SceneId>('home');
+
+  useEffect(() => {
+    sessionStorage.removeItem('hasEntered');
+  }, []);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -122,45 +107,40 @@ export default function App() {
     };
   }, []);
 
-  const resetToOpeningScene = useCallback(() => {
-    setHasEntered(false);
-  }, []);
-
   const handleEnter = () => {
     setHasEntered(true);
   };
 
+  const handleSceneChange = useCallback((scene: SceneId) => {
+    setActiveScene(scene);
+  }, []);
+
   return (
-    <BrowserRouter>
-      <WishProvider>
-        <FreshBootReset onReset={resetToOpeningScene} />
-        <ScrollToTop />
-        
-        <AnimatePresence mode="wait">
-          {!isPreloaded && (
-            <SitePreloader key="preloader" onComplete={() => setIsPreloaded(true)} />
-          )}
-        </AnimatePresence>
+    <WishProvider>
+      <AnimatePresence mode="wait">
+        {!isPreloaded && (
+          <SitePreloader key="preloader" onComplete={() => setIsPreloaded(true)} />
+        )}
+      </AnimatePresence>
 
-        {isPreloaded && <GlobalAudio hasEntered={hasEntered} />}
+      {isPreloaded && <GlobalAudio hasEntered={hasEntered} activeScene={activeScene} />}
 
-        {isPreloaded && !hasEntered ? (
-          <EnvelopeEntry onEnter={handleEnter} />
-        ) : isPreloaded && hasEntered ? (
-          <div className="relative min-h-screen w-full flex flex-col font-sans">
-            <SkyBackground />
-            <GlobalDust />
-            <InteractiveChimes />
-            
-            <WishUIWrapper>
-              <Navigation />
-              <main className="flex-grow z-10 w-full relative">
-                <AppRoutes />
-              </main>
-            </WishUIWrapper>
-          </div>
-        ) : null}
-      </WishProvider>
-    </BrowserRouter>
+      {isPreloaded && !hasEntered ? (
+        <EnvelopeEntry onEnter={handleEnter} />
+      ) : isPreloaded && hasEntered ? (
+        <div className="relative min-h-screen w-full flex flex-col font-sans">
+          <SkyBackground activeScene={activeScene} onOpenProjection={() => handleSceneChange('projection')} />
+          <GlobalDust />
+          <InteractiveChimes />
+
+          <WishUIWrapper>
+            <Navigation activeScene={activeScene} onSceneChange={handleSceneChange} />
+            <main className="flex-grow z-10 w-full min-h-[100dvh] relative">
+              <ActiveScene activeScene={activeScene} onSceneChange={handleSceneChange} />
+            </main>
+          </WishUIWrapper>
+        </div>
+      ) : null}
+    </WishProvider>
   );
 }
