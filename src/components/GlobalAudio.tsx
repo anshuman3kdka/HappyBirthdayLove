@@ -16,6 +16,37 @@ const TARGET_VOLUME = 0.45; // Moderately low background volume for ambient trac
 const WISH_DIM_VOLUME = 0.05; // Drop background track volume heavily during wish
 const FADE_STEP = 0.01;
 const FADE_INTERVAL = 30; // 30ms
+const SOUNDTRACK_CROSSFADE_DURATION_MS = 2000; // 2 seconds between global scene soundtracks
+const SOUNDTRACK_FADE_INTERVAL = 30; // Keep soundtrack blends smooth without overworking the browser
+
+function fadeAudioVolume(
+  audio: HTMLAudioElement,
+  targetVolume: number,
+  durationMs: number,
+  onComplete?: () => void
+) {
+  const startVolume = audio.volume;
+  const startTime = performance.now();
+
+  const timer = setInterval(() => {
+    const progress = Math.min((performance.now() - startTime) / durationMs, 1);
+    const nextVolume = startVolume + (targetVolume - startVolume) * progress;
+
+    try {
+      audio.volume = Math.min(1, Math.max(0, nextVolume));
+    } catch (e) {
+      audio.volume = targetVolume;
+    }
+
+    if (progress >= 1) {
+      audio.volume = targetVolume;
+      clearInterval(timer);
+      onComplete?.();
+    }
+  }, SOUNDTRACK_FADE_INTERVAL);
+
+  return timer;
+}
 
 export function GlobalAudio({ hasEntered, activeScene }: { hasEntered: boolean; activeScene: SceneId }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -92,45 +123,30 @@ export function GlobalAudio({ hasEntered, activeScene }: { hasEntered: boolean; 
     const fadeOutAudio = normalizedPreviousScene ? audioRefs.current[normalizedPreviousScene] : null;
     const fadeInAudio = normalizedCurrentScene ? audioRefs.current[normalizedCurrentScene] : null;
 
-    let fadeOutTimer: NodeJS.Timeout;
-    let fadeInTimer: NodeJS.Timeout;
+    let fadeOutTimer: ReturnType<typeof setInterval> | null = null;
+    let fadeInTimer: ReturnType<typeof setInterval> | null = null;
+    const targetAmbientVolume = TARGET_VOLUME;
 
     if (fadeOutAudio) {
-      fadeOutTimer = setInterval(() => {
-        if (fadeOutAudio.volume > FADE_STEP) {
-          try {
-            fadeOutAudio.volume = Math.max(0, fadeOutAudio.volume - FADE_STEP);
-          } catch (e) {
-            fadeOutAudio.volume = 0;
-          }
-        } else {
-          fadeOutAudio.volume = 0;
+      fadeOutTimer = fadeAudioVolume(
+        fadeOutAudio,
+        0,
+        SOUNDTRACK_CROSSFADE_DURATION_MS,
+        () => {
           fadeOutAudio.pause(); // Pause to retain the exact position where we left it
-          clearInterval(fadeOutTimer);
         }
-      }, FADE_INTERVAL);
+      );
     }
 
     if (fadeInAudio) {
+      fadeInAudio.volume = 0;
       fadeInAudio.play().catch(e => console.warn('Play blocked on fade-in:', e));
-      
-      fadeInTimer = setInterval(() => {
-        if (fadeInAudio.volume < TARGET_VOLUME - FADE_STEP) {
-          try {
-            fadeInAudio.volume = Math.min(TARGET_VOLUME, fadeInAudio.volume + FADE_STEP);
-          } catch (e) {
-            fadeInAudio.volume = TARGET_VOLUME;
-          }
-        } else {
-          fadeInAudio.volume = TARGET_VOLUME;
-          clearInterval(fadeInTimer);
-        }
-      }, FADE_INTERVAL);
+      fadeInTimer = fadeAudioVolume(fadeInAudio, targetAmbientVolume, SOUNDTRACK_CROSSFADE_DURATION_MS);
     }
 
     return () => {
-      clearInterval(fadeOutTimer);
-      clearInterval(fadeInTimer);
+      if (fadeOutTimer) clearInterval(fadeOutTimer);
+      if (fadeInTimer) clearInterval(fadeInTimer);
     };
   }, [activeScene, isPlaying]);
 
