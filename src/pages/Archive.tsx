@@ -264,6 +264,7 @@ function VideoMoment() {
            className="w-full h-full"
            muted={false}
            volume={0.7}
+           pausable={true}
          />
       </div>
       <p className="font-serif text-center opacity-50 mt-6 italic text-lg tracking-wide">
