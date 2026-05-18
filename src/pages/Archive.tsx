@@ -6,8 +6,70 @@ import { resolveAssetUrl } from '../lib/assetUtils';
 import archiveContent from '../content/archive.json';
 import siteContent from '../content/site.json';
 
-const ARCHIVE_PHOTOS = archiveContent.constellationPhotos;
-const FILMSTRIP_PHOTOS = archiveContent.filmstripPhotos;
+type ArchivePhoto = {
+  id: string;
+  image?: string;
+  caption: string;
+  x: number;
+  y: number;
+};
+
+type FilmstripPhoto = {
+  id: string;
+  image?: string;
+  frameCode: string;
+  frameLabel: string;
+};
+
+const ARCHIVE_PHOTOS = archiveContent.constellationPhotos.map((photo, index) => ({
+  ...photo,
+  id: `constellation-${index + 1}`,
+})) as ArchivePhoto[];
+const FILMSTRIP_PHOTOS = archiveContent.filmstripPhotos.map((photo, index) => ({
+  ...photo,
+  id: `filmstrip-${index + 1}`,
+})) as FilmstripPhoto[];
+
+function ArchiveImageFrame({
+  image,
+  alt,
+  className,
+  placeholderLabel,
+}: {
+  image?: string;
+  alt: string;
+  className: string;
+  placeholderLabel: string;
+}) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const canShowImage = Boolean(image) && !imageFailed;
+
+  if (!canShowImage) {
+    return (
+      <div
+        role="img"
+        aria-label={alt}
+        className={`${className} flex items-center justify-center bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,0.24),rgba(120,113,108,0.13)_38%,rgba(12,10,9,0.94)_78%)]`}
+      >
+        <div className="text-center px-3">
+          <div className="mx-auto mb-2 h-1.5 w-1.5 rounded-full bg-white/70 shadow-[0_0_14px_rgba(255,255,255,0.9)]" />
+          <div className="font-mono text-[9px] uppercase tracking-[0.28em] text-white/45">
+            {placeholderLabel}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={resolveAssetUrl(image!, 'image')}
+      alt={alt}
+      className={className}
+      onError={() => setImageFailed(true)}
+    />
+  );
+}
 
 function ConstellationMap() {
   const [selectedPhoto, setSelectedPhoto] = useState<(typeof ARCHIVE_PHOTOS)[number] | null>(null);
@@ -28,7 +90,7 @@ function ConstellationMap() {
       <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.3))' }}>
         {lines.map((line, i) => (
           <motion.line
-            key={i}
+            key={`${line.from.id}-${line.to.id}`}
             x1={`${line.from.x}%`}
             y1={`${line.from.y}%`}
             x2={`${line.to.x}%`}
@@ -45,7 +107,7 @@ function ConstellationMap() {
       {/* Nodes */}
       {ARCHIVE_PHOTOS.map((photo, i) => (
         <motion.div
-          key={i}
+          key={photo.id}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.8, delay: 1 + i * 0.1 }}
@@ -55,7 +117,12 @@ function ConstellationMap() {
           onClick={() => setSelectedPhoto(photo)}
         >
           <div className="w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden border border-zinc-500/30 group-hover:border-zinc-300 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.3)]">
-            <img src={resolveAssetUrl(photo.image, 'image')} alt={siteContent.accessibility.constellationPhotoAlt} className="w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:mix-blend-normal transition-all" />
+            <ArchiveImageFrame
+              image={photo.image}
+              alt={siteContent.accessibility.constellationPhotoAlt}
+              placeholderLabel={`Memory ${i + 1}`}
+              className="w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 group-hover:mix-blend-normal transition-all"
+            />
           </div>
         </motion.div>
       ))}
@@ -71,14 +138,19 @@ function ConstellationMap() {
             onClick={() => setSelectedPhoto(null)}
           >
             <motion.div
-              layoutId={selectedPhoto.image}
+              layoutId={selectedPhoto.image || selectedPhoto.id}
               className="relative max-w-5xl max-h-[90vh] bg-white p-4 md:p-6 pb-16 md:pb-20 shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
                <button onClick={() => setSelectedPhoto(null)} aria-label={siteContent.accessibility.closeLightboxLabel} className="absolute top-4 right-4 z-10 text-zinc-800 mix-blend-difference hover:scale-110 transition-transform">
                  <X size={24} />
                </button>
-               <img src={resolveAssetUrl(selectedPhoto.image, 'image')} alt={siteContent.accessibility.lightboxPhotoAlt} className="w-full h-full object-contain max-h-[75vh]" />
+               <ArchiveImageFrame
+                 image={selectedPhoto.image}
+                 alt={siteContent.accessibility.lightboxPhotoAlt}
+                 placeholderLabel={selectedPhoto.caption || siteContent.archiveLabels.lightboxCaption}
+                 className="w-full h-full object-contain max-h-[75vh] min-h-80"
+               />
                <div className="absolute bottom-4 left-0 w-full text-center font-handwriting text-2xl text-zinc-800">
                   {selectedPhoto.caption || siteContent.archiveLabels.lightboxCaption}
                </div>
@@ -149,15 +221,18 @@ function FilmStrip() {
               transition={{ type: "spring", stiffness: 200, damping: 25 }}
             >
                {FILMSTRIP_PHOTOS.map((photo, i) => (
-                 <div key={i} className="flex-shrink-0 w-full aspect-[3/2] border-[12px] md:border-[24px] border-[#111] transition-colors relative bg-[#050505] overflow-hidden">
+                 <div key={photo.id} className="flex-shrink-0 w-full aspect-[3/2] border-[12px] md:border-[24px] border-[#111] transition-colors relative bg-[#050505] overflow-hidden">
                    <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{photo.frameCode}</div>
                    <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{siteContent.archiveLabels.filmStockLabel}</div>
                    <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 font-mono text-[10px] text-white/20 tracking-wider pointer-events-none">{photo.frameLabel || `${siteContent.archiveLabels.filmFramePrefix} ${i + 1}`}</div>
-                   <motion.img
-                     src={resolveAssetUrl(photo.image, 'image')}
-                     style={{ y }}
-                     className="w-full h-full object-cover sepia-[20%] contrast-110 opacity-90 mx-auto pointer-events-none scale-[1.3] origin-center"
-                   />
+                   <motion.div style={{ y }} className="w-full h-full mx-auto pointer-events-none scale-[1.3] origin-center">
+                     <ArchiveImageFrame
+                       image={photo.image}
+                       alt={`${siteContent.accessibility.constellationPhotoAlt} ${i + 1}`}
+                       placeholderLabel={photo.frameLabel || `${siteContent.archiveLabels.filmFramePrefix} ${i + 1}`}
+                       className="w-full h-full object-cover sepia-[20%] contrast-110 opacity-90"
+                     />
+                   </motion.div>
                  </div>
                ))}
             </motion.div>
