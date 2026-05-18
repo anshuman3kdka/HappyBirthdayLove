@@ -18,6 +18,7 @@ The universe is vast, but it finds meaning in the constellations we draw. The co
 4. **Sophisticated Typography:** The contrast between stark tech-forward layouts and deep romance is balanced through typography. We utilize `Inter` for clean legibility, `JetBrains Mono` for structural clarity, and `Lora` to provide that deeply personal, editorial, and romantic edge.
 5. **Launch-Night Stability:** Final polish favors invisible reliability over flashy changes: dependency installation is verified, TypeScript must pass, production builds must complete cleanly, and cinematic details like hidden scrollbars are kept standards-compliant so the birthday observatory feels effortless on opening night.
 6. **Editable Emotional Script:** All visible words now live in carefully categorized Pages CMS content files, so the birthday story can be rewritten like a film script—headings, journal entries, timestamps, captions, buttons, loading copy, hidden notes, and accessibility labels—without opening the application code.
+7. **Human-Readable CMS Editing:** Pages CMS repeatable memory rooms are shaped as named, collapsible cards instead of raw objects, so each editable constellation photo, journal entry, polaroid, film frame, and navigation link announces itself clearly before anyone opens it.
 
 ## ✨ Core Features
 *   **The Envelope Entry:** A physical-feeling onboarding process that requires a deliberate "click to open," granting the browser required permissions to autoplay the cinematic audio.
@@ -31,6 +32,7 @@ The universe is vast, but it finds meaning in the constellations we draw. The co
 *   **Launch-Ready Visual Polish:** Global scrollbar hiding is scoped to the page root for cleaner browser parsing, preserving the full-screen observatory illusion while keeping the production build calm and predictable.
 *   **Full Pages CMS Text Control:** The content model is now divided into broad editing rooms—global interface/navigation/envelope text and page-specific memories—so non-coders can adjust virtually every word in the experience from Pages CMS, including journals, headings, titles, timestamps, captions, film labels, hidden constellation messages, and button labels.
 *   **Reliable Pages CMS Editing Rooms:** The CMS map now follows Pages CMS' current `content` and `path` structure, separating Core Text from Page Text while giving photos, videos, and voice notes real media pickers. Editors can step into the birthday observatory, choose the room they want, and safely swap memories without touching code.
+*   **Readable Pages CMS Memory Cards:** Repeatable CMS areas now use Pages CMS' supported object-list pattern with collapsed summaries, replacing confusing `[object Object]` rows with recognizable captions, dates, coordinates, frame codes, and route labels.
 
 ## 🛠 Tech Stack
 *   **Framework:** React 19 & Vite
@@ -80,6 +82,7 @@ npm run build
 *   **[v1.21.0]** - Launch-Night Readiness: Installed the full dependency constellation, refreshed the lockfile, verified TypeScript and production build health, and corrected the global hidden-scrollbar rule so the final cinematic birthday run-up is quieter, cleaner, and ready for opening night.
 *   **[v1.22.0]** - Pages CMS Full Text Wiring: Rebuilt the CMS structure into clear content categories and added a dedicated global interface script file. The digital birthday observatory can now be copy-edited from Pages CMS across visible page copy, journal passages, headings, dates, captions, hidden star messages, loading language, interaction buttons, and accessibility labels without touching React code.
 *   **[v1.23.0]** - Pages CMS Restoration: Repaired the Pages CMS configuration to use the current `content`/`path` schema and cinematic group menus, then upgraded memory fields to dedicated image, video, and audio pickers. Uploaded files now keep their exact extensions at runtime, so new CMS-selected media can appear inside the observatory without breaking the illusion.
+*   **[v1.24.0]** - Pages CMS Readability Rescue: Converted every repeatable CMS memory row from an ambiguous object display into a collapsible, labeled editing card. The observatory's editor now surfaces captions, dates, coordinates, frame codes, and route names up front, making the birthday script practical to revise without decoding developer-shaped data.
 *   *Exploration:* Investigating invisible, generative AI mechanics (Gemini) as a background "director" to orchestrate physics and asset curation without exposing obvious generated text.
 *   *Planned:* Parallax memory carousels mapped to real-world star coordinates.
 
