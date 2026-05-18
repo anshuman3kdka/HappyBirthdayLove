@@ -137,26 +137,45 @@ export function AutoplayVideo({
     };
   }, [isIntersecting, isScrolling, muted, needsUserInteraction, volume, isManuallyPaused]);
 
-  const handleTogglePlay = (e: React.MouseEvent) => {
+  const handleTogglePlay = () => {
     if (!pausable) return;
 
-    // Stop propagation so the window-level interaction listener isn't redundantly triggered
-    e.stopPropagation();
-
     if (needsUserInteraction) {
-      // If it needed interaction, the first click starts it and marks it as not manually paused
-      setIsManuallyPaused(false);
-      setNeedsUserInteraction(false);
+      if (!videoRef.current) return;
+
+      videoRef.current.muted = muted;
+      videoRef.current.volume = Math.min(1, Math.max(0, volume));
+      videoRef.current.play().then(() => {
+        setNeedsUserInteraction(false);
+        setIsManuallyPaused(false);
+        setIsPlaying(true);
+      }).catch(e => {
+        console.warn("Video play failed after direct interaction:", e);
+        setNeedsUserInteraction(true);
+        setIsPlaying(false);
+      });
       return;
     }
 
-    setIsManuallyPaused(!isManuallyPaused);
+    setIsManuallyPaused(prev => !prev);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!pausable) return;
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    handleTogglePlay();
   };
 
   return (
     <div
       className={`relative ${className} [perspective:1000px] ${pausable ? 'cursor-pointer' : ''}`}
-      onClick={handleTogglePlay}
+      onClick={pausable ? handleTogglePlay : undefined}
+      onKeyDown={pausable ? handleKeyDown : undefined}
+      role={pausable ? 'button' : undefined}
+      tabIndex={pausable ? 0 : undefined}
+      aria-label={pausable ? (isPlaying && !isManuallyPaused ? 'Pause archive video' : 'Play archive video') : undefined}
+      aria-pressed={pausable ? !isManuallyPaused : undefined}
     >
       <div 
         className={`w-full h-full relative transition-all duration-1000 preserve-3d
