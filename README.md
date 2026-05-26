@@ -22,6 +22,7 @@ The universe is vast, but it finds meaning in the constellations we draw. The co
 8. **Fresh Premiere on Every Reload:** A browser refresh is treated like raising the curtain again, not resuming a half-watched scene. The observatory intentionally resets to the envelope so the birthday experience always starts from the beginning.
 9. **Single-URL Memory Stage:** Navigation now behaves like lighting cues on one continuous stage instead of sending the visitor to separate webpages. The Journal, Archive, Projection Room, and Sky swap in place at the same address, preserving the illusion that this is one cinematic birthday observatory rather than a traditional website.
 10. **Layered Memory Audio:** Special memory artifacts can now speak above the score without stealing the room from it. The Archive video is allowed to carry its own sound at a defined 70% volume while the ambient soundtrack continues underneath at whatever volume the scene had already established.
+11. **Future-Proof AI Stage Door:** A secure server-side AI gateway now sits behind the observatory curtain. Any future on-screen AI moment can call a local helper that talks to a private Vercel API route, so the NVIDIA NIM key stays hidden in environment variables and never appears in browser code.
 
 ## ✨ Core Features
 *   **The Envelope Entry:** A physical-feeling onboarding process that requires a deliberate "click to open," granting the browser required permissions to autoplay the cinematic audio. Reloading the site now returns here every time, even if the last scene was the Journal, Archive, or Projection Room.
@@ -39,6 +40,7 @@ The universe is vast, but it finds meaning in the constellations we draw. The co
 *   **Full Pages CMS Text Control:** The content model is now divided into broad editing rooms—global interface/navigation/envelope text and page-specific memories—so non-coders can adjust virtually every word in the experience from Pages CMS, including journals, headings, titles, timestamps, captions, film labels, hidden constellation messages, and button labels.
 *   **Reliable Pages CMS Editing Rooms:** The CMS map now follows Pages CMS' current `content` and `path` structure, separating Core Text from Page Text while giving photos, videos, and voice notes real media pickers. Editors can step into the birthday observatory, choose the room they want, and safely swap memories without touching code.
 *   **Readable Pages CMS Memory Cards:** Repeatable CMS areas now use Pages CMS' supported object-list pattern with collapsed summaries, replacing confusing `[object Object]` rows with recognizable captions, dates, coordinates, frame codes, and route labels.
+*   **AI-Ready NIM Gateway:** A Vercel serverless endpoint (`/api/nim-chat`) and matching browser helper (`askNim`) are now in place so future AI-powered birthday interactions can be added quickly while keeping the private NVIDIA NIM key locked safely on the server side.
 
 ## 🛠 Tech Stack
 *   **Framework:** React 19 & Vite
@@ -95,6 +97,7 @@ npm run build
 *   **[v1.28.0]** - Audible Archive Reel: Unmuted the Archive's holographic video moment, set it to play at 70% volume, and kept the nostalgic background music untouched beneath it so the personal clip can breathe without breaking the continuous birthday soundtrack.
 *   **[v1.29.0]** - Archive Fallback Constellations: Hardened the Archive tab against missing CMS image fields and missing uploaded files. Constellation nodes, lightboxes, and film frames now fade into intentional starlit placeholders instead of crashing the cinematic birthday experience.
 *   **[v1.30.0]** - Interactive Archive Playback Polish: Refined the archive reel's tap/click pause control to immediately satisfy browser interaction rules for audible playback, hardened rapid toggle reliability, and exposed keyboard-accessible play/pause interaction while preserving the no-UI cinematic look.
+*   **[v1.31.0]** - NIM Stargate Foundation: Added a secure Vercel serverless route for NVIDIA NIM chat completions and a reusable browser-side helper so future AI scenes can be summoned without ever exposing the private API key in front-end code.
 *   *Exploration:* Investigating invisible, generative AI mechanics (Gemini) as a background "director" to orchestrate physics and asset curation without exposing obvious generated text.
 *   *Planned:* Parallax memory carousels mapped to real-world star coordinates.
 
