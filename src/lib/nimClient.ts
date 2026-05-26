@@ -19,10 +19,21 @@ export async function askNim(messages: AiMessage[], options?: {
     }),
   });
 
-  const data = await response.json();
+  const rawBody = await response.text();
+  let data: unknown = null;
+
+  if (rawBody) {
+    try {
+      data = JSON.parse(rawBody);
+    } catch {
+      data = { raw: rawBody };
+    }
+  }
 
   if (!response.ok) {
-    throw new Error(data?.error || 'NIM request failed.');
+    const parsedError =
+      data && typeof data === 'object' && 'error' in data ? (data as { error?: string }).error : null;
+    throw new Error(`NIM request failed (${response.status}): ${parsedError || rawBody || 'Unknown error'}`);
   }
 
   return data;
