@@ -20,11 +20,11 @@ This document lists all media assets required for the cinematic experience. To p
 | `journal-bg-1.jpg` | Background for "The Beginning" entry | Journal Page |
 | `journal-bg-2.jpg` | Background for "Golden Hour" entry | Journal Page |
 | `journal-bg-3.jpg` | Background for "Midnight" entry | Journal Page |
-| `archive-photo-1.jpg` | Scattered memory photo | Archive Page |
-| `archive-photo-2.jpg` | Scattered memory photo | Archive Page |
-| `archive-photo-3.jpg` | Scattered memory photo | Archive Page |
-| `archive-photo-4.jpg` | Scattered memory photo | Archive Page |
-| `archive-photo-5.jpg` | Scattered memory photo | Archive Page |
+| `archive-photo-1.png` | Scattered memory photo | Archive Page |
+| `archive-photo-2.png` | Scattered memory photo | Archive Page |
+| `archive-photo-3.png` | Scattered memory photo | Archive Page |
+| `archive-photo-4.png` | Scattered memory photo | Archive Page |
+| `archive-photo-5.png` | Scattered memory photo | Archive Page |
 | `archive-film-1.jpg` | Filmstrip frame 1 | Archive Page |
 | `archive-film-2.jpg` | Filmstrip frame 2 | Archive Page |
 | `archive-film-3.jpg` | Filmstrip frame 3 | Archive Page |
