@@ -5,7 +5,6 @@
   "links": [
     { "to": "/", "label": "The Sky" },
     { "to": "/journal", "label": "The Journal" },
-    { "to": "/archive", "label": "The Archive" },
-    { "to": "/projection", "label": "The Projection" }
+    { "to": "/archive", "label": "The Archive" }
   ]
 }

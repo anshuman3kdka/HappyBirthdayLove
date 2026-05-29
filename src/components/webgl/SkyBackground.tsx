@@ -517,7 +517,7 @@ function SceneController({ activeScene }: { activeScene: SceneId }) {
   return null;
 }
 
-export function SkyBackground({ activeScene, onOpenProjection }: { activeScene: SceneId; onOpenProjection: () => void }) {
+export function SkyBackground({ activeScene, onOpenProjection }: { activeScene: SceneId; onOpenProjection?: () => void }) {
   const [showHeartSecret, setShowHeartSecret] = useState(false);
   const [showCatSecret, setShowCatSecret] = useState(false);
   const [catGlowing, setCatGlowing] = useState(false);
@@ -586,6 +586,8 @@ export function SkyBackground({ activeScene, onOpenProjection }: { activeScene: 
   };
 
   const handleProjectionTransition = () => {
+    if (!onOpenProjection) return;
+
     setProjectionGlowing(true);
     // Glow intensifies for a moment, then transitions
     setTimeout(() => {
@@ -680,7 +682,7 @@ export function SkyBackground({ activeScene, onOpenProjection }: { activeScene: 
             scale={6.5}
             pulseSpeed={1.8}
             pulseOffset={3}
-            interactive={true}
+            interactive={Boolean(onOpenProjection)}
             glowing={projectionGlowing}
             onClick={handleProjectionTransition}
           />

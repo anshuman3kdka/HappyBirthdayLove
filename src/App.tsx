@@ -129,7 +129,7 @@ export default function App() {
         <EnvelopeEntry onEnter={handleEnter} />
       ) : isPreloaded && hasEntered ? (
         <div className="relative min-h-screen w-full flex flex-col font-sans">
-          <SkyBackground activeScene={activeScene} onOpenProjection={() => handleSceneChange('projection')} />
+          <SkyBackground activeScene={activeScene} />
           <GlobalDust />
           <InteractiveChimes />
 
