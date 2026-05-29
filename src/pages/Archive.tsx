@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import type { SyntheticEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Play, Pause, X } from 'lucide-react';
@@ -22,6 +23,8 @@ type FilmstripPhoto = {
   frameLabel: string;
 };
 
+type FilmstripOrientation = 'landscape' | 'portrait';
+
 const ARCHIVE_PHOTOS = archiveContent.constellationPhotos.map((photo, index) => ({
   ...photo,
   id: `constellation-${index + 1}`,
@@ -36,13 +39,19 @@ function ArchiveImageFrame({
   alt,
   className,
   placeholderLabel,
+  onImageLoad,
 }: {
   image?: string;
   alt: string;
   className: string;
   placeholderLabel: string;
+  onImageLoad?: (event: SyntheticEvent<HTMLImageElement>) => void;
 }) {
   const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [image]);
   const canShowImage = Boolean(image) && !imageFailed;
 
   if (!canShowImage) {
@@ -67,6 +76,7 @@ function ArchiveImageFrame({
       src={resolveAssetUrl(image!, 'image')}
       alt={alt}
       className={className}
+      onLoad={onImageLoad}
       onError={() => setImageFailed(true)}
     />
   );
@@ -179,6 +189,8 @@ function ConstellationMap() {
 
 function FilmStrip() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState(1);
+  const [orientationByPhotoId, setOrientationByPhotoId] = useState<Record<string, FilmstripOrientation>>({});
   const audioRef = useRef<HTMLAudioElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -191,6 +203,7 @@ function FilmStrip() {
 
   const slideLeft = () => {
     if (currentIndex > 0) {
+      setSlideDirection(-1);
       setCurrentIndex(prev => prev - 1);
       playClickSound();
     }
@@ -198,9 +211,20 @@ function FilmStrip() {
 
   const slideRight = () => {
     if (currentIndex < FILMSTRIP_PHOTOS.length - 1) {
+      setSlideDirection(1);
       setCurrentIndex(prev => prev + 1);
       playClickSound();
     }
+  };
+
+  const updatePhotoOrientation = (photoId: string, event: SyntheticEvent<HTMLImageElement>) => {
+    const image = event.currentTarget;
+    const nextOrientation = image.naturalHeight > image.naturalWidth ? 'portrait' : 'landscape';
+
+    setOrientationByPhotoId(prev => {
+      if (prev[photoId] === nextOrientation) return prev;
+      return { ...prev, [photoId]: nextOrientation };
+    });
   };
 
   const playClickSound = () => {
@@ -235,21 +259,42 @@ function FilmStrip() {
               animate={{ x: `-${currentIndex * 100}%` }}
               transition={{ type: "spring", stiffness: 200, damping: 25 }}
             >
-               {FILMSTRIP_PHOTOS.map((photo, i) => (
-                 <div key={photo.id} className="flex-shrink-0 w-full aspect-[3/2] border-[12px] md:border-[24px] border-[#111] transition-colors relative bg-[#050505] overflow-hidden">
-                   <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{photo.frameCode}</div>
-                   <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{siteContent.archiveLabels.filmStockLabel}</div>
-                   <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 font-mono text-[10px] text-white/20 tracking-wider pointer-events-none">{photo.frameLabel || `${siteContent.archiveLabels.filmFramePrefix} ${i + 1}`}</div>
-                   <motion.div style={{ y }} className="w-full h-full mx-auto pointer-events-none scale-[1.3] origin-center">
-                     <ArchiveImageFrame
-                       image={photo.image}
-                       alt={`${siteContent.accessibility.constellationPhotoAlt} ${i + 1}`}
-                       placeholderLabel={photo.frameLabel || `${siteContent.archiveLabels.filmFramePrefix} ${i + 1}`}
-                       className="w-full h-full object-cover sepia-[20%] contrast-110 opacity-90"
-                     />
-                   </motion.div>
-                 </div>
-               ))}
+               {FILMSTRIP_PHOTOS.map((photo, i) => {
+                 const orientation = orientationByPhotoId[photo.id] ?? 'landscape';
+                 const isPortrait = orientation === 'portrait';
+                 const isActive = i === currentIndex;
+                 const frameLabel = photo.frameLabel || `${siteContent.archiveLabels.filmFramePrefix} ${i + 1}`;
+
+                 return (
+                   <div key={photo.id} className="flex-shrink-0 w-full min-h-[min(78vh,95vw)] md:min-h-[min(78vh,44vw)] flex items-center justify-center py-4 [perspective:1200px]">
+                     <motion.div
+                       layout
+                       animate={{
+                         width: isPortrait ? 'min(62vw,430px)' : '100%',
+                         aspectRatio: isPortrait ? 2 / 3 : 3 / 2,
+                         rotateZ: isPortrait ? (i % 2 === 0 ? -1.8 : 1.8) : 0,
+                         rotateY: isActive ? [slideDirection * 14, 0] : 0,
+                         scale: isActive ? 1 : 0.94,
+                       }}
+                       transition={{ type: 'spring', stiffness: 170, damping: 22 }}
+                       className="relative overflow-hidden border-[12px] border-[#111] bg-[#050505] shadow-[0_0_40px_rgba(0,0,0,0.55)] transition-colors md:border-[24px]"
+                     >
+                       <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{photo.frameCode}</div>
+                       <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{siteContent.archiveLabels.filmStockLabel}</div>
+                       <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 font-mono text-[10px] text-white/20 tracking-wider pointer-events-none">{frameLabel}</div>
+                       <motion.div style={{ y }} className="w-full h-full mx-auto pointer-events-none scale-[1.3] origin-center">
+                         <ArchiveImageFrame
+                           image={photo.image}
+                           alt={`${siteContent.accessibility.constellationPhotoAlt} ${i + 1}`}
+                           placeholderLabel={frameLabel}
+                           className="w-full h-full object-cover sepia-[20%] contrast-110 opacity-90"
+                           onImageLoad={event => updatePhotoOrientation(photo.id, event)}
+                         />
+                       </motion.div>
+                     </motion.div>
+                   </div>
+                 );
+               })}
             </motion.div>
           </div>
 
