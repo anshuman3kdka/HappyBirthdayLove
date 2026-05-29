@@ -115,14 +115,16 @@ export function Journal({ onOpenArchive }: { onOpenArchive: () => void }) {
 
   const handlePointerLeave = () => setTouchPoint(null);
 
+  const SCROLL_DISTANCE_MULTIPLIER = 0.35;
+
   const handleWheel = (e: React.WheelEvent) => {
     setScrollY(y => {
-      const ny = y + e.deltaY;
+      const ny = y + e.deltaY * 0.5;
       return Math.max(0, Math.min(ny, maxScroll));
     });
   };
 
-  const scrollAmount = typeof window !== 'undefined' ? window.innerHeight * 0.7 : 500;
+  const scrollAmount = typeof window !== 'undefined' ? window.innerHeight * SCROLL_DISTANCE_MULTIPLIER : 250;
   
   const scrollDown = () => setScrollY(y => Math.min(maxScroll, y + scrollAmount));
   const scrollUp = () => setScrollY(y => Math.max(0, y - scrollAmount));
@@ -170,7 +172,7 @@ export function Journal({ onOpenArchive }: { onOpenArchive: () => void }) {
 
       {/* Custom Scroll Actions */}
       <div 
-         className="absolute right-4 md:right-8 bottom-[10vh] flex flex-col gap-3 z-50 pointer-events-auto"
+         className="absolute right-4 md:right-8 bottom-[10vh] flex flex-col gap-3 z-[70] pointer-events-auto"
          onPointerDown={(e) => e.stopPropagation()} 
       >
         <button 
