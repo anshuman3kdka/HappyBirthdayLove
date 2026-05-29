@@ -255,16 +255,24 @@ function FilmStrip() {
   );
 }
 
-function VideoMoment() {
+function VideoMoment({
+  isPausedByVoiceNote,
+  onVideoPlayRequest,
+}: {
+  isPausedByVoiceNote: boolean;
+  onVideoPlayRequest: () => void;
+}) {
   return (
     <div className="w-full max-w-4xl mx-auto px-6 mb-32 z-10 relative">
       <div className="relative aspect-video bg-[#0a0a0a] shadow-[0_0_40px_rgba(255,255,255,0.05)] overflow-hidden rounded-sm group">
          <AutoplayVideo
-           src={resolveAssetUrl(archiveContent.videoMoment.video, "video")}
-           className="w-full h-full"
-           muted={false}
-           volume={0.7}
-           pausable={true}
+          src={resolveAssetUrl(archiveContent.videoMoment.video, "video")}
+          className="w-full h-full"
+          muted={false}
+          volume={0.7}
+          pausable={true}
+          externallyPaused={isPausedByVoiceNote}
+          onPlayRequest={onVideoPlayRequest}
          />
       </div>
       <p className="font-serif text-center opacity-50 mt-6 italic text-lg tracking-wide">
@@ -274,18 +282,42 @@ function VideoMoment() {
   );
 }
 
-function LittleThings() {
+function LittleThings({
+  onVoiceNoteStart,
+  onVoiceNoteStop,
+  stopVoiceNoteRequest,
+}: {
+  onVoiceNoteStart: () => void;
+  onVoiceNoteStop: () => void;
+  stopVoiceNoteRequest: number;
+}) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (!audioRef.current) return;
+    if (audioRef.current.paused) return;
+
+    audioRef.current.pause();
+    setIsPlaying(false);
+    onVoiceNoteStop();
+  }, [stopVoiceNoteRequest]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
       audioRef.current.pause();
+      setIsPlaying(false);
+      onVoiceNoteStop();
     } else {
-      audioRef.current.play();
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+        onVoiceNoteStart();
+      }).catch(() => {
+        setIsPlaying(false);
+      });
+      return;
     }
-    setIsPlaying(!isPlaying);
   };
 
   return (
@@ -299,7 +331,10 @@ function LittleThings() {
         <audio
           ref={audioRef}
           src={resolveAssetUrl(archiveContent.littleThings.audioVoiceNote, "audio")}
-          onEnded={() => setIsPlaying(false)}
+          onEnded={() => {
+            setIsPlaying(false);
+            onVoiceNoteStop();
+          }}
         />
         <div className="flex justify-between items-start">
           <div className="font-mono text-[10px] text-white/50 uppercase tracking-widest">{siteContent.archiveLabels.voiceNoteTimestamp}</div>
@@ -351,12 +386,38 @@ function LittleThings() {
 }
 
 export function Archive() {
+  const [isVoiceNotePlaying, setIsVoiceNotePlaying] = useState(false);
+  const [isVideoPausedByVoiceNote, setIsVideoPausedByVoiceNote] = useState(false);
+  const [stopVoiceNoteRequest, setStopVoiceNoteRequest] = useState(0);
+
+  const handleVoiceNoteStart = () => {
+    setIsVoiceNotePlaying(true);
+    setIsVideoPausedByVoiceNote(true);
+  };
+
+  const handleVoiceNoteStop = () => {
+    setIsVoiceNotePlaying(false);
+    setIsVideoPausedByVoiceNote(false);
+  };
+
+  const handleVideoPlayRequest = () => {
+    if (isVoiceNotePlaying) {
+     setStopVoiceNoteRequest(prev => prev + 1);
+    }
+    setIsVoiceNotePlaying(false);
+    setIsVideoPausedByVoiceNote(false);
+  };
+
   return (
     <div className="w-full min-h-screen relative flex flex-col pt-16">
-       <ConstellationMap />
-       <FilmStrip />
-       <VideoMoment />
-       <LittleThings />
+      <ConstellationMap />
+      <FilmStrip />
+      <VideoMoment isPausedByVoiceNote={isVideoPausedByVoiceNote} onVideoPlayRequest={handleVideoPlayRequest} />
+      <LittleThings
+        onVoiceNoteStart={handleVoiceNoteStart}
+        onVoiceNoteStop={handleVoiceNoteStop}
+        stopVoiceNoteRequest={stopVoiceNoteRequest}
+      />
     </div>
   );
 }

@@ -8,6 +8,8 @@ interface AutoplayVideoProps {
   muted?: boolean;
   volume?: number;
   pausable?: boolean;
+  externallyPaused?: boolean;
+  onPlayRequest?: () => void;
 }
 
 export function AutoplayVideo({
@@ -18,6 +20,8 @@ export function AutoplayVideo({
   muted = true,
   volume = 1,
   pausable = false,
+  externallyPaused = false,
+  onPlayRequest,
 }: AutoplayVideoProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -72,8 +76,8 @@ export function AutoplayVideo({
   useEffect(() => {
     if (!videoRef.current) return;
 
-    // Pause immediately if scrolling, out of view, or manually paused
-    if (!isIntersecting || isScrolling || isManuallyPaused) {
+    // Pause immediately if scrolling, out of view, manually paused, or externally paused
+    if (!isIntersecting || isScrolling || isManuallyPaused || externallyPaused) {
       videoRef.current.pause();
       setIsPlaying(false);
       return;
@@ -108,17 +112,17 @@ export function AutoplayVideo({
     };
 
     // Play if intersecting, stopped scrolling, and not manually paused
-    if (isIntersecting && !isScrolling && !isManuallyPaused) {
+    if (isIntersecting && !isScrolling && !isManuallyPaused && !externallyPaused) {
       playVideo();
     }
-  }, [isIntersecting, isScrolling, muted, volume, isManuallyPaused]);
+  }, [isIntersecting, isScrolling, muted, volume, isManuallyPaused, externallyPaused]);
 
   useEffect(() => {
-    if (!needsUserInteraction || muted || !isIntersecting || isScrolling || isManuallyPaused) return;
+    if (!needsUserInteraction || muted || !isIntersecting || isScrolling || isManuallyPaused || externallyPaused) return;
 
     const retryWithSound = () => {
       if (!videoRef.current) return;
-      if (isManuallyPaused) return;
+      if (isManuallyPaused || externallyPaused) return;
 
       videoRef.current.muted = false;
       videoRef.current.volume = Math.min(1, Math.max(0, volume));
@@ -135,25 +139,45 @@ export function AutoplayVideo({
       window.removeEventListener('click', retryWithSound);
       window.removeEventListener('touchstart', retryWithSound);
     };
-  }, [isIntersecting, isScrolling, muted, needsUserInteraction, volume, isManuallyPaused]);
+  }, [isIntersecting, isScrolling, muted, needsUserInteraction, volume, isManuallyPaused, externallyPaused]);
+
+  const playDirectly = () => {
+    if (!videoRef.current) return;
+
+    videoRef.current.muted = muted;
+    videoRef.current.volume = Math.min(1, Math.max(0, volume));
+    videoRef.current.play().then(() => {
+      setNeedsUserInteraction(false);
+      setIsManuallyPaused(false);
+      setIsPlaying(true);
+    }).catch(e => {
+      console.warn("Video play failed after direct interaction:", e);
+      setNeedsUserInteraction(true);
+      setIsPlaying(false);
+    });
+  };
 
   const handleTogglePlay = () => {
     if (!pausable) return;
 
-    if (needsUserInteraction) {
-      if (!videoRef.current) return;
+    if (isPlaying && !isManuallyPaused && !externallyPaused) {
+      setIsManuallyPaused(true);
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
+      setIsPlaying(false);
+      return;
+    }
 
-      videoRef.current.muted = muted;
-      videoRef.current.volume = Math.min(1, Math.max(0, volume));
-      videoRef.current.play().then(() => {
-        setNeedsUserInteraction(false);
-        setIsManuallyPaused(false);
-        setIsPlaying(true);
-      }).catch(e => {
-        console.warn("Video play failed after direct interaction:", e);
-        setNeedsUserInteraction(true);
-        setIsPlaying(false);
-      });
+    if (needsUserInteraction) {
+      onPlayRequest?.();
+      playDirectly();
+      return;
+    }
+
+    if (isManuallyPaused || externallyPaused || !isPlaying) {
+      onPlayRequest?.();
+      playDirectly();
       return;
     }
 
@@ -174,8 +198,8 @@ export function AutoplayVideo({
       onKeyDown={pausable ? handleKeyDown : undefined}
       role={pausable ? 'button' : undefined}
       tabIndex={pausable ? 0 : undefined}
-      aria-label={pausable ? (isPlaying && !isManuallyPaused ? 'Pause archive video' : 'Play archive video') : undefined}
-      aria-pressed={pausable ? !isManuallyPaused : undefined}
+      aria-label={pausable ? (isPlaying && !isManuallyPaused && !externallyPaused ? 'Pause archive video' : 'Play archive video') : undefined}
+      aria-pressed={pausable ? (!isManuallyPaused && !externallyPaused) : undefined}
     >
       <div 
         className={`w-full h-full relative transition-all duration-1000 preserve-3d
