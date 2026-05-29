@@ -14,6 +14,12 @@ type JournalEntry = {
 const ENTRIES = journalContent.entries as JournalEntry[];
 
 const JournalContent = forwardRef<HTMLDivElement, { isForeground?: boolean; isRevealed?: boolean }>((props, ref) => {
+  const photoVisibilityClass = props.isForeground
+    ? 'opacity-65 saturate-[1.15] contrast-110 brightness-110 mix-blend-screen'
+    : props.isRevealed
+      ? 'opacity-35 saturate-[1.05] contrast-105 brightness-95 mix-blend-luminosity'
+      : 'opacity-0 blur-[10px] scale-105';
+
   return (
     <div ref={ref} className="w-full flex flex-col items-center pb-[20vh]">
       <div className={`pt-[25vh] pb-[10vh] px-6 max-w-5xl mx-auto text-center z-10 relative ${props.isForeground ? 'opacity-0' : 'opacity-100'}`}>
@@ -33,10 +39,11 @@ const JournalContent = forwardRef<HTMLDivElement, { isForeground?: boolean; isRe
                 <img 
                   src={resolveAssetUrl(entry.image, 'image')} 
                   alt="" 
-                  className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity"
+                  className={`w-full h-full object-cover transition-all duration-1000 ease-out ${photoVisibilityClass}`}
                 />
               )}
-              <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-purple-900/10 to-[#050505]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-[#12071f]/35 to-[#050505]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(5,5,5,0.24)_45%,rgba(5,5,5,0.88)_100%)]" />
             </div>
 
             <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col px-4 md:px-0 border-l border-purple-200/10 pl-6 py-2">
@@ -156,8 +163,8 @@ export function Journal({ onOpenArchive }: { onOpenArchive: () => void }) {
       <div 
         className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ease-out z-20 ${isRevealed ? 'hidden' : ''}`}
         style={{
-          WebkitMaskImage: touchPoint ? `radial-gradient(circle 200px at ${touchPoint.x}px ${touchPoint.y}px, black 25%, transparent 100%)` : 'none',
-          maskImage: touchPoint ? `radial-gradient(circle 200px at ${touchPoint.x}px ${touchPoint.y}px, black 25%, transparent 100%)` : 'none',
+          WebkitMaskImage: touchPoint ? `radial-gradient(circle 280px at ${touchPoint.x}px ${touchPoint.y}px, black 30%, transparent 100%)` : 'none',
+          maskImage: touchPoint ? `radial-gradient(circle 280px at ${touchPoint.x}px ${touchPoint.y}px, black 30%, transparent 100%)` : 'none',
           opacity: (touchPoint && !isRevealed) ? 1 : 0,
         }}
       >
