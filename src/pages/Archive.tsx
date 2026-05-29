@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Play, Pause, X } from 'lucide-react';
 import { AutoplayVideo } from '../components/AutoplayVideo';
@@ -74,6 +75,17 @@ function ArchiveImageFrame({
 function ConstellationMap() {
   const [selectedPhoto, setSelectedPhoto] = useState<(typeof ARCHIVE_PHOTOS)[number] | null>(null);
 
+  useEffect(() => {
+    if (!selectedPhoto) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [selectedPhoto]);
+
   // Simple SVG lines connecting the centers of the images
   const lines = [
     { from: ARCHIVE_PHOTOS[0], to: ARCHIVE_PHOTOS[1] },
@@ -128,36 +140,39 @@ function ConstellationMap() {
       ))}
 
       {/* Lightbox */}
-      <AnimatePresence>
-        {selectedPhoto && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-6 md:p-12 cursor-zoom-out"
-            onClick={() => setSelectedPhoto(null)}
-          >
+      {createPortal(
+        <AnimatePresence>
+          {selectedPhoto && (
             <motion.div
-              layoutId={selectedPhoto.image || selectedPhoto.id}
-              className="relative max-w-5xl max-h-[90vh] bg-white p-4 md:p-6 pb-16 md:pb-20 shadow-2xl"
-              onClick={e => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/90 px-4 pb-6 pt-[max(1rem,env(safe-area-inset-top))] md:items-center md:p-12 cursor-zoom-out"
+              onClick={() => setSelectedPhoto(null)}
             >
-               <button onClick={() => setSelectedPhoto(null)} aria-label={siteContent.accessibility.closeLightboxLabel} className="absolute top-4 right-4 z-10 text-zinc-800 mix-blend-difference hover:scale-110 transition-transform">
-                 <X size={24} />
-               </button>
-               <ArchiveImageFrame
-                 image={selectedPhoto.image}
-                 alt={siteContent.accessibility.lightboxPhotoAlt}
-                 placeholderLabel={selectedPhoto.caption || siteContent.archiveLabels.lightboxCaption}
-                 className="w-full h-full object-contain max-h-[75vh] min-h-80"
-               />
-               <div className="absolute bottom-4 left-0 w-full text-center font-handwriting text-2xl text-zinc-800">
+              <motion.div
+                layoutId={selectedPhoto.image || selectedPhoto.id}
+                className="relative flex w-full max-w-5xl flex-col bg-white p-3 pb-5 shadow-2xl md:p-6 md:pb-8"
+                onClick={e => e.stopPropagation()}
+              >
+                <button onClick={() => setSelectedPhoto(null)} aria-label={siteContent.accessibility.closeLightboxLabel} className="absolute top-4 right-4 z-10 text-zinc-800 mix-blend-difference hover:scale-110 transition-transform">
+                  <X size={24} />
+                </button>
+                <ArchiveImageFrame
+                  image={selectedPhoto.image}
+                  alt={siteContent.accessibility.lightboxPhotoAlt}
+                  placeholderLabel={selectedPhoto.caption || siteContent.archiveLabels.lightboxCaption}
+                  className="mx-auto block max-h-[calc(100dvh-9.5rem)] w-auto max-w-full object-contain md:max-h-[calc(100vh-12rem)]"
+                />
+                <div className="pt-4 text-center font-handwriting text-2xl text-zinc-800">
                   {selectedPhoto.caption || siteContent.archiveLabels.lightboxCaption}
-               </div>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </div>
   );
 }
