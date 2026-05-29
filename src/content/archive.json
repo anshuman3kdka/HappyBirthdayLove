@@ -34,27 +34,33 @@
   "filmstripPhotos": [
     {
       "frameCode": "01A",
-      "frameLabel": "FRAME 1"
+      "frameLabel": "FRAME 1",
+      "image": "/assets/image/archive-film-1.jpg"
     },
     {
       "frameCode": "02A",
-      "frameLabel": "FRAME 2"
+      "frameLabel": "FRAME 2",
+      "image": "/assets/image/archive-film-2.png"
     },
     {
       "frameCode": "03A",
-      "frameLabel": "FRAME 3"
+      "frameLabel": "FRAME 3",
+      "image": "/assets/image/archive-film-3.png"
     },
     {
       "frameCode": "04A",
-      "frameLabel": "FRAME 4"
+      "frameLabel": "FRAME 4",
+      "image": "/assets/image/archive-film-4.png"
     },
     {
       "frameCode": "05A",
-      "frameLabel": "FRAME 5"
+      "frameLabel": "FRAME 5",
+      "image": "/assets/image/archive-film-5.jpg"
     },
     {
       "frameCode": "06A",
-      "frameLabel": "FRAME 6"
+      "frameLabel": "FRAME 6",
+      "image": "/assets/image/archive-film-6.jpg"
     }
   ],
   "videoMoment": {
