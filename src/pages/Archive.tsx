@@ -282,12 +282,12 @@ function FilmStrip() {
                        <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{photo.frameCode}</div>
                        <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10 font-mono text-[10px] md:text-sm text-white/30 tracking-widest pointer-events-none">{siteContent.archiveLabels.filmStockLabel}</div>
                        <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 z-10 font-mono text-[10px] text-white/20 tracking-wider pointer-events-none">{frameLabel}</div>
-                       <motion.div style={{ y }} className="w-full h-full mx-auto pointer-events-none scale-[1.3] origin-center">
+                       <motion.div style={{ y }} className="w-full h-full mx-auto pointer-events-none">
                          <ArchiveImageFrame
                            image={photo.image}
                            alt={`${siteContent.accessibility.constellationPhotoAlt} ${i + 1}`}
                            placeholderLabel={frameLabel}
-                           className="w-full h-full object-cover sepia-[20%] contrast-110 opacity-90"
+                           className="w-full h-full object-contain sepia-[20%] contrast-110 opacity-90"
                            onImageLoad={event => updatePhotoOrientation(photo.id, event)}
                          />
                        </motion.div>
