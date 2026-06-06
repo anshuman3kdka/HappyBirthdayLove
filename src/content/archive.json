@@ -64,11 +64,11 @@
     }
   ],
   "videoMoment": {
-    "video": "/assets/video/archive-video",
+    "video": "/assets/video/archive-video.webm",
     "caption": "13th December, 2025\nthat one perfect evening"
   },
   "littleThings": {
-    "audioVoiceNote": "/assets/audio/archive-voicenote",
+    "audioVoiceNote": "/assets/audio/archive-voicenote.mp3",
     "voiceNoteLabel": "your laugh",
     "ticketSeat": "Row F • Seat 12",
     "ticketTitle": "ADMIT ONE"
