@@ -5,6 +5,7 @@
     {
       "coord": "RA 14h 29m · Dec +18° 11'",
       "date": "september 8, 2025",
+      "text": "It was your lipstick. And it was your smile. I had already thought of you as someone ",
       "image": "/assets/image/journal-bg-1.jpg"
     },
     {
@@ -19,7 +20,7 @@
     }
   ],
   "finalMessage": {
-    "text1": "Oh, there's one more thing i should have said sooner, maybe on the first page...or the first day-",
+    "text1": "Oh, there's one more thing i should have said sooner, maybe on the first page... or the first day–",
     "text2": "i love you."
   }
 }
