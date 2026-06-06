@@ -1,66 +1,66 @@
 {
   "constellationPhotos": [
     {
+      "image": "/assets/image/archive-photo-1.png",
       "caption": "memorabilia.",
       "x": 20,
-      "y": 30,
-      "image": "/assets/image/archive-photo-1.png"
+      "y": 30
     },
     {
+      "image": "/assets/image/archive-photo-2.png",
       "caption": "memorabilia.",
       "x": 60,
-      "y": 15,
-      "image": "/assets/image/archive-photo-2.png"
+      "y": 15
     },
     {
+      "image": "/assets/image/archive-photo-3.png",
       "caption": "memorabilia.",
       "x": 80,
-      "y": 50,
-      "image": "/assets/image/archive-photo-3.png"
+      "y": 50
     },
     {
+      "image": "/assets/image/archive-photo-4.png",
       "caption": "memorabilia.",
       "x": 40,
-      "y": 70,
-      "image": "/assets/image/archive-photo-4.png"
+      "y": 70
     },
     {
+      "image": "/assets/image/archive-photo-5.png",
       "caption": "memorabilia.",
       "x": 10,
-      "y": 80,
-      "image": "/assets/image/archive-photo-5.png"
+      "y": 80
     }
   ],
   "filmstripPhotos": [
     {
+      "image": "/assets/image/archive-film-1.jpg",
       "frameCode": "01A",
-      "frameLabel": "FRAME 1",
-      "image": "/assets/image/archive-film-1.jpg"
+      "frameLabel": "FRAME 1"
     },
     {
+      "image": "/assets/image/archive-film-2.png",
       "frameCode": "02A",
-      "frameLabel": "FRAME 2",
-      "image": "/assets/image/archive-film-2.png"
+      "frameLabel": "FRAME 2"
     },
     {
+      "image": "/assets/image/archive-film-3.png",
       "frameCode": "03A",
-      "frameLabel": "FRAME 3",
-      "image": "/assets/image/archive-film-3.png"
+      "frameLabel": "FRAME 3"
     },
     {
+      "image": "/assets/image/archive-film-4.png",
       "frameCode": "04A",
-      "frameLabel": "FRAME 4",
-      "image": "/assets/image/archive-film-4.png"
+      "frameLabel": "FRAME 4"
     },
     {
+      "image": "/assets/image/archive-film-5.jpg",
       "frameCode": "05A",
-      "frameLabel": "FRAME 5",
-      "image": "/assets/image/archive-film-5.jpg"
+      "frameLabel": "FRAME 5"
     },
     {
+      "image": "/assets/image/archive-film-6.jpg",
       "frameCode": "06A",
-      "frameLabel": "FRAME 6",
-      "image": "/assets/image/archive-film-6.jpg"
+      "frameLabel": "FRAME 6"
     }
   ],
   "videoMoment": {
@@ -70,7 +70,7 @@
   "littleThings": {
     "audioVoiceNote": "/assets/audio/archive-voicenote.mp3",
     "voiceNoteLabel": "your laugh",
-    "ticketSeat": "Row F • Seat 12",
-    "ticketTitle": "ADMIT ONE"
+    "ticketSeat": "Garden of Five Senses",
+    "ticketTitle": "ADMIT TWO"
   }
 }
