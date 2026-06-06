@@ -5,22 +5,22 @@
   "bottom_date": "march 4th, 2025 // 02:42 am",
   "polaroids": [
     {
-      "image": "/assets/image/home-photo-1",
+      "image": "/assets/image/home-photo-1.jpg",
       "caption": "Paris, 2024",
       "rotation": -4
     },
     {
-      "image": "/assets/image/home-photo-2",
+      "image": "/assets/image/home-photo-2.jpg",
       "caption": "coffee at 2pm",
       "rotation": 3
     },
     {
-      "image": "/assets/image/home-photo-3",
+      "image": "/assets/image/home-photo-3.jpg",
       "caption": "you wouldn't stop laughing",
       "rotation": -6
     },
     {
-      "image": "/assets/image/home-photo-4",
+      "image": "/assets/image/home-photo-4.jpg",
       "caption": "That night on the roof",
       "rotation": 5
     }
