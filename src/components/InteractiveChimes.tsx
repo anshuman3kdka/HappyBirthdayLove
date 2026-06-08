@@ -13,8 +13,9 @@ export function InteractiveChimes() {
   const rippleCounter = useRef(0);
 
   useEffect(() => {
-    const CONTINUOUS_CHIME_INTERVAL = 220;
-    let lastContinuousChimeAt = 0;
+    const WHEEL_GESTURE_END_DELAY = 350;
+    let wheelGestureActive = false;
+    let wheelGestureEndTimer: number | undefined;
     let lastPointerPosition = {
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,
@@ -61,26 +62,23 @@ export function InteractiveChimes() {
       playChime(ctx, panValue);
     };
 
-    const triggerContinuousChime = () => {
-      const now = performance.now();
-      if (now - lastContinuousChimeAt < CONTINUOUS_CHIME_INTERVAL) return;
+    const handleWheel = () => {
+      // A mouse wheel or trackpad sends many events during one scroll. Chime
+      // only on the first event, then wait until the gesture has fully ended.
+      if (!wheelGestureActive) {
+        wheelGestureActive = true;
+        triggerChime();
+      }
 
-      lastContinuousChimeAt = now;
-      triggerChime();
+      window.clearTimeout(wheelGestureEndTimer);
+      wheelGestureEndTimer = window.setTimeout(() => {
+        wheelGestureActive = false;
+      }, WHEEL_GESTURE_END_DELAY);
     };
 
     const handlePointerDown = (event: PointerEvent) => {
       lastPointerPosition = { x: event.clientX, y: event.clientY };
       triggerChime(event.clientX, true, event.clientY);
-    };
-
-    const handlePointerMove = (event: PointerEvent) => {
-      lastPointerPosition = { x: event.clientX, y: event.clientY };
-
-      // A pressed pointer means the guest is dragging or touch-scrolling.
-      if (event.buttons > 0 || event.pointerType === 'touch') {
-        triggerContinuousChime();
-      }
     };
 
     const handleKeyboardInteraction = (event: KeyboardEvent) => {
@@ -91,16 +89,13 @@ export function InteractiveChimes() {
     // Capture-phase listeners hear interactions even when a photo, video, or
     // custom control stops the event before it reaches the rest of the page.
     window.addEventListener('pointerdown', handlePointerDown, true);
-    window.addEventListener('pointermove', handlePointerMove, true);
-    window.addEventListener('wheel', triggerContinuousChime, { capture: true, passive: true });
-    window.addEventListener('scroll', triggerContinuousChime, { capture: true, passive: true });
+    window.addEventListener('wheel', handleWheel, { capture: true, passive: true });
     window.addEventListener('keydown', handleKeyboardInteraction, true);
 
     return () => {
       window.removeEventListener('pointerdown', handlePointerDown, true);
-      window.removeEventListener('pointermove', handlePointerMove, true);
-      window.removeEventListener('wheel', triggerContinuousChime, true);
-      window.removeEventListener('scroll', triggerContinuousChime, true);
+      window.removeEventListener('wheel', handleWheel, true);
+      window.clearTimeout(wheelGestureEndTimer);
       window.removeEventListener('keydown', handleKeyboardInteraction, true);
       if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
         audioCtxRef.current.close().catch(() => {});
