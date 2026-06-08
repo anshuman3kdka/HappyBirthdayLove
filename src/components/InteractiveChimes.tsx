@@ -13,46 +13,90 @@ export function InteractiveChimes() {
   const rippleCounter = useRef(0);
 
   useEffect(() => {
-    const handleGlobalClick = (e: MouseEvent) => {
-      // Add ripple effect
-      const newRipple = {
-        id: rippleCounter.current++,
-        x: e.clientX,
-        y: e.clientY
-      };
-      setRipples(prev => [...prev, newRipple]);
-      
-      // Auto-remove ripple after animation
-      setTimeout(() => {
-        setRipples(prev => prev.filter(r => r.id !== newRipple.id));
-      }, 1500);
+    const WHEEL_GESTURE_END_DELAY = 350;
+    let wheelGestureActive = false;
+    let wheelGestureEndTimer: number | undefined;
+    let lastPointerPosition = {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+    };
 
-      // Initialize AudioContext on first interaction if it doesn't exist
+    const ensureAudioContext = () => {
       if (!audioCtxRef.current) {
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioContextClass) {
           audioCtxRef.current = new AudioContextClass();
         }
       }
-      
-      const ctx = audioCtxRef.current;
-      if (!ctx) return;
 
-      // Resume context if suspended
-      if (ctx.state === 'suspended') {
-        ctx.resume();
+      const ctx = audioCtxRef.current;
+      if (ctx?.state === 'suspended') {
+        void ctx.resume();
       }
 
-      // Calculate pan from -1 to 1
-      const panValue = (e.clientX / window.innerWidth) * 2 - 1;
+      return ctx;
+    };
 
+    const addRipple = (x: number, y: number) => {
+      const newRipple = {
+        id: rippleCounter.current++,
+        x,
+        y,
+      };
+      setRipples(prev => [...prev, newRipple]);
+
+      window.setTimeout(() => {
+        setRipples(prev => prev.filter(r => r.id !== newRipple.id));
+      }, 1500);
+    };
+
+    const triggerChime = (x = lastPointerPosition.x, showRipple = false, y = lastPointerPosition.y) => {
+      const ctx = ensureAudioContext();
+      if (!ctx) return;
+
+      if (showRipple) {
+        addRipple(x, y);
+      }
+
+      const panValue = Math.max(-1, Math.min(1, (x / window.innerWidth) * 2 - 1));
       playChime(ctx, panValue);
     };
 
-    window.addEventListener('mousedown', handleGlobalClick);
-    
+    const handleWheel = () => {
+      // A mouse wheel or trackpad sends many events during one scroll. Chime
+      // only on the first event, then wait until the gesture has fully ended.
+      if (!wheelGestureActive) {
+        wheelGestureActive = true;
+        triggerChime();
+      }
+
+      window.clearTimeout(wheelGestureEndTimer);
+      wheelGestureEndTimer = window.setTimeout(() => {
+        wheelGestureActive = false;
+      }, WHEEL_GESTURE_END_DELAY);
+    };
+
+    const handlePointerDown = (event: PointerEvent) => {
+      lastPointerPosition = { x: event.clientX, y: event.clientY };
+      triggerChime(event.clientX, true, event.clientY);
+    };
+
+    const handleKeyboardInteraction = (event: KeyboardEvent) => {
+      if (event.repeat) return;
+      triggerChime(window.innerWidth / 2);
+    };
+
+    // Capture-phase listeners hear interactions even when a photo, video, or
+    // custom control stops the event before it reaches the rest of the page.
+    window.addEventListener('pointerdown', handlePointerDown, true);
+    window.addEventListener('wheel', handleWheel, { capture: true, passive: true });
+    window.addEventListener('keydown', handleKeyboardInteraction, true);
+
     return () => {
-      window.removeEventListener('mousedown', handleGlobalClick);
+      window.removeEventListener('pointerdown', handlePointerDown, true);
+      window.removeEventListener('wheel', handleWheel, true);
+      window.clearTimeout(wheelGestureEndTimer);
+      window.removeEventListener('keydown', handleKeyboardInteraction, true);
       if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
         audioCtxRef.current.close().catch(() => {});
       }
