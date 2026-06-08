@@ -13,46 +13,95 @@ export function InteractiveChimes() {
   const rippleCounter = useRef(0);
 
   useEffect(() => {
-    const handleGlobalClick = (e: MouseEvent) => {
-      // Add ripple effect
-      const newRipple = {
-        id: rippleCounter.current++,
-        x: e.clientX,
-        y: e.clientY
-      };
-      setRipples(prev => [...prev, newRipple]);
-      
-      // Auto-remove ripple after animation
-      setTimeout(() => {
-        setRipples(prev => prev.filter(r => r.id !== newRipple.id));
-      }, 1500);
+    const CONTINUOUS_CHIME_INTERVAL = 220;
+    let lastContinuousChimeAt = 0;
+    let lastPointerPosition = {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+    };
 
-      // Initialize AudioContext on first interaction if it doesn't exist
+    const ensureAudioContext = () => {
       if (!audioCtxRef.current) {
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioContextClass) {
           audioCtxRef.current = new AudioContextClass();
         }
       }
-      
-      const ctx = audioCtxRef.current;
-      if (!ctx) return;
 
-      // Resume context if suspended
-      if (ctx.state === 'suspended') {
-        ctx.resume();
+      const ctx = audioCtxRef.current;
+      if (ctx?.state === 'suspended') {
+        void ctx.resume();
       }
 
-      // Calculate pan from -1 to 1
-      const panValue = (e.clientX / window.innerWidth) * 2 - 1;
+      return ctx;
+    };
 
+    const addRipple = (x: number, y: number) => {
+      const newRipple = {
+        id: rippleCounter.current++,
+        x,
+        y,
+      };
+      setRipples(prev => [...prev, newRipple]);
+
+      window.setTimeout(() => {
+        setRipples(prev => prev.filter(r => r.id !== newRipple.id));
+      }, 1500);
+    };
+
+    const triggerChime = (x = lastPointerPosition.x, showRipple = false, y = lastPointerPosition.y) => {
+      const ctx = ensureAudioContext();
+      if (!ctx) return;
+
+      if (showRipple) {
+        addRipple(x, y);
+      }
+
+      const panValue = Math.max(-1, Math.min(1, (x / window.innerWidth) * 2 - 1));
       playChime(ctx, panValue);
     };
 
-    window.addEventListener('mousedown', handleGlobalClick);
-    
+    const triggerContinuousChime = () => {
+      const now = performance.now();
+      if (now - lastContinuousChimeAt < CONTINUOUS_CHIME_INTERVAL) return;
+
+      lastContinuousChimeAt = now;
+      triggerChime();
+    };
+
+    const handlePointerDown = (event: PointerEvent) => {
+      lastPointerPosition = { x: event.clientX, y: event.clientY };
+      triggerChime(event.clientX, true, event.clientY);
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      lastPointerPosition = { x: event.clientX, y: event.clientY };
+
+      // A pressed pointer means the guest is dragging or touch-scrolling.
+      if (event.buttons > 0 || event.pointerType === 'touch') {
+        triggerContinuousChime();
+      }
+    };
+
+    const handleKeyboardInteraction = (event: KeyboardEvent) => {
+      if (event.repeat) return;
+      triggerChime(window.innerWidth / 2);
+    };
+
+    // Capture-phase listeners hear interactions even when a photo, video, or
+    // custom control stops the event before it reaches the rest of the page.
+    window.addEventListener('pointerdown', handlePointerDown, true);
+    window.addEventListener('pointermove', handlePointerMove, true);
+    window.addEventListener('wheel', triggerContinuousChime, { capture: true, passive: true });
+    window.addEventListener('scroll', triggerContinuousChime, { capture: true, passive: true });
+    window.addEventListener('keydown', handleKeyboardInteraction, true);
+
     return () => {
-      window.removeEventListener('mousedown', handleGlobalClick);
+      window.removeEventListener('pointerdown', handlePointerDown, true);
+      window.removeEventListener('pointermove', handlePointerMove, true);
+      window.removeEventListener('wheel', triggerContinuousChime, true);
+      window.removeEventListener('scroll', triggerContinuousChime, true);
+      window.removeEventListener('keydown', handleKeyboardInteraction, true);
       if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
         audioCtxRef.current.close().catch(() => {});
       }
